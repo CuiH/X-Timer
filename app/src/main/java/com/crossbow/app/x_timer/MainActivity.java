@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     private ServiceConnection connection;
 
-    private Intent intent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +92,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
-
-        // intent
-        intent = new Intent(this, TickTrackerService.class);
     }
 
     @Override
@@ -172,6 +169,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // check if the user has system permission
     private boolean hasPermission() {
         AppOpsManager appOps = (AppOpsManager)
                 getSystemService(Context.APP_OPS_SERVICE);
@@ -180,28 +178,36 @@ public class MainActivity extends AppCompatActivity
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
+    // if no permission show info
     private void requestPermission() {
         Toast.makeText(this, "no permission", Toast.LENGTH_LONG).show();
     }
 
+    // start the TickTracker Service
     public void startTickService() {
+        Intent intent = new Intent(this, TickTrackerService.class);
         startService(intent);
         bindTickService();
 
         Toast.makeText(this, "started", Toast.LENGTH_LONG).show();
     }
 
+    // stop the TickTracker Service
     public void stopTickService() {
+        Intent intent = new Intent(this, TickTrackerService.class);
         stopService(intent);
         unbindTickService();
 
         Toast.makeText(this, "stopped", Toast.LENGTH_LONG).show();
     }
 
+    // bind the service
     public void bindTickService() {
+        Intent intent = new Intent(this, TickTrackerService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
     }
 
+    // unbind the service
     public void unbindTickService() {
         unbindService(connection);
     }

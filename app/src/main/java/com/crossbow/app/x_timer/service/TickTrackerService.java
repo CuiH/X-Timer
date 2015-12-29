@@ -43,7 +43,7 @@ public class TickTrackerService extends Service {
     @Override
     public void onCreate() {
         oldAppStatus = null;
-        Log.d(TAG, "onCreate: Service Created");
+        Log.d(TAG, "onCreate: Created " + this.toString());
         watchingList = new HashMap<>();
         watchingList.put("com.tencent.mm", new AppUsage());
         watchingList.get("com.tencent.mm").setPackageName("com.tencent.mm");
@@ -62,7 +62,7 @@ public class TickTrackerService extends Service {
         Log.d(TAG, "onAppSwitched: 上次用时" + (System.currentTimeMillis() -
                 oldAppStatus.getLastTimeUsed()));
         Log.d(TAG, "onAppSwitched: 总用时" + total);
-        Log.d(TAG, watchingForegroundAppThread.toString()+this.toString());
+        Log.d(TAG, watchingForegroundAppThread.toString() + this.toString());
     }
 
     private class WatchingForegroundAppThread extends Thread {
@@ -102,17 +102,17 @@ public class TickTrackerService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy: Service");
+        Log.d(TAG, "onDestroy: " + this.toString());
 
         //TODO 在销毁之前把数据写入数据库
-
         watchingForegroundAppThread.interrupt();
+        running = false;
         super.onDestroy();
     }
 
     @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind: Unbind Service");
+     public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind: Unbind " + this.toString());
         return super.onUnbind(intent);
     }
 }
