@@ -1,5 +1,6 @@
 package com.crossbow.app.x_timer;
 
+import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -29,42 +30,20 @@ import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "xyz";
-
+    private static final String TAG = "main";
     private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1;
 
     public static TickTrackerService.UsageBinder usageBinder;
 
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            usageBinder = (TickTrackerService.UsageBinder) service;
-            //watchingList = usageBinder.getWatchingList();
-        }
+    private ServiceConnection connection;
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS:
-                if (hasPermission()){
-                    return;
-                }else{
-                    requestPermission();
-                }
-                break;
-        }
-    }
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +69,7 @@ public class MainActivity extends AppCompatActivity
 
         // fragment tab
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(),
-                MainActivity.this));
+        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab);
         tabLayout.setupWithViewPager(viewPager);
@@ -99,18 +77,24 @@ public class MainActivity extends AppCompatActivity
         // check permission
         if (!hasPermission()) {
             requestPermission();
-        } else {
-            Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
         }
 
-        // service
-        /**
-         * 如果Service是在绑定创建的，解除绑定时，service也会被销毁
-         * 通过startService创建的服务必须通过stopService才能停止
-         */
-        Intent intent = new Intent(MainActivity.this,
-                TickTrackerService.class);
-        startService(intent);
+        // connection
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                usageBinder = (TickTrackerService.UsageBinder) service;
+                //watchingList = usageBinder.getWatchingList();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+
+        // intent
+        intent = new Intent(this, TickTrackerService.class);
     }
 
     @Override
@@ -123,9 +107,8 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-        Intent intent = new Intent(MainActivity.this,
-                TickTrackerService.class);
-        bindService(intent, connection, BIND_AUTO_CREATE);
+
+        if (isWorking()) bindTickService();
     }
 
     @Override
@@ -144,7 +127,8 @@ public class MainActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
-        unbindService(connection);
+
+        if (isWorking()) unbindTickService();
     }
 
     @Override
@@ -198,5 +182,46 @@ public class MainActivity extends AppCompatActivity
 
     private void requestPermission() {
         Toast.makeText(this, "no permission", Toast.LENGTH_LONG).show();
+    }
+
+    public void startTickService() {
+        startService(intent);
+        bindTickService();
+
+        Toast.makeText(this, "started", Toast.LENGTH_LONG).show();
+    }
+
+    public void stopTickService() {
+        stopService(intent);
+        unbindTickService();
+
+        Toast.makeText(this, "stopped", Toast.LENGTH_LONG).show();
+    }
+
+    public void bindTickService() {
+        bindService(intent, connection, BIND_AUTO_CREATE);
+    }
+
+    public void unbindTickService() {
+        unbindService(connection);
+    }
+
+    private boolean isWorking() {
+        ActivityManager myAM = (ActivityManager)getApplicationContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
+
+        if (myList.size() <= 0) {
+            return false;
+        }
+
+        for (int i = 0; i < myList.size(); i++) {
+            String mName = myList.get(i).service.getClassName().toString();
+            System.out.println(mName);
+            if (mName.equals("com.crossbow.app.x_timer.service.TickTrackerService")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -23,7 +23,10 @@ public class TickTrackerService extends Service {
     private UsageStats oldAppStatus;
     private Map<String, AppUsage> watchingList;
     private UsageBinder usageBinder = new UsageBinder();
-    private String TAG = "xyz";
+    private String TAG = "service";
+
+
+    private WatchingForegroundAppThread watchingForegroundAppThread = new WatchingForegroundAppThread();
 
     public class UsageBinder extends Binder {
         public Map<String, AppUsage> getWatchingList() {
@@ -45,7 +48,7 @@ public class TickTrackerService extends Service {
         watchingList.put("com.tencent.mm", new AppUsage());
         watchingList.get("com.tencent.mm").setPackageName("com.tencent.mm");
         usageStatsManager = (UsageStatsManager)getSystemService(Context.USAGE_STATS_SERVICE);
-        new WatchingForegroundAppThread().start();
+        watchingForegroundAppThread.start();
     }
 
     private void onAppSwitched() {
@@ -59,6 +62,7 @@ public class TickTrackerService extends Service {
         Log.d(TAG, "onAppSwitched: 上次用时" + (System.currentTimeMillis() -
                 oldAppStatus.getLastTimeUsed()));
         Log.d(TAG, "onAppSwitched: 总用时" + total);
+        Log.d(TAG, watchingForegroundAppThread.toString()+this.toString());
     }
 
     private class WatchingForegroundAppThread extends Thread {
@@ -99,8 +103,11 @@ public class TickTrackerService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Service");
-        super.onDestroy();
+
         //TODO 在销毁之前把数据写入数据库
+
+        watchingForegroundAppThread.interrupt();
+        super.onDestroy();
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.crossbow.app.x_timer.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.crossbow.app.x_timer.MainActivity;
 
 /**
  * Created by CuiH on 2015/12/29.
@@ -11,11 +14,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 public class MyPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 3;
     private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
-    private Context context;
+    private MainActivity mainActivity;
 
-    public MyPagerAdapter(FragmentManager fm, Context context) {
+    public MyPagerAdapter(FragmentManager fm, MainActivity activity) {
         super(fm);
-        this.context = context;
+        mainActivity = activity;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new MyFragment1();
+            return new MyFragment1(mainActivity);
         } else if (position == 1) {
             return new MyFragment2();
         } else if (position == 2) {
