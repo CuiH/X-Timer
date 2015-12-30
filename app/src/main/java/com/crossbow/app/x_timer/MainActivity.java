@@ -36,14 +36,11 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "main";
-    private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1;
+    private final String TAG = "main";
 
     public static TickTrackerService.UsageBinder usageBinder;
 
     private ServiceConnection connection;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +209,7 @@ public class MainActivity extends AppCompatActivity
         unbindService(connection);
     }
 
+    // check if the service is working
     private boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);

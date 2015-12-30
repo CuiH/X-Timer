@@ -31,10 +31,12 @@ import java.util.Map;
  * Created by CuiH on 2015/12/29.
  */
 public class MyFragment1 extends Fragment {
-    private static final String TAG = "xyz";
+    private final String TAG = "MyFragment1";
 
     private Button mShowInfoButton;
     private Button controlService;
+    private Button addQQ;
+    private Button removeQQ;
     private TextView mTestInfoTextView;
     private Map<String, AppUsage> watchingList;
     private MainActivity mainActivity;
@@ -59,6 +61,8 @@ public class MyFragment1 extends Fragment {
         controlService = (Button)view.findViewById(R.id.controlService);
         mTestInfoTextView = (TextView)view.findViewById(R.id.mTestInfoTextView);
 
+        addQQ = (Button)view.findViewById(R.id.addQQ);
+        removeQQ = (Button)view.findViewById(R.id.removeQQ);
 
         if (isWorking()) {
             controlService.setText("stop service");
@@ -71,9 +75,13 @@ public class MyFragment1 extends Fragment {
             public void onClick(View v) {
                 watchingList = MainActivity.usageBinder.getWatchingList();
                 Log.d(TAG, "onClick: " + watchingList.toString());
-                mTestInfoTextView.setText(watchingList.get("com.tencent.mm")
-                        .getPackageName() + watchingList.get("com.tencent.mm")
-                        .getTotalTimeUsed() + "");
+                StringBuilder builder = new StringBuilder();
+
+                for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
+                    builder.append(entry.getKey().toString() + entry.getValue().getTotalTimeUsed()+ "\n");
+                }
+
+                mTestInfoTextView.setText(builder.toString());
             }
         });
 
@@ -87,6 +95,40 @@ public class MyFragment1 extends Fragment {
                 } else {
                     mainActivity.startTickService();
                     controlService.setText("stop service");
+                }
+            }
+        });
+
+        addQQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isWorking()) {
+                    Toast.makeText(mainActivity, "please start service first!"
+                            , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (MainActivity.usageBinder.addAppToWatchingList("com.tencent.mm")) {
+                    Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        removeQQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isWorking()) {
+                    Toast.makeText(mainActivity, "please start service first!"
+                            , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (MainActivity.usageBinder.removeAppFromWatchingLise("com.tencent.mm")) {
+                    Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
                 }
             }
         });
