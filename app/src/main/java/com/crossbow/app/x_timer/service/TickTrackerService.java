@@ -199,6 +199,7 @@ public class TickTrackerService extends Service {
         startNotification();
     }
 
+    // start the foreground service - notification
     private void startNotification() {
         Intent i = new Intent(this, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this, 0, i,
