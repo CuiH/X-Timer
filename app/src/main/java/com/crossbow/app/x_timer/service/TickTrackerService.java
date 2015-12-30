@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.crossbow.app.x_timer.Utils.FileUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,11 +103,19 @@ public class TickTrackerService extends Service {
         Log.d(TAG, "onDestroy: Service");
         super.onDestroy();
         //TODO 在销毁之前把数据写入数据库
+        FileUtils fileUtils = new FileUtils(this);
+        for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
+            fileUtils.store(entry.getValue());
+        }
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind: Unbind Service");
         return super.onUnbind(intent);
+    }
+
+    private void loadFromFile() {
+
     }
 }
