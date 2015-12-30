@@ -1,5 +1,7 @@
 package com.crossbow.app.x_timer.service;
 
+import java.util.ArrayList;
+
 /**
  * Created by CuiH on 2015/12/29.
  */
@@ -12,14 +14,21 @@ public class AppUsage {
      * 应用包名
      */
     private String packageName;
+
     /**
-     * 最近一次到前台的时间
+     * 记录应用的打开和关闭历史
      */
-    private long lastTimeUsed;
-    /**
-     * 最近一次退出前台的时间
-     */
-    private long lastTimeQuit;
+    private ArrayList<History> usingHistory;
+
+    public AppUsage() {
+        usingHistory = new ArrayList<>();
+        totalTimeUsed = 0;
+    }
+
+    public AppUsage(String pkgName) {
+        this();
+        packageName = pkgName;
+    }
 
     public long getTotalTimeUsed() {
         return totalTimeUsed;
@@ -27,18 +36,6 @@ public class AppUsage {
 
     public String getPackageName() {
         return packageName;
-    }
-
-    public long getLastTimeUsed() {
-        return lastTimeUsed;
-    }
-
-    public long getLastTimeQuit() {
-        return lastTimeQuit;
-    }
-
-    public void setLastTimeQuit(long lastTimeQuit) {
-        this.lastTimeQuit = lastTimeQuit;
     }
 
     public void setTotalTimeUsed(long totalTimeUsed) {
@@ -49,7 +46,38 @@ public class AppUsage {
         this.packageName = packageName;
     }
 
-    public void setLastTimeUsed(long lastTimeUsed) {
-        this.lastTimeUsed = lastTimeUsed;
+    public void addUsingRecord(long start, long end) {
+        usingHistory.add(new History(start, end));
+    }
+
+    public ArrayList<History> getUsingRecord() {
+        return usingHistory;
+    }
+
+
+    public static class History {
+        private long startTime;
+        private long endTime;
+
+        public History(long startTime, long endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+
+        public long getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
+        }
     }
 }

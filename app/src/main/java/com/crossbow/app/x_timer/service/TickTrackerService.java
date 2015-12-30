@@ -50,8 +50,8 @@ public class TickTrackerService extends Service {
 
     private void onAppSwitched() {
         AppUsage appUsage = watchingList.get(oldAppStatus.getPackageName());
-        appUsage.setLastTimeUsed(oldAppStatus.getLastTimeUsed());
-        appUsage.setLastTimeQuit(System.currentTimeMillis());
+//        appUsage.setLastTimeUsed(oldAppStatus.getLastTimeUsed());
+//        appUsage.setLastTimeQuit(System.currentTimeMillis());
         long total = appUsage.getTotalTimeUsed() + System
                 .currentTimeMillis() - oldAppStatus.getLastTimeUsed();
         appUsage.setTotalTimeUsed(total);
