@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 /**
  * Created by heath on 15-12-29.
@@ -24,21 +26,22 @@ public class FileUtils {
         this.context = context;
     }
 
-    public String[] getApplist() {
+    public ArrayList<String> getApplist() {
         if (!new File("/data/data/com.crossbow.app.x_timer/AppList").exists
                 ()) {
-            return null;
+            return new ArrayList<String>();
         }
         try {
             Gson gson = new Gson();
-            return gson.fromJson(getContent("AppList"), String[].class);
+            return gson.fromJson(getContent("AppList"), new
+                    TypeToken<ArrayList<String> >() {}.getType());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public void storeAppList(String[] appList) {
+    public void storeAppList(ArrayList<String> appList) {
         try {
             getWriter("AppList").write(new Gson().toJson(appList));
         } catch (Exception e) {
