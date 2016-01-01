@@ -10,15 +10,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 
 import android.widget.RadioButton;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "main";
 
-    public static TickTrackerService.UsageBinder usageBinder;
+    public TickTrackerService.UsageBinder usageBinder;
 
     private ServiceConnection connection;
 
@@ -228,6 +228,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // return the service binder
+    public TickTrackerService.UsageBinder getBinder() {
+        return usageBinder;
+    }
+
     // init the connection
     private void initConnection() {
         connection = new ServiceConnection() {
@@ -329,7 +334,6 @@ public class MainActivity extends AppCompatActivity
 
         for (int i = 0; i < myList.size(); i++) {
             String mName = myList.get(i).service.getClassName().toString();
-            System.out.println(mName);
             if (mName.equals("com.crossbow.app.x_timer.service.TickTrackerService")) {
                 return true;
             }

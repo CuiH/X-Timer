@@ -16,7 +16,11 @@ import android.widget.Toast;
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.service.AppUsage;
+import com.crossbow.app.x_timer.service.TickTrackerService;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +34,7 @@ public class MyFragment1 extends Fragment {
     private Button controlService;
     private Button addQQ;
     private Button removeQQ;
+    private Button clearFile;
     private TextView mTestInfoTextView;
     private Map<String, AppUsage> watchingList;
     private MainActivity mainActivity;
@@ -66,12 +71,18 @@ public class MyFragment1 extends Fragment {
         mShowInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                watchingList = MainActivity.usageBinder.getWatchingList();
-                Log.d(TAG, "onClick: " + watchingList.toString());
+                watchingList = mainActivity.getBinder().getWatchingList();
                 StringBuilder builder = new StringBuilder();
 
                 for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
-                    builder.append(entry.getKey().toString() + entry.getValue().getTotalTimeUsed()+ "\n");
+                    builder.append(entry.getValue().getPackageName() + ":\n");
+                    AppUsage.History today = entry.getValue().getUsingHistory().get(TickTrackerService.getDateInString(new Date()));
+                    builder.append("使用次数："+today.getUsedCount()+":\n");
+                    builder.append("使用总时长："+today.getTotalTime()+":\n");
+                    ArrayList<AppUsage.History.Record> records = today.getUsingRecord();
+                    for (int i = 1; i <= records.size(); i++) {
+                        builder.append("第"+i+"次持续："+records.get(i-1).getDuration()+"\n");
+                    }
                 }
 
                 mTestInfoTextView.setText(builder.toString());
@@ -101,7 +112,7 @@ public class MyFragment1 extends Fragment {
                     return;
                 }
 
-                if (MainActivity.usageBinder.addAppToWatchingList("com.tencent.mm")) {
+                if (mainActivity.getBinder().addAppToWatchingList("com.tencent.mobileqq")) {
                     Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
@@ -118,10 +129,23 @@ public class MyFragment1 extends Fragment {
                     return;
                 }
 
-                if (MainActivity.usageBinder.removeAppFromWatchingLise("com.tencent.mm")) {
+                if (mainActivity.getBinder().removeAppFromWatchingLise("com.tencent.mobileqq")) {
                     Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        clearFile = (Button)view.findViewById(R.id.clearFile);
+        clearFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                File root = new File("/data/data/com.crossbow.app.x_timer/");
+                File[] files = root.listFiles();
+                for (File file : files) {
+                    file.delete();
                 }
             }
         });

@@ -27,8 +27,7 @@ public class FileUtils {
     }
 
     public ArrayList<String> getApplist() {
-        if (!new File("/data/data/com.crossbow.app.x_timer/AppList").exists
-                ()) {
+        if (!new File("/data/data/com.crossbow.app.x_timer/AppList").exists()) {
             return new ArrayList<String>();
         }
         try {
@@ -59,10 +58,8 @@ public class FileUtils {
     }
 
     public AppUsage load(String pkgName) {
-
         //文件不存在，直接返回一个新的AppUsage
-        if (!new File("/data/data/com.crossbow.app.x_timer/" + pkgName).exists
-                ()) {
+        if (!new File("/data/data/com.crossbow.app.x_timer/" + pkgName).exists()) {
             return new AppUsage(pkgName);
         }
         //文件存在则读取文件，转换成AppUsage
