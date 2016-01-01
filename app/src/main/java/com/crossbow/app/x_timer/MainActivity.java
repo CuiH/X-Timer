@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity
     private RadioButton tab_what;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,23 +64,13 @@ public class MainActivity extends AppCompatActivity
         // fragment and radio group
         initTab();
 
-        // check permission
+        // permission
         if (!hasPermission()) {
             requestPermission();
         }
 
         // connection
-        connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                usageBinder = (TickTrackerService.UsageBinder) service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
+        initConnection();
     }
 
     @Override
@@ -237,6 +226,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // init the connection
+    private void initConnection() {
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                usageBinder = (TickTrackerService.UsageBinder) service;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+    }
+
     // init the toolbar
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -264,7 +268,6 @@ public class MainActivity extends AppCompatActivity
         // fragment
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
-
         viewPager.addOnPageChangeListener(this);
     }
 
@@ -277,7 +280,8 @@ public class MainActivity extends AppCompatActivity
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
-    // if no permission show info
+    // TODO not finished
+    // if no permission, show info
     private void requestPermission() {
         Toast.makeText(this, "no permission", Toast.LENGTH_LONG).show();
     }

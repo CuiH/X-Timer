@@ -1,15 +1,9 @@
 package com.crossbow.app.x_timer.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +16,6 @@ import android.widget.Toast;
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.service.AppUsage;
-import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +34,7 @@ public class MyFragment1 extends Fragment {
     private Map<String, AppUsage> watchingList;
     private MainActivity mainActivity;
 
-    public  MyFragment1() {}
+    public MyFragment1() { }
 
     @SuppressLint("ValidFragment")
     public MyFragment1(MainActivity activity) {
