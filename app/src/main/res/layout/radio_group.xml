@@ -1,0 +1,48 @@
+<RadioGroup
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#F7F7F7"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <RadioButton
+            android:id="@+id/radio_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/home_active"
+            android:checked="true"
+            android:button="@null"
+            android:padding="5dp"
+            android:text="今日"
+            android:gravity="center"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+        <RadioButton
+            android:id="@+id/radio_history"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/history"
+            android:button="@null"
+            android:padding="5dp"
+            android:text="历史"
+            android:gravity="center"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+        <RadioButton
+            android:id="@+id/radio_what"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/what"
+            android:button="@null"
+            android:padding="5dp"
+            android:text="what"
+            android:gravity="center"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+    </RelativeLayout>
+</RadioGroup>
