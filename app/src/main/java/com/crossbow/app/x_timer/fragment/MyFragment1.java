@@ -2,6 +2,7 @@ package com.crossbow.app.x_timer.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -116,31 +117,7 @@ public class MyFragment1 extends Fragment {
                 }
 
                 Intent intent = new Intent(getContext(), AddAppActivity.class);
-
-                Bundle bundle=new Bundle();
-                bundle.putStringArrayList("selected", getSelectedApps());
-
-                System.out.println(getSelectedApps());
-
-                intent.putExtras(bundle);
                 startActivity(intent);
-//                if (!mainActivity.isWorking()) {
-//                    Toast.makeText(mainActivity, "please start service first!"
-//                            , Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                if (mainActivity.getBinder().addAppToWatchingList("com.tencent.mobileqq")) {
-//                    Toast.makeText(mainActivity, "successqq", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(mainActivity, "failqq", Toast.LENGTH_SHORT).show();
-//                }
-//
-//                if (mainActivity.getBinder().addAppToWatchingList("com.tencent.mm")) {
-//                    Toast.makeText(mainActivity, "successmm", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(mainActivity, "failmm", Toast.LENGTH_SHORT).show();
-//                }
             }
         });
 
@@ -172,15 +149,4 @@ public class MyFragment1 extends Fragment {
         return view;
     }
 
-
-    // find all watching apps
-    private ArrayList<String> getSelectedApps() {
-        Map<String, AppUsage> watchingList = mainActivity.getBinder().getWatchingList();
-        ArrayList<String> list = new ArrayList<>();
-        for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
-            list.add(app.getKey());
-        }
-
-        return list;
-    }
 }

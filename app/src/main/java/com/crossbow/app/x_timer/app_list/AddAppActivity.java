@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.app_list;
 
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -9,8 +10,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,10 +22,12 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wanglx on 2016/1/1.
@@ -36,22 +37,38 @@ public class AddAppActivity extends AppCompatActivity {
     private AppInfoAdapter appInfoAdapter;
     private ArrayList<String> selected;
     private TextView showInfo;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_app);
 
-        // toolbar
+        initToolbar();
+        initStatusBar();
+        initCustomAppList();
+        initAdapter();
+
+        handleListView();
+        handleButton();
+    }
+
+    // handle toolbar
+    private void initToolbar() {
         Toolbar toolbar = (Toolbar)findViewById(R.id.add_app_toolbar);
         setSupportActionBar(toolbar);
+    }
 
-        // change toolbar color
+    // handle the status bar
+    private void initStatusBar() {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+    }
 
+    // list all custom app info
+    public void initCustomAppList() {
         appList = new ArrayList<>();
         List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
 
@@ -67,46 +84,51 @@ public class AddAppActivity extends AppCompatActivity {
             AppInfo tmpInfo =new AppInfo(packageName, appName, appIcon);
             appList.add(tmpInfo);
         }
+    }
 
+    // handle the adapter
+    private void initAdapter() {
         appInfoAdapter = new AppInfoAdapter(this, R.layout.app_item, appList);
-
-        // 传递已选信息
-        Bundle bundle = getIntent().getExtras();
-        selected = bundle.getStringArrayList("selected");
-
+        // 已选
+        selected = (ArrayList<String>)getSelectedApps().clone();
         appInfoAdapter.setDefault(selected);
 
         showInfo = (TextView) findViewById(R.id.add_app_text);
+        showInfo.setText("已选"+selected.size()+"个应用");
 
-        ListView listView = (ListView)findViewById(R.id.app_list);
+        listView = (ListView)findViewById(R.id.app_list);
         listView.setAdapter(appInfoAdapter);
+    }
 
+    // add listener to list view
+    private void handleListView() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(AddAppActivity.this, "111", Toast.LENGTH_SHORT).show();
-                CheckBox check = (CheckBox)view.findViewById(R.id.app_check_box);
+                CheckBox check = (CheckBox) view.findViewById(R.id.app_check_box);
                 if (check.isChecked()) {
                     check.setChecked(false);
                     selected.remove(appList.get(position).getPackageName());
-                    showInfo.setText("已选"+selected.size()+"个应用");
+                    showInfo.setText("已选" + selected.size() + "个应用");
                 } else {
                     check.setChecked(true);
                     selected.add(appList.get(position).getPackageName());
-                    showInfo.setText("已选"+selected.size()+"个应用");
+                    showInfo.setText("已选" + selected.size() + "个应用");
                 }
             }
         });
+    }
 
-        showInfo.setText("已选"+selected.size()+"个应用");
-
-        // 点击 确定
+    // add listener to button
+    private void handleButton() {
+        // 确定 按钮
         Button ok = (Button)findViewById(R.id.add_app_ok);
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isWorking()) {
-                    Toast.makeText(AddAppActivity.this, "失败，请先开启服务", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddAppActivity.this, "失败，请先开启服务",
+                            Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
@@ -118,12 +140,18 @@ public class AddAppActivity extends AppCompatActivity {
                     }
                 }
 
+                for (String name: getSelectedApps()) {
+                    if (!selected.contains(name)) {
+                        binder.removeAppFromWatchingLise(name);
+                    }
+                }
+
                 Toast.makeText(AddAppActivity.this, "成功", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
-        // 点击 取消
+        // 取消 按钮
         Button cancel = (Button)findViewById(R.id.add_app_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +159,6 @@ public class AddAppActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     // check if the service is working
@@ -153,4 +180,14 @@ public class AddAppActivity extends AppCompatActivity {
         return false;
     }
 
+    // find all apps in the watching list
+    private ArrayList<String> getSelectedApps() {
+        Map<String, AppUsage> watchingList = MainActivity.usageBinder.getWatchingList();
+        ArrayList<String> list = new ArrayList<>();
+        for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
+            list.add(app.getKey());
+        }
+
+        return list;
+    }
 }
