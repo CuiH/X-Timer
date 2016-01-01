@@ -38,16 +38,26 @@ public class AppUsage {
         return packageName;
     }
 
-    public void setTotalTimeUsed(long totalTimeUsed) {
-        this.totalTimeUsed = totalTimeUsed;
-    }
+//    public void setTotalTimeUsed(long totalTimeUsed) {
+//        this.totalTimeUsed = totalTimeUsed;
+//    }
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
 
-    public void addUsingRecord(long start, long end) {
-        usingHistory.add(new History(start, end));
+    public void addUsingRecord(String date, long time) {
+        if (usingHistory.isEmpty()) {
+            usingHistory.add(new History(date, time));
+            return;
+        }
+        History history = usingHistory.get(usingHistory.size() - 1);
+        if (history.getDate().equals(date)) {
+            history.setTotalTime(history.getTotalTime() + time);
+        } else {
+            usingHistory.add(new History(date, time));
+        }
+        totalTimeUsed += time;
     }
 
     public ArrayList<History> getUsingRecord() {
@@ -56,28 +66,33 @@ public class AppUsage {
 
 
     public static class History {
-        private long startTime;
-        private long endTime;
+        private String date;
 
-        public History(long startTime, long endTime) {
-            this.startTime = startTime;
-            this.endTime = endTime;
+        public long getTotalTime() {
+            return totalTime;
         }
 
-        public long getStartTime() {
-            return startTime;
+        public void setTotalTime(long totalTime) {
+            this.totalTime = totalTime;
         }
 
-        public void setStartTime(long startTime) {
-            this.startTime = startTime;
+        public String getDate() {
+            return date;
         }
 
-        public long getEndTime() {
-            return endTime;
+        public void setDate(String date) {
+            this.date = date;
         }
 
-        public void setEndTime(long endTime) {
-            this.endTime = endTime;
+        private long totalTime;
+
+        public History(String date) {
+            this.date = date;
+            this.totalTime = 0;
+        }
+        public History(String date, long totalTime) {
+            this.date = date;
+            this.totalTime = totalTime;
         }
     }
 }
