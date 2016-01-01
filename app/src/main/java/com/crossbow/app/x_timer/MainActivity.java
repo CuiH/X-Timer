@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "main";
 
-    public TickTrackerService.UsageBinder usageBinder;
+    public static TickTrackerService.UsageBinder usageBinder;
 
     private ServiceConnection connection;
 
@@ -54,14 +54,6 @@ public class MainActivity extends AppCompatActivity
 
         // toolbar
         initToolbar();
-
-        // navigation
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // 沉浸
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
         // fragment and radio group
         initTab();
