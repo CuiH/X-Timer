@@ -1,6 +1,8 @@
 package com.crossbow.app.x_timer.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,5 +133,13 @@ public class AppUsage {
                 return duration;
             }
         }
+    }
+
+    // return the date in string (xxxx-xx-xx)
+    public static String getDateInString(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String stringDate = formatter.format(date);
+
+        return stringDate;
     }
 }

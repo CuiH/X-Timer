@@ -40,4 +40,10 @@
         android:layout_height="wrap_content"
         android:text="clear file"/>
 
+    <Button
+        android:id="@+id/showFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="show file"/>
+
 </LinearLayout>

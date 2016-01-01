@@ -35,6 +35,7 @@ public class MyFragment1 extends Fragment {
     private Button addQQ;
     private Button removeQQ;
     private Button clearFile;
+    private Button showFile;
     private TextView mTestInfoTextView;
     private Map<String, AppUsage> watchingList;
     private MainActivity mainActivity;
@@ -62,7 +63,7 @@ public class MyFragment1 extends Fragment {
         addQQ = (Button)view.findViewById(R.id.addQQ);
         removeQQ = (Button)view.findViewById(R.id.removeQQ);
 
-        if (isWorking()) {
+        if (mainActivity.isWorking()) {
             controlService.setText("stop service");
         } else {
             controlService.setText("start service");
@@ -76,7 +77,7 @@ public class MyFragment1 extends Fragment {
 
                 for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
                     builder.append(entry.getValue().getPackageName() + ":\n");
-                    AppUsage.History today = entry.getValue().getUsingHistory().get(TickTrackerService.getDateInString(new Date()));
+                    AppUsage.History today = entry.getValue().getUsingHistory().get(AppUsage.getDateInString(new Date()));
                     builder.append("使用次数："+today.getUsedCount()+":\n");
                     builder.append("使用总时长："+today.getTotalTime()+":\n");
                     ArrayList<AppUsage.History.Record> records = today.getUsingRecord();
@@ -92,7 +93,7 @@ public class MyFragment1 extends Fragment {
         controlService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isWorking()) {
+                if (mainActivity.isWorking()) {
                     mainActivity.stopTickService();
                     controlService.setText("start service");
                     
@@ -106,16 +107,22 @@ public class MyFragment1 extends Fragment {
         addQQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isWorking()) {
+                if (!mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "please start service first!"
                             , Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (mainActivity.getBinder().addAppToWatchingList("com.tencent.mobileqq")) {
-                    Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainActivity, "successqq", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainActivity, "failqq", Toast.LENGTH_SHORT).show();
+                }
+
+                if (mainActivity.getBinder().addAppToWatchingList("com.tencent.mm")) {
+                    Toast.makeText(mainActivity, "successmm", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mainActivity, "failmm", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -123,16 +130,22 @@ public class MyFragment1 extends Fragment {
         removeQQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isWorking()) {
+                if (!mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "please start service first!"
                             , Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (mainActivity.getBinder().removeAppFromWatchingLise("com.tencent.mobileqq")) {
-                    Toast.makeText(mainActivity, "success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainActivity, "successqq", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(mainActivity, "fail", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainActivity, "failqq", Toast.LENGTH_SHORT).show();
+                }
+
+                if (mainActivity.getBinder().removeAppFromWatchingLise("com.tencent.mm")) {
+                    Toast.makeText(mainActivity, "successmm", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mainActivity, "failmm", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -142,7 +155,7 @@ public class MyFragment1 extends Fragment {
             @Override
             public void onClick(View v) {
 
-                File root = new File("/data/data/com.crossbow.app.x_timer/");
+                File root = new File("/data/data/com.crossbow.app.x_timer/files");
                 File[] files = root.listFiles();
                 for (File file : files) {
                     file.delete();
@@ -150,24 +163,19 @@ public class MyFragment1 extends Fragment {
             }
         });
 
-        return view;
-    }
-
-    private boolean isWorking() {
-        ActivityManager myAM = (ActivityManager) mainActivity.getApplicationContext()
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
-
-        if (myList.size() <= 0) {
-            return false;
-        }
-
-        for (int i = 0; i < myList.size(); i++) {
-            String mName = myList.get(i).service.getClassName().toString();
-            if (mName.equals("com.crossbow.app.x_timer.service.TickTrackerService")) {
-                return true;
+        showFile = (Button)view.findViewById(R.id.showFile);
+        showFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File root = new File("/data/data/com.crossbow.app.x_timer/files");
+                File[] files = root.listFiles();
+                System.out.println("im here");
+                for (File file : files) {
+                    System.out.println("asdasdasdas: "+file.getName());
+                }
             }
-        }
-        return false;
+        });
+
+        return view;
     }
 }

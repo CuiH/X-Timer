@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // check if the service is working
-    private boolean isWorking() {
+    public boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);

@@ -28,7 +28,9 @@ public class TickTrackerService extends Service {
 
     // system service
     public UsageStatsManager usageStatsManager;
-    //private FileUtils fileUtils;
+
+    // file
+    private FileUtils fileUtils;
 
     // thread
     private boolean running;
@@ -49,7 +51,7 @@ public class TickTrackerService extends Service {
 
         // add a app to watching list
         public boolean addAppToWatchingList(String appName) {
-            if (watchingList.containsKey(appName)) return false;
+            if (isInWatchingList(appName)) return false;
 
             watchingList.put(appName, new AppUsage(appName));
             updateNotification();
@@ -58,14 +60,21 @@ public class TickTrackerService extends Service {
 
         // remove a app from watching list
         public boolean removeAppFromWatchingLise(String appName) {
-            if (!watchingList.containsKey(appName)) return false;
+            if (!isInWatchingList(appName)) return false;
 
             watchingList.remove(appName);
             updateNotification();
             return true;
         }
+
+        // check whether a app is in the watching list or not
+        public boolean isInWatchingList(String appName) {
+            if (!watchingList.containsKey(appName)) return false;
+            else return true;
+        }
     }
 
+    // thread that keeps watching apps
     private class WatchingForegroundAppThread extends Thread {
         @Override
         public void run() {
@@ -76,7 +85,7 @@ public class TickTrackerService extends Service {
 
                 if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
                     UsageStats currentApp = null;
-                    // find current app;
+                    // find current app
                     for (UsageStats usageStats : queryUsageStats) {
                         if (currentApp == null || currentApp.getLastTimeUsed() <
                                 usageStats.getLastTimeUsed()) {
@@ -118,38 +127,21 @@ public class TickTrackerService extends Service {
         Log.d(TAG, "onCreate: Created " + this.toString());
         super.onCreate();
 
-        // init
-        running = true;
-        lastApp = null;
-        watchingList = new HashMap<>();
-        usageBinder = new UsageBinder();
-        //fileUtils = new FileUtils(this);
-
-        //API Level 21 需要使用硬编码;
-        usageStatsManager = (UsageStatsManager) getSystemService("usagestats");
-
+        initVariables();
         initWatchingList();
         initWatchingThread();
-        startNotification();
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: " + this.toString());
-        return super.onStartCommand(intent, flags, startId);
+        startNotification();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: " + this.toString());
 
-        // stop thread
-        watchingForegroundAppThread.interrupt();
-        running = false;
+        stopWatchingThread();
 
-        // store info
-        storeInformation();
-        storeAppList();
+        storeAppInformation();
+        storeWatchingList();
 
         super.onDestroy();
     }
@@ -160,11 +152,23 @@ public class TickTrackerService extends Service {
         return super.onUnbind(intent);
     }
 
+    private void initVariables() {
+        running = true;
+        lastApp = null;
+
+        watchingList = new HashMap<>();
+        usageBinder = new UsageBinder();
+        fileUtils = new FileUtils(this);
+
+        //API Level 21 需要使用硬编码;
+        usageStatsManager = (UsageStatsManager) getSystemService("usagestats");
+    }
+
     // init the watching list
     private void initWatchingList() {
-//        for (String appName : fileUtils.getApplist()) {
-//            watchingList.put(appName, fileUtils.load(appName));
-//        }
+        for (String appName : fileUtils.getAppList()) {
+            watchingList.put(appName, fileUtils.loadAppInfo(appName));
+        }
     }
 
     // init the thread
@@ -173,12 +177,17 @@ public class TickTrackerService extends Service {
         watchingForegroundAppThread.start();
     }
 
+    // stop the thread
+    private void stopWatchingThread() {
+        watchingForegroundAppThread.interrupt();
+        running = false;
+    }
+
     // update the old app when app switched
     private void onAppSwitched() {
-        // update last app's usage time
         AppUsage targetApp = watchingList.get(lastApp.getPackageName());
 
-        String today = getDateInString(new Date());
+        String today = AppUsage.getDateInString(new Date());
 
         targetApp.updateUsingHistory(today,
                 System.currentTimeMillis()-lastApp.getLastTimeUsed(),
@@ -186,7 +195,7 @@ public class TickTrackerService extends Service {
 
         Log.d(TAG, "上个 app: " + targetApp.getPackageName());
         Log.d(TAG, "上次用时: "+ targetApp.getUsingHistory().get(today).getUsingRecord().get(targetApp.getUsingHistory().get(today).getUsingRecord().size()-1).getDuration());
-        Log.d(TAG, "总次数: "+ targetApp.getUsingHistory().get(today).getUsedCount());
+        Log.d(TAG, "总次数: " + targetApp.getUsingHistory().get(today).getUsedCount());
         Log.d(TAG, "总用时: " + targetApp.getUsingHistory().get(today).getTotalTime());
     }
 
@@ -215,26 +224,19 @@ public class TickTrackerService extends Service {
     }
 
     // store app information when exit
-    private void storeInformation() {
-//        for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
-//            fileUtils.store(entry.getValue());
-//        }
+    private void storeAppInformation() {
+        for (Map.Entry<String, AppUsage> entry: watchingList.entrySet()) {
+            fileUtils.storeAppInfo(entry.getValue());
+        }
     }
 
     // store the watching list
-    private void storeAppList() {
-//        ArrayList<String> arrayList = new ArrayList<>();
-//        for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
-//            arrayList.add(app.getKey());
-//        }
-//
-//        fileUtils.storeAppList(arrayList);
-    }
+    private void storeWatchingList() {
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
+            arrayList.add(app.getKey());
+        }
 
-    public static String getDateInString(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String stringDate = formatter.format(date);
-
-        return stringDate;
+        fileUtils.storeAppList(arrayList);
     }
 }

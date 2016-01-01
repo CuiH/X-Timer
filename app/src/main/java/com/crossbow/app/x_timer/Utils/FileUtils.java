@@ -7,94 +7,128 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
  * Created by heath on 15-12-29.
  */
 public class FileUtils {
-    private Context context;
+    // 记录上下文
+    private Context mContext;
 
     public FileUtils(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
-    public ArrayList<String> getApplist() {
-        if (!new File("/data/data/com.crossbow.app.x_timer/AppList").exists()) {
+    // 获取保存的监听列表
+    public ArrayList<String> getAppList() {
+        File file = new File("/data/data/com.crossbow.app.x_timer/files/appList");
+        if (!file.exists()) {
             return new ArrayList<String>();
         }
+
         try {
             Gson gson = new Gson();
-            return gson.fromJson(getContent("AppList"), new
+            return gson.fromJson(getContent(file), new
                     TypeToken<ArrayList<String> >() {}.getType());
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
+    // 保存监听列表
     public void storeAppList(ArrayList<String> appList) {
+        System.out.println(appList);
         try {
-            getWriter("AppList").write(new Gson().toJson(appList));
+            getOutputStream("appList").write(new Gson().toJson(appList).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void store(AppUsage appUsage) {
+    public void storeAppInfo(AppUsage appUsage) {
         try {
-            getWriter(appUsage.getPackageName()).write(new Gson().toJson
-                    (appUsage));
+            getOutputStream(appUsage.getPackageName())
+                    .write(new Gson().toJson(appUsage).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public AppUsage load(String pkgName) {
+    public AppUsage loadAppInfo(String pkgName) {
         //文件不存在，直接返回一个新的AppUsage
-        if (!new File("/data/data/com.crossbow.app.x_timer/" + pkgName).exists()) {
+        File file = new File("/data/data/com.crossbow.app.x_timer/files/" + pkgName);
+        if (!file.exists()) {
             return new AppUsage(pkgName);
         }
+
         //文件存在则读取文件，转换成AppUsage
         try {
-            return parseJSOMWithGson(getContent(pkgName));
+            return parseJSONWithGSON(getContent(file));
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
-    private AppUsage parseJSOMWithGson(String json) {
+    // 通过GSON读取json文件
+    private AppUsage parseJSONWithGSON(String json) {
         Gson gson = new Gson();
         AppUsage appUsage = gson.fromJson(json, AppUsage.class);
         return appUsage;
     }
 
-    private BufferedWriter getWriter(String fileName) throws IOException {
-        FileOutputStream outputStream = context.openFileOutput(fileName, Context
-                .MODE_PRIVATE);
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter
-                (outputStream));
-        return writer;
+    // 获取file的OutputStream
+    private FileOutputStream getOutputStream(String fileName) {
+        try {
+            FileOutputStream outputStream = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+
+            return outputStream;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    private String getContent(String fileName) throws IOException {
-        FileInputStream inputStream = null;
-        BufferedReader reader = null;
-        StringBuilder content = new StringBuilder();
-        inputStream = context.openFileInput(fileName);
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line = "";
-        while ((line = reader.readLine()) != null) {
-            content.append(line);
+    // 获取file内容，返回String
+    private String getContent(File file) {
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuilder content = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+
+            return content.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return content.toString();
+
+        return null;
+    }
+
+    // 删除应用的信息
+    private boolean deleteAppInfo(String pkgName) {
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+        for (File file : files) {
+            if (file.getName().equals(pkgName)) {
+                file.delete();
+                return true;
+            }
+        }
+
+        return false;
     }
 }
