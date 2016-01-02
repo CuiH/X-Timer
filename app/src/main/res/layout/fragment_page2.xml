@@ -3,16 +3,20 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/gettest"
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="get"/>
-
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:text="选择一个日期查看"
+        android:textColor="#325632"
+        android:textSize="24sp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
         <Button
             android:id="@+id/calendar_last_year"
             android:layout_alignParentLeft="true"
@@ -51,8 +55,18 @@
         <com.squareup.timessquare.CalendarPickerView
             android:id="@+id/calendar_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/calendar_ok"
+        android:background="@drawable/my_button1"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="8dp"
+        android:text="确定"/>
 
 </LinearLayout>

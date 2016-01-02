@@ -1,4 +1,4 @@
-package com.crossbow.app.x_timer.app_list;
+package com.crossbow.app.x_timer.add_app;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -7,14 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.crossbow.app.x_timer.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +71,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         return view;
     }
 
-    class ViewHolder {
+    private static class ViewHolder {
         ImageView iv;
         TextView tv;
         CheckBox cb;

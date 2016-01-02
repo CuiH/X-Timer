@@ -1,7 +1,6 @@
-package com.crossbow.app.x_timer.app_list;
+package com.crossbow.app.x_timer.add_app;
 
 import android.app.ActivityManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -43,7 +42,7 @@ public class AddAppActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_app);
+        setContentView(R.layout.add_app_main);
 
         initToolbar();
         initStatusBar();
@@ -58,6 +57,17 @@ public class AddAppActivity extends AppCompatActivity {
     private void initToolbar() {
         Toolbar toolbar = (Toolbar)findViewById(R.id.add_app_toolbar);
         setSupportActionBar(toolbar);
+
+        // back
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     // handle the status bar
@@ -89,7 +99,7 @@ public class AddAppActivity extends AppCompatActivity {
 
     // handle the adapter
     private void initAdapter() {
-        appInfoAdapter = new AppInfoAdapter(this, R.layout.app_item, appList);
+        appInfoAdapter = new AppInfoAdapter(this, R.layout.add_app_item, appList);
         // 已选
         selected = (ArrayList<String>)getSelectedApps().clone();
         appInfoAdapter.setDefault(selected);

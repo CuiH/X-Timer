@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.day_detail.DayDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.squareup.timessquare.CalendarPickerView;
 
@@ -46,7 +48,8 @@ public class MyFragment2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_page2, container, false);
 
         initCalendar(view);
-        initButton(view);
+        initCalendarButton(view);
+        initOtherButton(view);
 
         return view;
     }
@@ -61,8 +64,8 @@ public class MyFragment2 extends Fragment {
         calendar.init(firstDayOfTheMonth, firstDayOfTheNextMonth).withSelectedDate(today);
     }
 
-    // add listener to buttons
-    private void initButton(View view) {
+    // add listener to calendar buttons
+    private void initCalendarButton(View view) {
         Button nextMonth = (Button)view.findViewById(R.id.calendar_next_month);
         nextMonth.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +87,22 @@ public class MyFragment2 extends Fragment {
                 Date firstDatOfTheMonth = getTheFirstDayOfTheMonth(now);
 
                 calendar.init(firstDayOfTheLastMonth, firstDatOfTheMonth).withSelectedDate(firstDayOfTheLastMonth);
+            }
+        });
+    }
+
+    // add listener to other buttons
+    private void initOtherButton(View view) {
+        Button ok = (Button)view.findViewById(R.id.calendar_ok);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mainActivity, DayDetailActivity.class);
+
+                Date target = calendar.getSelectedDate();
+                intent.putExtra("date", AppUsage.getDateInString(target));
+
+                startActivity(intent);
             }
         });
     }

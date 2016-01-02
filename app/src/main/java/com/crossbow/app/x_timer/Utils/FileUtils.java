@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by heath on 15-12-29.
@@ -55,7 +56,7 @@ public class FileUtils {
     // 保存app使用状况
     public void storeAppInfo(AppUsage appUsage) {
         try {
-            getOutputStream(appUsage.getPackageName())
+            getOutputStream("flag_"+appUsage.getPackageName())
                     .write(new Gson().toJson(appUsage).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +66,7 @@ public class FileUtils {
     // 读取app使用状况
     public AppUsage loadAppInfo(String pkgName) {
         //文件不存在，直接返回一个新的AppUsage
-        File file = new File("/data/data/com.crossbow.app.x_timer/files/" + pkgName);
+        File file = new File("/data/data/com.crossbow.app.x_timer/files/flag_" + pkgName);
         if (!file.exists()) {
             return new AppUsage(pkgName);
         }
@@ -118,6 +119,21 @@ public class FileUtils {
         }
 
         return null;
+    }
+
+    // 获取所有存储的app信息，不管在不在list里
+    public List<AppUsage> getAllStoredApp() {
+        List<AppUsage> list = new ArrayList<>();
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+        for (File file : files) {
+            if (file.getName().startsWith("flag_")) {
+                AppUsage usage = loadAppInfo(file.getName().substring(5, file.getName().length()));
+                list.add(usage);
+            }
+        }
+
+        return list;
     }
 
     // 删除指定应用信息

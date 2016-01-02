@@ -24,8 +24,13 @@
         </activity>
 
         <activity
-            android:name=".app_list.AddAppActivity"
+            android:name=".add_app.AddAppActivity"
             android:label="选择你想要监听的应用"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".day_detail.DayDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

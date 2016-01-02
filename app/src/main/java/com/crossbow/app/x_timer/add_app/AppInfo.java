@@ -1,6 +1,5 @@
-package com.crossbow.app.x_timer.app_list;
+package com.crossbow.app.x_timer.add_app;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 /**

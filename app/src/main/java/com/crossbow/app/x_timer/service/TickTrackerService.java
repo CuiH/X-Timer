@@ -72,7 +72,14 @@ public class TickTrackerService extends Service {
             if (!watchingList.containsKey(appName)) return false;
             else return true;
         }
+
+        // manually save data
+        public void manuallySaveData() {
+            storeAppInformation();
+            storeWatchingList();
+        }
     }
+
 
     // thread that keeps watching apps
     private class WatchingForegroundAppThread extends Thread {
@@ -194,7 +201,7 @@ public class TickTrackerService extends Service {
                 System.currentTimeMillis());
 
         Log.d(TAG, "上个 app: " + targetApp.getPackageName());
-        Log.d(TAG, "上次用时: "+ targetApp.getUsingHistory().get(today).getUsingRecord().get(targetApp.getUsingHistory().get(today).getUsingRecord().size()-1).getDuration());
+        Log.d(TAG, "上次用时: "+ targetApp.getUsingHistory().get(today).getUsingRecord().get(targetApp.getUsingHistory().get(today).getUsingRecord().size() - 1).getDuration());
         Log.d(TAG, "总次数: " + targetApp.getUsingHistory().get(today).getUsedCount());
         Log.d(TAG, "总用时: " + targetApp.getUsingHistory().get(today).getTotalTime());
     }
