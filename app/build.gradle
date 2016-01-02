@@ -26,5 +26,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.+'
     compile 'com.android.support:design:23.1.+'
     compile 'com.google.code.gson:gson:2.5'
-    compile files('libs/togglebuttonlib.jar')
+    compile 'com.squareup:android-times-square:1.6.4@aar'
 }

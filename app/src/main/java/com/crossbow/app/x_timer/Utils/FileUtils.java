@@ -28,7 +28,7 @@ public class FileUtils {
     public ArrayList<String> getAppList() {
         File file = new File("/data/data/com.crossbow.app.x_timer/files/appList");
         if (!file.exists()) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         try {
@@ -52,6 +52,7 @@ public class FileUtils {
         }
     }
 
+    // 保存app使用状况
     public void storeAppInfo(AppUsage appUsage) {
         try {
             getOutputStream(appUsage.getPackageName())
@@ -61,6 +62,7 @@ public class FileUtils {
         }
     }
 
+    // 读取app使用状况
     public AppUsage loadAppInfo(String pkgName) {
         //文件不存在，直接返回一个新的AppUsage
         File file = new File("/data/data/com.crossbow.app.x_timer/files/" + pkgName);
@@ -118,8 +120,8 @@ public class FileUtils {
         return null;
     }
 
-    // 删除应用的信息
-    private boolean deleteAppInfo(String pkgName) {
+    // 删除指定应用信息
+    public boolean deleteCertainAppInfo(String pkgName) {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
         for (File file : files) {
@@ -130,5 +132,16 @@ public class FileUtils {
         }
 
         return false;
+    }
+
+    // 删除所有应用信息
+    public boolean deleteAllAppInfo() {
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+        for (File file : files) {
+            file.delete();
+        }
+
+        return true;
     }
 }

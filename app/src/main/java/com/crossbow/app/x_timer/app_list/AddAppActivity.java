@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,14 +107,17 @@ public class AddAppActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckBox check = (CheckBox) view.findViewById(R.id.app_check_box);
+                RelativeLayout background = (RelativeLayout)view.findViewById(R.id.app_background);
                 if (check.isChecked()) {
                     check.setChecked(false);
                     selected.remove(appList.get(position).getPackageName());
                     showInfo.setText("已选" + selected.size() + "个应用");
+                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this, R.color.listItemUnselected));
                 } else {
                     check.setChecked(true);
                     selected.add(appList.get(position).getPackageName());
                     showInfo.setText("已选" + selected.size() + "个应用");
+                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this, R.color.listItemSelected));
                 }
             }
         });

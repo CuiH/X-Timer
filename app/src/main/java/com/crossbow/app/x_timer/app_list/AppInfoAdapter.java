@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.app_list;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.crossbow.app.x_timer.R;
@@ -24,15 +26,17 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
     private int resourceId;
     // 已选的
     private ArrayList<String> checked;
+    private Context mContext;
 
     public AppInfoAdapter(Context context, int textViewResourceId, List<AppInfo> objects) {
         super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
         checked = new ArrayList<>();
+        mContext = context;
     }
 
     public void setDefault(ArrayList<String> alreadyChecked) {
-        checked = (ArrayList<String>)alreadyChecked.clone();
+        checked = alreadyChecked;
     }
 
     public ArrayList<String> getCheckedList() {
@@ -48,6 +52,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
             vh.iv = (ImageView)view.findViewById(R.id.app_icon);
             vh.tv = (TextView)view.findViewById(R.id.app_name);
             vh.cb = (CheckBox)view.findViewById(R.id.app_check_box);
+            vh.rl = (RelativeLayout)view.findViewById(R.id.app_background);
             view.setTag(vh);
         } else {
             view = convertView;
@@ -58,8 +63,13 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         vh.tv.setText(appInfo.getAppName());
 
         // 已选的默认勾选
-        if (checked.contains(getItem(position).getPackageName())) vh.cb.setChecked(true);
-        else vh.cb.setChecked(false);
+        if (checked.contains(getItem(position).getPackageName())) {
+            vh.cb.setChecked(true);
+            vh.rl.setBackgroundColor(ContextCompat.getColor(mContext, R.color.listItemSelected));
+        } else {
+            vh.cb.setChecked(false);
+            vh.rl.setBackgroundColor(ContextCompat.getColor(mContext, R.color.listItemUnselected));
+        }
 
         return view;
     }
@@ -68,5 +78,6 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         ImageView iv;
         TextView tv;
         CheckBox cb;
+        RelativeLayout rl;
     }
 }

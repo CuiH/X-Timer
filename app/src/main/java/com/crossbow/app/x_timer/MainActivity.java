@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity
 
     private RadioButton tab_home;
     private RadioButton tab_history;
-    private RadioButton tab_what;
+    private RadioButton tab_detail;
+    private RadioButton tab_setting;
 
 
     @Override
@@ -153,12 +154,22 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.radio_home:
                 viewPager.setCurrentItem(0);
+
                 break;
+
             case R.id.radio_history:
                 viewPager.setCurrentItem(1);
+
                 break;
-            case R.id.radio_what:
+
+            case R.id.radio_detail:
                 viewPager.setCurrentItem(2);
+
+                break;
+
+            case R.id.radio_setting:
+                viewPager.setCurrentItem(3);
+
                 break;
 
             default:
@@ -171,25 +182,35 @@ public class MainActivity extends AppCompatActivity
     public void onPageSelected(int id){
         switch(id){
             case 0:
+                changeAllTabColor();
+
                 tab_home.setChecked(true);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home_active, 0, 0);
+                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home_active, 0, 0);
 
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history, 0, 0);
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what, 0, 0);
                 break;
+
             case 1:
+                changeAllTabColor();
+
                 tab_history.setChecked(true);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history_active, 0, 0);
+                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_active, 0, 0);
 
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what, 0, 0);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home, 0, 0);
                 break;
-            case 2:
-                tab_what.setChecked(true);
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what_active, 0, 0);
 
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home, 0, 0);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history, 0, 0);
+            case 2:
+                changeAllTabColor();
+
+                tab_detail.setChecked(true);
+                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_detail_active, 0, 0);
+
+                break;
+
+            case 3:
+                changeAllTabColor();
+
+                tab_setting.setChecked(true);
+                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting_active, 0, 0);
+
                 break;
 
             default:
@@ -258,15 +279,25 @@ public class MainActivity extends AppCompatActivity
         // radio group
         tab_home = (RadioButton) findViewById(R.id.radio_home);
         tab_history = (RadioButton) findViewById(R.id.radio_history);
-        tab_what = (RadioButton) findViewById(R.id.radio_what);
+        tab_detail = (RadioButton) findViewById(R.id.radio_detail);
+        tab_setting = (RadioButton) findViewById(R.id.radio_setting);
         tab_home.setOnClickListener(this);
         tab_history.setOnClickListener(this);
-        tab_what.setOnClickListener(this);
+        tab_detail.setOnClickListener(this);
+        tab_setting.setOnClickListener(this);
 
         // fragment
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
         viewPager.addOnPageChangeListener(this);
+    }
+
+    // change all tab to unactive
+    private void changeAllTabColor() {
+        tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home, 0, 0);
+        tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history, 0, 0);
+        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_detail, 0, 0);
+        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting, 0, 0);
     }
 
     // check if the user has system permission

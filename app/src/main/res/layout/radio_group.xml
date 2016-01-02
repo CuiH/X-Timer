@@ -4,45 +4,55 @@
     android:layout_height="wrap_content"
     android:background="#F7F7F7"
     android:orientation="vertical">
-    <RelativeLayout
-        android:layout_width="320dp"
+    <LinearLayout
+        android:layout_width="360dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:padding="3dp">
         <RadioButton
             android:id="@+id/radio_home"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/home_active"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/radio_home_active"
             android:checked="true"
             android:button="@null"
-            android:padding="5dp"
             android:text="今日"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
         <RadioButton
             android:id="@+id/radio_history"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/history"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/radio_history"
             android:button="@null"
-            android:padding="5dp"
             android:text="历史"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
         <RadioButton
-            android:id="@+id/radio_what"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
+            android:id="@+id/radio_detail"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/what"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/radio_detail"
             android:button="@null"
-            android:padding="5dp"
-            android:text="what"
+            android:text="统计"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
-    </RelativeLayout>
+        <RadioButton
+            android:id="@+id/radio_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/radio_setting"
+            android:button="@null"
+            android:text="设置"
+            android:gravity="center"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+    </LinearLayout>
 </RadioGroup>
