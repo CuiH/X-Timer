@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_share:
-                Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "未实现", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;

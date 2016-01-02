@@ -92,6 +92,22 @@ public class MyFragment2 extends Fragment {
                 calendar.init(firstDayOfTheLastMonth, firstDatOfTheMonth).withSelectedDate(firstDayOfTheLastMonth);
             }
         });
+
+        Button nextYear = (Button)view.findViewById(R.id.calendar_next_year);
+        nextYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button lastYear = (Button)view.findViewById(R.id.calendar_last_year);
+        lastYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // add listener to other buttons

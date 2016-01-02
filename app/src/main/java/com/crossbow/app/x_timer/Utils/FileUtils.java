@@ -155,9 +155,20 @@ public class FileUtils {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
         for (File file : files) {
-            file.delete();
+            if (file.getName().startsWith("flag_")) file.delete();
         }
 
+        return true;
+    }
+
+    // 删除所监听列表
+    public boolean deleteAppList() {
+        File file = new File("/data/data/com.crossbow.app.x_timer/files/appList");
+        if (!file.exists()) {
+            return false;
+        }
+
+        file.delete();
         return true;
     }
 }

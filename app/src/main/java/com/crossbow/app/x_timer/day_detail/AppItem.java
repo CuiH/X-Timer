@@ -43,13 +43,13 @@ public class AppItem {
         } else if (millSec < 3600000){
             long min = millSec/60000;
             long sec = millSec%60000;
-            return ""+min+"分"+sec+"秒";
+            return ""+min+"分"+sec/1000+"秒";
         } else {
             long hour = millSec/3600000;
             millSec %= 3600000;
             long min = millSec/60000;
             long sec = millSec%60000;
-            return ""+hour+"小时"+min+"分"+sec+"秒";
+            return ""+hour+"小时"+min+"分"+sec/1000+"秒";
         }
     }
 }

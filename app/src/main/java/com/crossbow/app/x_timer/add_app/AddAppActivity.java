@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.add_app;
 
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -43,6 +44,8 @@ public class AddAppActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_app_main);
+
+
 
         initToolbar();
         initStatusBar();
