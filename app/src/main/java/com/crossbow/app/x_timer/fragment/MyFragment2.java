@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,8 @@ public class MyFragment2 extends Fragment {
     MainActivity mainActivity;
 
     CalendarPickerView calendar;
+
+    ProgressDialog dialog;
 
     public MyFragment2() { }
 

@@ -1,9 +1,12 @@
 package com.crossbow.app.x_timer.day_detail;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crossbow.app.x_timer.R;
@@ -17,6 +20,7 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
     private LayoutInflater inflater;
 
     private List<AppItem> items;
+
 
     public DayDetailAdapter(Context context) {
         inflater = LayoutInflater.from(context);
@@ -45,14 +49,16 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
             holder = new UsageHolder();
             convertView = inflater.inflate(R.layout.day_detail_item, parent, false);
             holder.title = (TextView) convertView.findViewById(R.id.textTitle);
-            holder.hint = (TextView) convertView.findViewById(R.id.textHint);
+            holder.hint1 = (TextView) convertView.findViewById(R.id.textHint1);
+            holder.hint2 = (TextView) convertView.findViewById(R.id.textHint2);
             convertView.setTag(holder);
         } else {
             holder = (UsageHolder) convertView.getTag();
         }
 
-        holder.title.setText(item.getDurationInString());
-        holder.hint.setText(item.getBeginInString()+" to "+item.getEndInString());
+        holder.title.setText("单次时长：" + item.getDurationInString());
+        holder.hint1.setText("开始时间："+item.getBeginInString());
+        holder.hint2.setText("结束时间："+item.getEndInString());
 
         return convertView;
     }
@@ -85,12 +91,14 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
             holder = new AppHolder();
             convertView = inflater.inflate(R.layout.day_detail_group, parent, false);
             holder.title = (TextView) convertView.findViewById(R.id.textTitle);
+            holder.image = (ImageView) convertView.findViewById(R.id.appImage);
             convertView.setTag(holder);
         } else {
-            holder = (AppHolder) convertView.getTag();
+            holder = (AppHolder)convertView.getTag();
         }
 
-        holder.title.setText(item.getAppName());
+        holder.title.setText(item.getAppName()+"（总计："+item.getTotalTimeInString()+"）");
+        holder.image.setImageDrawable(item.getAppIcon());
 
         return convertView;
     }
@@ -108,11 +116,13 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
 
     private static class UsageHolder {
         TextView title;
-        TextView hint;
+        TextView hint1;
+        TextView hint2;
     }
 
     private static class AppHolder {
         TextView title;
+        ImageView image;
     }
 
 }

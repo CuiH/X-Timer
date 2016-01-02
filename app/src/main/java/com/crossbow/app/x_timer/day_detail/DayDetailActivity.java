@@ -13,11 +13,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.Utils.FileUtils;
-import com.crossbow.app.x_timer.add_app.AppInfo;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
@@ -36,6 +36,9 @@ public class DayDetailActivity extends AppCompatActivity {
     private FileUtils fileUtils;
     private String date;
 
+    private LinearLayout hasInfo;
+    private LinearLayout noInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +48,7 @@ public class DayDetailActivity extends AppCompatActivity {
         initStatusBar();
         initInstalledAppInfo();
 
-
-        initAdapter();
+        initLayout();
     }
 
     // handle toolbar
@@ -78,8 +80,22 @@ public class DayDetailActivity extends AppCompatActivity {
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
     }
 
+    // handle the layout
+    private void initLayout() {
+        hasInfo = (LinearLayout)findViewById(R.id.day_detail_yes);
+        noInfo = (LinearLayout)findViewById(R.id.day_detail_no);
+
+        if (initAdapter()) {
+            hasInfo.setVisibility(View.VISIBLE);
+            noInfo.setVisibility(View.GONE);
+        } else {
+            hasInfo.setVisibility(View.GONE);
+            noInfo.setVisibility(View.VISIBLE);
+        }
+    }
+
     // init the adapter and list view
-    private void initAdapter() {
+    private boolean initAdapter() {
         adapter = new DayDetailAdapter(this);
 
         List<AppItem> items = new ArrayList<>();
@@ -105,10 +121,13 @@ public class DayDetailActivity extends AppCompatActivity {
                     usages.add(usage);
                 }
 
-                AppItem item = new AppItem(itemCopy.appName, itemCopy.appIcon, records.size(), usages);
+                AppItem item = new AppItem(itemCopy.appName, itemCopy.appIcon, theDay.getTotalTime(), usages);
                 items.add(item);
             }
         }
+
+        // no record that day
+        if (items.isEmpty()) return false;
 
         adapter.setData(items);
 
@@ -128,6 +147,8 @@ public class DayDetailActivity extends AppCompatActivity {
             }
 
         });
+
+        return true;
     }
 
     // get all installed app info

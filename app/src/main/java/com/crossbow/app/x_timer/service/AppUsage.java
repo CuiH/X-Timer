@@ -53,7 +53,7 @@ public class AppUsage {
 
     public class History {
         // 最多记录当天使用记录数
-        private final int MAX_RECORD = 3;
+        private final int MAX_RECORD = 5;
 
         // 使用总时长
         private long totalTime;
@@ -84,7 +84,7 @@ public class AppUsage {
             return usedCount;
         }
 
-        public void addUsedCount(int count) {
+        public void addUsedCount() {
             usedCount = usedCount+1;
         }
 
@@ -94,7 +94,7 @@ public class AppUsage {
 
         // 增加一条使用记录，同时如果在这之前已满（即删除了一条）返回true，否则返回false
         public boolean addUsingRecord(long duration, long endTime) {
-            addUsedCount(1);
+            addUsedCount();
 
             Record record = new Record(duration, endTime);
 

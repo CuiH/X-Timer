@@ -11,13 +11,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="asdasda "/>
+        android:text="总时长：8:80"/>
 
     <TextView
-        android:id="@+id/textHint"
+        android:id="@+id/textHint1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="asdasda "/>
+        android:text="开始时间：1111-11-11 50:55:55"/>
+    <TextView
+        android:id="@+id/textHint2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="结束时间：1111-11-11 50:55:55"/>
 
 </LinearLayout>

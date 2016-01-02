@@ -2,17 +2,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:paddingRight="10dp"
     android:paddingLeft="40dp">
 
-    <TextView
+    <ImageView
+        android:id="@+id/appImage"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"/>
+
+    <TextView
         android:id="@+id/textTitle"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="asdasdasds"/>
+        android:layout_gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>
