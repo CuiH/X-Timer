@@ -4,8 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.crossbow.app.x_timer.MainActivity;
-import com.crossbow.app.x_timer.fragment.MyFragment1;
+import com.crossbow.app.x_timer.home.HomeFragment;
 import com.crossbow.app.x_timer.fragment.MyFragment3;
 import com.crossbow.app.x_timer.history.HistoryFragment;
 import com.crossbow.app.x_timer.setting.SettingFragment;
@@ -18,7 +17,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     private String tabTitles[] = new String[] {"今日", "历史", "详情", "设置"};
     private MainActivity mainActivity;
 
-    private MyFragment1 fragment1;
+    private HomeFragment fragment1;
     private HistoryFragment fragment2;
     private MyFragment3 fragment3;
     private SettingFragment fragment4;
@@ -37,7 +36,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         if (position == 0) {
             if (fragment1 == null) {
-                fragment1 = new MyFragment1(mainActivity);
+                fragment1 = new HomeFragment(mainActivity);
                 return  fragment1;
             } else {
                 return fragment1;

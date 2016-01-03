@@ -92,13 +92,17 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
             convertView = inflater.inflate(R.layout.day_detail_group, parent, false);
             holder.title = (TextView) convertView.findViewById(R.id.textTitle);
             holder.image = (ImageView) convertView.findViewById(R.id.appImage);
+            holder.count = (TextView) convertView.findViewById(R.id.textCount);
+            holder.time = (TextView) convertView.findViewById(R.id.textTime);
             convertView.setTag(holder);
         } else {
             holder = (AppHolder)convertView.getTag();
         }
 
-        holder.title.setText(item.getAppName()+"（总计："+item.getTotalTimeInString()+"）");
+        holder.title.setText(item.getAppName());
         holder.image.setImageDrawable(item.getAppIcon());
+        holder.count.setText("总次数:" + item.getTotalCount());
+        holder.time.setText("总时长："+item.getTotalTimeInString());
 
         return convertView;
     }
@@ -123,6 +127,8 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
     private static class AppHolder {
         TextView title;
         ImageView image;
+        TextView count;
+        TextView time;
     }
 
 }

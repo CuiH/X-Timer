@@ -1,4 +1,4 @@
-package com.crossbow.app.x_timer.day_detail;
+package com.crossbow.app.x_timer.home;
 
 import android.graphics.drawable.Drawable;
 
@@ -7,35 +7,27 @@ import java.util.List;
 /**
  * Created by wanglx on 2016/1/2.
  */
-public class AppItem {
+public class AppChartItem {
     private String appName;
-    private Drawable appIcon;
     private long totalTime;
     private int totalCount;
-    private List<UsageItem> appUsages;
 
-    public AppItem(String name, Drawable icon, long tTime, int tCount, List<UsageItem> usages) {
+    public AppChartItem(String name, long tTime, int tCount) {
         appName = name;
-        appIcon = icon;
         totalTime = tTime;
         totalCount = tCount;
-        appUsages = usages;
     }
 
     public String getAppName() {
         return appName;
     }
 
-    public Drawable getAppIcon() {
-        return appIcon;
-    }
-
     public int getTotalCount() {
         return totalCount;
     }
 
-    public List<UsageItem> getAppUsages() {
-        return appUsages;
+    public float getTotalTimeInSecond() {
+        return (float)totalTime/1000;
     }
 
     public String getTotalTimeInString() {

@@ -292,6 +292,8 @@ public class MainActivity extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
         viewPager.addOnPageChangeListener(this);
+        // viewpager缓存数
+        viewPager.setOffscreenPageLimit(4);
     }
 
     // change all tab to unactive

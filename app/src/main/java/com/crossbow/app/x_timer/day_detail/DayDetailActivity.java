@@ -126,11 +126,13 @@ public class DayDetailActivity extends AppCompatActivity {
                 ArrayList<AppUsage.History.Record> records = theDay.getUsingRecord();
 
                 for (AppUsage.History.Record r: records) {
-                    UsageItem usage = new UsageItem(r.getStartTime(), r.getEndTime(), r.getDuration());
+                    UsageItem usage = new UsageItem(r.getStartTime(),
+                            r.getEndTime(), r.getDuration());
                     usages.add(usage);
                 }
 
-                AppItem item = new AppItem(app.getRealName(), appIcon, theDay.getTotalTime(), usages);
+                AppItem item = new AppItem(app.getRealName(), appIcon,
+                        theDay.getTotalTime(), theDay.getUsedCount(), usages);
                 items.add(item);
             }
         }
@@ -168,7 +170,8 @@ public class DayDetailActivity extends AppCompatActivity {
 
     // get the app info
     private Drawable findAppIcon(String pkgName) {
-        if (packages == null ) if (packages == null )packages = getPackageManager().getInstalledPackages(0);
+        if (packages == null ) if (packages == null )packages
+                = getPackageManager().getInstalledPackages(0);
 
         for (int i = 0; i < packages.size(); i++) {
             PackageInfo packageInfo = packages.get(i);
