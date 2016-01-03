@@ -19,11 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.List;
@@ -42,8 +40,8 @@ public class MainActivity extends AppCompatActivity
 
     private RadioButton tab_home;
     private RadioButton tab_history;
-    private RadioButton tab_what;
-
+    private RadioButton tab_detail;
+    private RadioButton tab_setting;
 
 
     @Override
@@ -54,34 +52,16 @@ public class MainActivity extends AppCompatActivity
         // toolbar
         initToolbar();
 
-        // navigation
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // 沉浸
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-
         // fragment and radio group
         initTab();
 
-        // check permission
+        // permission
         if (!hasPermission()) {
             requestPermission();
         }
 
         // connection
-        connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                usageBinder = (TickTrackerService.UsageBinder) service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
+        initConnection();
     }
 
     @Override
@@ -126,11 +106,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 
@@ -171,12 +154,22 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.radio_home:
                 viewPager.setCurrentItem(0);
+
                 break;
+
             case R.id.radio_history:
                 viewPager.setCurrentItem(1);
+
                 break;
-            case R.id.radio_what:
+
+            case R.id.radio_detail:
                 viewPager.setCurrentItem(2);
+
+                break;
+
+            case R.id.radio_setting:
+                viewPager.setCurrentItem(3);
+
                 break;
 
             default:
@@ -189,25 +182,35 @@ public class MainActivity extends AppCompatActivity
     public void onPageSelected(int id){
         switch(id){
             case 0:
+                changeAllTabColor();
+
                 tab_home.setChecked(true);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home_active, 0, 0);
+                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home_active, 0, 0);
 
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history, 0, 0);
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what, 0, 0);
                 break;
+
             case 1:
+                changeAllTabColor();
+
                 tab_history.setChecked(true);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history_active, 0, 0);
+                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_active, 0, 0);
 
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what, 0, 0);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home, 0, 0);
                 break;
-            case 2:
-                tab_what.setChecked(true);
-                tab_what.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.what_active, 0, 0);
 
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.home, 0, 0);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.history, 0, 0);
+            case 2:
+                changeAllTabColor();
+
+                tab_detail.setChecked(true);
+                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_detail_active, 0, 0);
+
+                break;
+
+            case 3:
+                changeAllTabColor();
+
+                tab_setting.setChecked(true);
+                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting_active, 0, 0);
+
                 break;
 
             default:
@@ -228,13 +231,38 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_share:
-                Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "未实现", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
         }
 
         return true;
+    }
+
+    // get the viewpager instance
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
+    // return the service binder
+    public TickTrackerService.UsageBinder getBinder() {
+        return usageBinder;
+    }
+
+    // init the connection
+    private void initConnection() {
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                usageBinder = (TickTrackerService.UsageBinder) service;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
     }
 
     // init the toolbar
@@ -256,16 +284,27 @@ public class MainActivity extends AppCompatActivity
         // radio group
         tab_home = (RadioButton) findViewById(R.id.radio_home);
         tab_history = (RadioButton) findViewById(R.id.radio_history);
-        tab_what = (RadioButton) findViewById(R.id.radio_what);
+        tab_detail = (RadioButton) findViewById(R.id.radio_detail);
+        tab_setting = (RadioButton) findViewById(R.id.radio_setting);
         tab_home.setOnClickListener(this);
         tab_history.setOnClickListener(this);
-        tab_what.setOnClickListener(this);
+        tab_detail.setOnClickListener(this);
+        tab_setting.setOnClickListener(this);
 
         // fragment
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
-
         viewPager.addOnPageChangeListener(this);
+        // viewpager缓存数
+        viewPager.setOffscreenPageLimit(4);
+    }
+
+    // change all tab to unactive
+    private void changeAllTabColor() {
+        tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home, 0, 0);
+        tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history, 0, 0);
+        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_detail, 0, 0);
+        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting, 0, 0);
     }
 
     // check if the user has system permission
@@ -277,7 +316,8 @@ public class MainActivity extends AppCompatActivity
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
-    // if no permission show info
+    // TODO not finished
+    // if no permission, show info
     private void requestPermission() {
         Toast.makeText(this, "no permission", Toast.LENGTH_LONG).show();
     }
@@ -312,7 +352,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // check if the service is working
-    private boolean isWorking() {
+    public boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
@@ -323,7 +363,6 @@ public class MainActivity extends AppCompatActivity
 
         for (int i = 0; i < myList.size(); i++) {
             String mName = myList.get(i).service.getClassName().toString();
-            System.out.println(mName);
             if (mName.equals("com.crossbow.app.x_timer.service.TickTrackerService")) {
                 return true;
             }

@@ -1,98 +1,152 @@
 package com.crossbow.app.x_timer.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by CuiH on 2015/12/29.
  */
 public class AppUsage {
-    /**
-     * 应用在前台的总时间
-     */
-    private long totalTimeUsed;
-    /**
-     * 应用包名
-     */
+    // 应用包名
     private String packageName;
+    // 应用真实名字
+    private String realName;
+    // 记录应用使用历史（按天）
+    private Map<String, History> usingHistory;
 
-    /**
-     * 记录应用的打开和关闭历史
-     */
-    private ArrayList<History> usingHistory;
-
-    public AppUsage() {
-        usingHistory = new ArrayList<>();
-        totalTimeUsed = 0;
-    }
-
-    public AppUsage(String pkgName) {
-        this();
+    public AppUsage(String pkgName, String rName) {
         packageName = pkgName;
-    }
-
-    public long getTotalTimeUsed() {
-        return totalTimeUsed;
+        realName = rName;
+        usingHistory = new HashMap<>();
     }
 
     public String getPackageName() {
         return packageName;
     }
 
-//    public void setTotalTimeUsed(long totalTimeUsed) {
-//        this.totalTimeUsed = totalTimeUsed;
-//    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
+    public String getRealName() {
+        return realName;
     }
 
-    public void addUsingRecord(String date, long time) {
-        if (usingHistory.isEmpty()) {
-            usingHistory.add(new History(date, time));
-            return;
-        }
-        History history = usingHistory.get(usingHistory.size() - 1);
-        if (history.getDate().equals(date)) {
-            history.setTotalTime(history.getTotalTime() + time);
-        } else {
-            usingHistory.add(new History(date, time));
-        }
-        totalTimeUsed += time;
-    }
-
-    public ArrayList<History> getUsingRecord() {
+    public Map<String, History> getUsingHistory() {
         return usingHistory;
     }
 
+    // 更新使用记录，同时如果是新的一天（即新增了History）返回true，否则返回false
+    public boolean updateUsingHistory(String date, long duration, long endTime) {
+        // 是新的一天
+        if (usingHistory.isEmpty() || !usingHistory.containsKey(date)) {
+            addUsingHistory(date, duration, endTime);
 
-    public static class History {
-        private String date;
+            return true;
+        }
+
+        History targetHistory = usingHistory.get(date);
+        targetHistory.addTotalTime(duration, endTime);
+
+        return false;
+    }
+
+    //　增加使用记录
+    public void addUsingHistory(String date, long duration, long endTime) {
+        History newHistory = new History(duration, endTime);
+
+        usingHistory.put(date, newHistory);
+    }
+
+
+    public class History {
+        // 最多记录当天使用记录数
+        private final int MAX_RECORD = 5;
+
+        // 使用总时长
+        private long totalTime;
+        // 使用次数
+        private int usedCount;
+        // 使用记录（MAX_RECORD次）
+        private ArrayList<Record> usingRecord;
+
+        public History(long duration, long eTime) {
+            usedCount = 0;
+            totalTime = duration;
+            usingRecord = new ArrayList<>();
+
+            addUsingRecord(duration, eTime);
+        }
 
         public long getTotalTime() {
             return totalTime;
         }
 
-        public void setTotalTime(long totalTime) {
-            this.totalTime = totalTime;
+        // 更新使用时长，同时意味着多使用了一次，多增加了一条使用记录
+        public void addTotalTime(long duration, long endTime) {
+            totalTime = totalTime + duration;
+            addUsingRecord(duration, endTime);
         }
 
-        public String getDate() {
-            return date;
+        public int getUsedCount() {
+            return usedCount;
         }
 
-        public void setDate(String date) {
-            this.date = date;
+        public void addUsedCount() {
+            usedCount = usedCount+1;
         }
 
-        private long totalTime;
+        public ArrayList<Record> getUsingRecord() {
+            return usingRecord;
+        }
 
-        public History(String date) {
-            this.date = date;
-            this.totalTime = 0;
+        // 增加一条使用记录，同时如果在这之前已满（即删除了一条）返回true，否则返回false
+        public boolean addUsingRecord(long duration, long endTime) {
+            addUsedCount();
+
+            Record record = new Record(duration, endTime);
+
+            boolean updated = false;
+            if (!usingRecord.isEmpty() && usingRecord.size() >= MAX_RECORD) {
+                usingRecord.remove(0);
+                updated = true;
+            }
+            usingRecord.add(record);
+
+            return updated;
         }
-        public History(String date, long totalTime) {
-            this.date = date;
-            this.totalTime = totalTime;
+
+
+        // 详细使用记录
+        public class Record {
+            // 开始使用时间
+            private long duration;
+            // 使用结束时间
+            private long endTime;
+
+            Record(long dura, long eTime) {
+                duration = dura;
+                endTime = eTime;
+            }
+
+            public long getStartTime() {
+                return endTime-duration;
+            }
+
+            public long getEndTime() {
+                return endTime;
+            }
+
+            public long getDuration() {
+                return duration;
+            }
         }
+    }
+
+    // return the date in string (xxxx-xx-xx)
+    public static String getDateInString(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String stringDate = formatter.format(date);
+
+        return stringDate;
     }
 }

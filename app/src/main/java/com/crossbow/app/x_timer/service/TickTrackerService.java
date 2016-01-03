@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -14,9 +13,8 @@ import android.util.Log;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.Utils.FileUtils;
+import com.crossbow.app.x_timer.utils.FileUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +26,8 @@ public class TickTrackerService extends Service {
 
     // system service
     public UsageStatsManager usageStatsManager;
+
+    // file
     private FileUtils fileUtils;
 
     // thread
@@ -49,22 +49,37 @@ public class TickTrackerService extends Service {
 
         // add a app to watching list
         public boolean addAppToWatchingList(String appName) {
-            if (watchingList.containsKey(appName)) return false;
-            watchingList.put(appName, new AppUsage(appName));
+            if (isInWatchingList(appName)) return false;
+
+            watchingList.put(appName, fileUtils.loadAppInfo(appName));
             updateNotification();
             return true;
         }
 
         // remove a app from watching list
         public boolean removeAppFromWatchingLise(String appName) {
-            if (!watchingList.containsKey(appName)) return false;
+            if (!isInWatchingList(appName)) return false;
+
             watchingList.remove(appName);
             updateNotification();
             return true;
         }
+
+        // check whether a app is in the watching list or not
+        public boolean isInWatchingList(String appName) {
+            if (!watchingList.containsKey(appName)) return false;
+            else return true;
+        }
+
+        // manually save data
+        public void manuallySaveData() {
+            storeAppInformation();
+            storeWatchingList();
+        }
     }
 
 
+    // thread that keeps watching apps
     private class WatchingForegroundAppThread extends Thread {
         @Override
         public void run() {
@@ -75,8 +90,7 @@ public class TickTrackerService extends Service {
 
                 if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
                     UsageStats currentApp = null;
-
-                    // find current app;
+                    // find current app
                     for (UsageStats usageStats : queryUsageStats) {
                         if (currentApp == null || currentApp.getLastTimeUsed() <
                                 usageStats.getLastTimeUsed()) {
@@ -87,7 +101,8 @@ public class TickTrackerService extends Service {
                     // check if app switched
                     if (currentApp != null && (lastApp == null ||
                             !lastApp.getPackageName().equals(currentApp.getPackageName()))) {
-                        // check if the new app is in the watching list
+                        if (lastApp != null)
+                        // check if last app is in the watching list
                         if (lastApp != null && watchingList.containsKey(lastApp.getPackageName())) {
                             onAppSwitched();
                         }
@@ -117,36 +132,21 @@ public class TickTrackerService extends Service {
         Log.d(TAG, "onCreate: Created " + this.toString());
         super.onCreate();
 
-        // init
-        running = true;
-        lastApp = null;
-        watchingList = new HashMap<>();
-        usageBinder = new UsageBinder();
-        fileUtils = new FileUtils(this);
-        //API Level 21 需要使用硬编码;
-        usageStatsManager = (UsageStatsManager) getSystemService("usagestats");
-
+        initVariables();
         initWatchingList();
         initWatchingThread();
-        startNotification();
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: " + this.toString());
-        return super.onStartCommand(intent, flags, startId);
+        startNotification();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: " + this.toString());
 
-        // stop thread
-        watchingForegroundAppThread.interrupt();
-        running = false;
+        stopWatchingThread();
 
-        storeInformation();
-        storeAppList();
+        storeAppInformation();
+        storeWatchingList();
 
         super.onDestroy();
     }
@@ -157,16 +157,23 @@ public class TickTrackerService extends Service {
         return super.onUnbind(intent);
     }
 
+    private void initVariables() {
+        running = true;
+        lastApp = null;
+
+        watchingList = new HashMap<>();
+        usageBinder = new UsageBinder();
+        fileUtils = new FileUtils(this);
+
+        //API Level 21 需要使用硬编码;
+        usageStatsManager = (UsageStatsManager) getSystemService("usagestats");
+    }
+
     // init the watching list
-    private void initWatchingList () {
-        for (String appName : fileUtils.getApplist()) {
-            watchingList.put(appName, fileUtils.load(appName));
+    private void initWatchingList() {
+        for (String appName : fileUtils.getAppList()) {
+            watchingList.put(appName, fileUtils.loadAppInfo(appName));
         }
-        //for test
-//        watchingList.put("com.tencent.mm", new AppUsage());
-//        watchingList.get("com.tencent.mm").setPackageName("com.tencent.mm");
-//        watchingList.put("com.tencent.mobileqq", new AppUsage());
-//        watchingList.get("com.tencent.mobileqq").setPackageName("com.tencent.mobileqq");
     }
 
     // init the thread
@@ -175,38 +182,26 @@ public class TickTrackerService extends Service {
         watchingForegroundAppThread.start();
     }
 
-    // store app information when exit
-    private void storeInformation() {
-        for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
-            fileUtils.store(entry.getValue());
-        }
+    // stop the thread
+    private void stopWatchingThread() {
+        watchingForegroundAppThread.interrupt();
+        running = false;
     }
 
-
-    // operations when app switched
+    // update the old app when app switched
     private void onAppSwitched() {
-        // update last app's usage time
         AppUsage targetApp = watchingList.get(lastApp.getPackageName());
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date last = new Date(), now = new Date();
-        last.setTime(lastApp.getLastTimeUsed());
-        String lastDate = formatter.format(last),
-                nowDate = formatter.format(now);
-        if (lastDate.equals(nowDate)) {
-            targetApp.addUsingRecord(lastDate, System.currentTimeMillis() -
-                    lastApp.getLastTimeUsed());
-        } else {
-            try {
-                targetApp.addUsingRecord(lastDate, formatter.parse(nowDate)
-                        .getTime() - lastApp.getLastTimeUsed());
-                targetApp.addUsingRecord(nowDate, System.currentTimeMillis()
-                        - formatter.parse(nowDate).getTime());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        String today = AppUsage.getDateInString(new Date());
 
+        targetApp.updateUsingHistory(today,
+                System.currentTimeMillis()-lastApp.getLastTimeUsed(),
+                System.currentTimeMillis());
+
+        Log.d(TAG, "上个 app: " + targetApp.getPackageName());
+        Log.d(TAG, "上次用时: "+ targetApp.getUsingHistory().get(today).getUsingRecord().get(targetApp.getUsingHistory().get(today).getUsingRecord().size() - 1).getDuration());
+        Log.d(TAG, "总次数: " + targetApp.getUsingHistory().get(today).getUsedCount());
+        Log.d(TAG, "总用时: " + targetApp.getUsingHistory().get(today).getTotalTime());
     }
 
     // update the notification (stop and reshow)
@@ -222,10 +217,26 @@ public class TickTrackerService extends Service {
         PendingIntent pi = PendingIntent.getActivity(this, 0, i,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
+        String text;
+        if (watchingList.size() == 0) {
+            text = "没有需要监听的应用";
+        } else {
+            String appName = "";
+            for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
+                appName = app.getValue().getRealName();
+            }
+
+            if (watchingList.size() == 1) {
+                text = "正在监听 "+appName;
+            } else {
+                text = "正在监听 "+appName+" 等"+watchingList.size()+"个应用";
+            }
+        }
+
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle("X-Timer is working")
-                .setContentText("Watching " + watchingList.size() + " apps")
+                .setContentTitle("X-Timer已启动")
+                .setContentText(text)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pi)
                 .build();
@@ -233,7 +244,15 @@ public class TickTrackerService extends Service {
         startForeground(1, notification);
     }
 
-    private void storeAppList() {
+    // store app information when exit
+    private void storeAppInformation() {
+        for (Map.Entry<String, AppUsage> entry: watchingList.entrySet()) {
+            fileUtils.storeAppInfo(entry.getValue());
+        }
+    }
+
+    // store the watching list
+    private void storeWatchingList() {
         ArrayList<String> arrayList = new ArrayList<>();
         for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
             arrayList.add(app.getKey());
@@ -241,4 +260,5 @@ public class TickTrackerService extends Service {
 
         fileUtils.storeAppList(arrayList);
     }
+
 }

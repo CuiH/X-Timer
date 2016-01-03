@@ -6,7 +6,20 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textSize="50dp"
-        android:text="page1"/>
+        android:text="page3"/>
+
+    <Button
+        android:id="@+id/deleteall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="delete all"/>
+
+    <Button
+        android:id="@+id/showall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="show all"/>
+
 </LinearLayout>
