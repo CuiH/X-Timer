@@ -71,7 +71,7 @@ public class FileUtils {
         //文件不存在，直接返回一个新的AppUsage
         File file = new File("/data/data/com.crossbow.app.x_timer/files/flag_" + pkgName);
         if (!file.exists()) {
-            return new AppUsage(pkgName, findAppInfo(pkgName));
+            return new AppUsage(pkgName, findAppName(pkgName));
         }
 
         //文件存在则读取文件，转换成AppUsage
@@ -129,6 +129,9 @@ public class FileUtils {
         List<AppUsage> list = new ArrayList<>();
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return list;
+
         for (File file : files) {
             if (file.getName().startsWith("flag_")) {
                 AppUsage usage = loadAppInfo(file.getName().substring(5, file.getName().length()));
@@ -143,6 +146,9 @@ public class FileUtils {
     public boolean deleteCertainAppInfo(String pkgName) {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return false;
+
         for (File file : files) {
             if (file.getName().equals(pkgName)) {
                 file.delete();
@@ -157,8 +163,39 @@ public class FileUtils {
     public boolean deleteAllAppInfo() {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return false;
+
         for (File file : files) {
             if (file.getName().startsWith("flag_")) file.delete();
+        }
+
+        return true;
+    }
+
+    // 删除所有files下文件，debug用
+    public boolean deleteALLFiles() {
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return false;
+
+        for (File file : files) {
+            file.delete();
+        }
+
+        return true;
+    }
+
+    // 列出files下所有文件，debug用
+    public boolean showALLFiles() {
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return false;
+
+        for (File file : files) {
+            System.out.println(file.getName());
         }
 
         return true;
@@ -176,7 +213,7 @@ public class FileUtils {
     }
 
     // get app real name
-    private String findAppInfo(String pkgName) {
+    private String findAppName(String pkgName) {
         if (packages == null) packages = mContext.getPackageManager().getInstalledPackages(0);
 
         for (int i = 0; i < packages.size(); i++) {

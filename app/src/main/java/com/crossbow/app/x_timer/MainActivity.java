@@ -242,6 +242,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // get the viewpager instance
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
     // return the service binder
     public TickTrackerService.UsageBinder getBinder() {
         return usageBinder;

@@ -79,6 +79,14 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
         if (!initData(AppUsage.getDateInString(today))) {
             View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
 
+            Button goToSetting = (Button)view.findViewById(R.id.go_to_setting);
+            goToSetting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainActivity.getViewPager().setCurrentItem(3);
+                }
+            });
+
             return view;
         }
 
@@ -108,6 +116,7 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
         mChart.setTransparentCircleRadius(61f);
         // 显示中间文字
         mChart.setDrawCenterText(true);
+        mChart.setCenterText("点击图表查看");
         // 中间文字颜色
         mChart.setCenterTextColor(Color.parseColor("#22DDB8"));
         // 中间文字大小

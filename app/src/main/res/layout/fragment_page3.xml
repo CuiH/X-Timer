@@ -10,11 +10,16 @@
         android:textSize="50dp"
         android:text="page3"/>
 
-    <ProgressBar
-        android:id="@+id/widget43"
+    <Button
+        android:id="@+id/deleteall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
-    </ProgressBar>
+        android:text="delete all"/>
+
+    <Button
+        android:id="@+id/showall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="show all"/>
 
 </LinearLayout>
