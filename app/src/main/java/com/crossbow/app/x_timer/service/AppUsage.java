@@ -12,16 +12,23 @@ import java.util.Map;
 public class AppUsage {
     // 应用包名
     private String packageName;
+    // 应用真实名字
+    private String realName;
     // 记录应用使用历史（按天）
     private Map<String, History> usingHistory;
 
-    public AppUsage(String pkgName) {
+    public AppUsage(String pkgName, String rName) {
         packageName = pkgName;
+        realName = rName;
         usingHistory = new HashMap<>();
     }
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public String getRealName() {
+        return realName;
     }
 
     public Map<String, History> getUsingHistory() {

@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -14,9 +13,8 @@ import android.util.Log;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.Utils.FileUtils;
+import com.crossbow.app.x_timer.utils.FileUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,7 +51,7 @@ public class TickTrackerService extends Service {
         public boolean addAppToWatchingList(String appName) {
             if (isInWatchingList(appName)) return false;
 
-            watchingList.put(appName, new AppUsage(appName));
+            watchingList.put(appName, fileUtils.loadAppInfo(appName));
             updateNotification();
             return true;
         }
@@ -219,10 +217,26 @@ public class TickTrackerService extends Service {
         PendingIntent pi = PendingIntent.getActivity(this, 0, i,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
+        String text;
+        if (watchingList.size() == 0) {
+            text = "没有需要监听的应用";
+        } else {
+            String appName = "";
+            for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
+                appName = app.getValue().getRealName();
+            }
+
+            if (watchingList.size() == 1) {
+                text = "正在监听 "+appName;
+            } else {
+                text = "正在监听 "+appName+" 等"+watchingList.size()+"个应用";
+            }
+        }
+
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle("X-Timer is working")
-                .setContentText("Watching " + watchingList.size() + " apps")
+                .setContentTitle("X-Timer已启动")
+                .setContentText(text)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pi)
                 .build();
@@ -246,4 +260,5 @@ public class TickTrackerService extends Service {
 
         fileUtils.storeAppList(arrayList);
     }
+
 }

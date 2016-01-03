@@ -2,13 +2,13 @@ package com.crossbow.app.x_timer.day_detail;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.Utils.FileUtils;
+import com.crossbow.app.x_timer.utils.FileUtils;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
@@ -29,6 +29,9 @@ import java.util.Map;
  * Created by wanglx on 2016/1/2.
  */
 public class DayDetailActivity extends AppCompatActivity {
+
+    private final String TAG = "DayDetailActivity";
+
     private AnimatedExpandableListView listView;
     private DayDetailAdapter adapter;
     private List<PackageInfo> packages;
@@ -41,14 +44,20 @@ public class DayDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.day_detail_main);
 
         initToolbar();
         initStatusBar();
-        initInstalledAppInfo();
-
         initLayout();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
+        super.onBackPressed();
+        finish();
     }
 
     // handle toolbar
@@ -110,7 +119,7 @@ public class DayDetailActivity extends AppCompatActivity {
         for (AppUsage app: fileUtils.getAllStoredApp()) {
             Map<String, AppUsage.History> history = app.getUsingHistory();
             if (history.containsKey(date)) {
-                AppItemCopy itemCopy = findAppInfo(app.getPackageName());
+                Drawable appIcon = findAppIcon(app.getPackageName());
 
                 List<UsageItem> usages = new ArrayList<>();
                 AppUsage.History theDay = history.get(date);
@@ -121,7 +130,7 @@ public class DayDetailActivity extends AppCompatActivity {
                     usages.add(usage);
                 }
 
-                AppItem item = new AppItem(itemCopy.appName, itemCopy.appIcon, theDay.getTotalTime(), usages);
+                AppItem item = new AppItem(app.getRealName(), appIcon, theDay.getTotalTime(), usages);
                 items.add(item);
             }
         }
@@ -151,11 +160,6 @@ public class DayDetailActivity extends AppCompatActivity {
         return true;
     }
 
-    // get all installed app info
-    private void initInstalledAppInfo() {
-        packages = getPackageManager().getInstalledPackages(0);
-    }
-
     // save data first
     private void manuallySaveData() {
         usageBinder = MainActivity.usageBinder;
@@ -163,20 +167,20 @@ public class DayDetailActivity extends AppCompatActivity {
     }
 
     // get the app info
-    private AppItemCopy findAppInfo(String pkgName) {
+    private Drawable findAppIcon(String pkgName) {
+        if (packages == null ) if (packages == null )packages = getPackageManager().getInstalledPackages(0);
+
         for (int i = 0; i < packages.size(); i++) {
             PackageInfo packageInfo = packages.get(i);
             String packageName = packageInfo.packageName;
             if (packageName.equals(pkgName)) {
-                String appName = packageInfo.applicationInfo.loadLabel(getPackageManager()).toString();
                 Drawable appIcon = packageInfo.applicationInfo.loadIcon(getPackageManager());
-                AppItemCopy copy = new AppItemCopy(appName, appIcon);
 
-                return copy;
+                return appIcon;
             }
         }
 
-        return new AppItemCopy(pkgName, null);
+        return null;
     }
 
     // check if the service is working
@@ -198,14 +202,4 @@ public class DayDetailActivity extends AppCompatActivity {
         return false;
     }
 
-    // only record the name and icon
-    private static class AppItemCopy {
-        String appName;
-        Drawable appIcon;
-
-        AppItemCopy(String name, Drawable icon) {
-            appName = name;
-            appIcon = icon;
-        }
-    }
 }

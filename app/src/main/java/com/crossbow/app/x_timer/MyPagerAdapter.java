@@ -1,12 +1,14 @@
-package com.crossbow.app.x_timer.fragment;
+package com.crossbow.app.x_timer;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.crossbow.app.x_timer.MainActivity;
+import com.crossbow.app.x_timer.fragment.MyFragment1;
+import com.crossbow.app.x_timer.fragment.MyFragment3;
+import com.crossbow.app.x_timer.history.HistoryFragment;
+import com.crossbow.app.x_timer.setting.SettingFragment;
 
 /**
  * Created by CuiH on 2015/12/29.
@@ -17,9 +19,9 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     private MainActivity mainActivity;
 
     private MyFragment1 fragment1;
-    private MyFragment2 fragment2;
+    private HistoryFragment fragment2;
     private MyFragment3 fragment3;
-    private MyFragment4 fragment4;
+    private SettingFragment fragment4;
 
     public MyPagerAdapter(FragmentManager fm, MainActivity activity) {
         super(fm);
@@ -42,7 +44,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             }
         } else if (position == 1) {
             if (fragment2 == null) {
-                fragment2 = new MyFragment2(mainActivity);
+                fragment2 = new HistoryFragment(mainActivity);
                 return fragment2;
             } else {
                 return fragment2;
@@ -56,7 +58,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             }
         } else if (position == 3) {
             if (fragment4 == null) {
-                fragment4 = new MyFragment4(mainActivity);
+                fragment4 = new SettingFragment(mainActivity);
                 return  fragment4;
             } else {
                 return fragment4;

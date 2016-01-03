@@ -1,0 +1,48 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:paddingRight="20dp"
+    android:paddingLeft="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/settingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textColor="#000000"
+            android:text="监听服务"/>
+
+        <TextView
+            android:id="@+id/settingDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginTop="3dp"
+            android:text="监听服务"/>
+
+    </LinearLayout>
+
+    <ToggleButton
+        android:id="@+id/settingButton"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:background="@drawable/toggle_button"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:checked="false"
+        android:text=""
+        android:textOff=""
+        android:textOn="" />
+
+</RelativeLayout>

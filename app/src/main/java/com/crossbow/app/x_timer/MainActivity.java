@@ -24,7 +24,6 @@ import android.widget.RadioButton;
 
 import android.widget.Toast;
 
-import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.List;
@@ -109,11 +108,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 

@@ -36,10 +36,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         checked = alreadyChecked;
     }
 
-    public ArrayList<String> getCheckedList() {
-        return checked;
-    }
-
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         AppInfo appInfo = getItem(position);
         View view;

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,6 +35,9 @@ import java.util.Map;
  * Created by wanglx on 2016/1/1.
  */
 public class AddAppActivity extends AppCompatActivity {
+
+    private final String TAG = "AddAppActivity";
+
     private List<AppInfo> appList;
     private AppInfoAdapter appInfoAdapter;
     private ArrayList<String> selected;
@@ -42,10 +46,9 @@ public class AddAppActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_app_main);
-
-
 
         initToolbar();
         initStatusBar();
@@ -54,6 +57,13 @@ public class AddAppActivity extends AppCompatActivity {
 
         handleListView();
         handleButton();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
+        super.onBackPressed();
+        finish();
     }
 
     // handle toolbar

@@ -1,4 +1,4 @@
-package com.crossbow.app.x_timer.fragment;
+package com.crossbow.app.x_timer.history;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -18,14 +17,13 @@ import com.crossbow.app.x_timer.day_detail.DayDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.squareup.timessquare.CalendarPickerView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by CuiH on 2015/12/29.
  */
-public class MyFragment2 extends Fragment {
+public class HistoryFragment extends Fragment {
 
     MainActivity mainActivity;
 
@@ -33,10 +31,10 @@ public class MyFragment2 extends Fragment {
 
     ProgressDialog dialog;
 
-    public MyFragment2() { }
+    public HistoryFragment() { }
 
     @SuppressLint("ValidFragment")
-    public MyFragment2(MainActivity activity) {
+    public HistoryFragment(MainActivity activity) {
         mainActivity = activity;
     }
 
@@ -48,7 +46,7 @@ public class MyFragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page2, container, false);
+        View view = inflater.inflate(R.layout.history_fragment, container, false);
 
         initCalendar(view);
         initCalendarButton(view);

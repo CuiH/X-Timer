@@ -1,6 +1,7 @@
-package com.crossbow.app.x_timer.Utils;
+package com.crossbow.app.x_timer.utils;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.google.gson.Gson;
@@ -20,6 +21,8 @@ import java.util.List;
 public class FileUtils {
     // 记录上下文
     private Context mContext;
+
+    private List<PackageInfo> packages;
 
     public FileUtils(Context context) {
         this.mContext = context;
@@ -68,7 +71,7 @@ public class FileUtils {
         //文件不存在，直接返回一个新的AppUsage
         File file = new File("/data/data/com.crossbow.app.x_timer/files/flag_" + pkgName);
         if (!file.exists()) {
-            return new AppUsage(pkgName);
+            return new AppUsage(pkgName, findAppInfo(pkgName));
         }
 
         //文件存在则读取文件，转换成AppUsage
@@ -170,5 +173,22 @@ public class FileUtils {
 
         file.delete();
         return true;
+    }
+
+    // get app real name
+    private String findAppInfo(String pkgName) {
+        if (packages == null) packages = mContext.getPackageManager().getInstalledPackages(0);
+
+        for (int i = 0; i < packages.size(); i++) {
+            PackageInfo packageInfo = packages.get(i);
+            String packageName = packageInfo.packageName;
+            if (packageName.equals(pkgName)) {
+                String appName = packageInfo.applicationInfo
+                        .loadLabel(mContext.getPackageManager()).toString();
+
+                return appName;
+            }
+        }
+        return "找不到名字";
     }
 }
