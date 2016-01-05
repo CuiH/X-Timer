@@ -48,6 +48,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
  * Created by CuiH on 2015/12/29.
  */
 public class HomeFragment extends Fragment implements OnChartValueSelectedListener {
+
     private final String TAG = "HomeFragment";
 
     private PieChart mChart;
@@ -61,20 +62,19 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
     public HomeFragment() { }
 
     @SuppressLint("ValidFragment")
-    public HomeFragment(MainActivity activity) {
-        mainActivity = activity;
-    }
+        public HomeFragment(MainActivity activity) {
+            mainActivity = activity;
+        }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        // 今天没有数据
+        @Override
+        public View onCreateView(LayoutInflater inflater,
+                ViewGroup container, Bundle savedInstanceState) {
+            // 今天没有数据
         Date today = new Date();
         if (!initData(AppUsage.getDateInString(today))) {
             View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
@@ -140,7 +140,9 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
 
     // init data
     private boolean initData(String date) {
-        if (mainActivity.isWorking()) manuallySaveData();
+        if (mainActivity.isWorking()) {
+            manuallySaveData();
+        }
 
         list = getCertainDayData(date);
 
@@ -191,7 +193,7 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
 
     // save data manually
     private void manuallySaveData() {
-        TickTrackerService.UsageBinder usageBinder = MainActivity.usageBinder;
+        TickTrackerService.UsageBinder usageBinder = mainActivity.getBinder();
         usageBinder.manuallySaveData();
     }
 
@@ -221,8 +223,6 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null)
             return;
-
-        System.out.println(dataSetIndex);
 
         mChart.setCenterText(list.get(e.getXIndex()).getAppName()+"\n"
                 +list.get(e.getXIndex()).getTotalTimeInString());

@@ -1,10 +1,16 @@
 package com.crossbow.app.x_timer.day_detail;
 
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,28 +41,57 @@ public class DayDetailActivity extends AppCompatActivity {
     private AnimatedExpandableListView listView;
     private DayDetailAdapter adapter;
     private List<PackageInfo> packages;
-    private TickTrackerService.UsageBinder usageBinder;
     private FileUtils fileUtils;
     private String date;
 
     private LinearLayout hasInfo;
     private LinearLayout noInfo;
 
+    // 联系service
+    private TickTrackerService.UsageBinder usageBinder;
+    private ServiceConnection connection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.day_detail_main);
 
         initToolbar();
         initStatusBar();
-        initLayout();
+        initConnection();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+
+        super.onResume();
+
+        if (isWorking()) {
+            bindTickService();
+        } else {
+            initLayout();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+
+        super.onPause();
+
+        if (isWorking()) unbindTickService();
     }
 
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed: ");
+
         super.onBackPressed();
+
         finish();
     }
 
@@ -110,7 +145,9 @@ public class DayDetailActivity extends AppCompatActivity {
         List<AppItem> items = new ArrayList<>();
 
         // if the service is working, save date first;
-        if (isWorking()) manuallySaveData();
+        if (isWorking()) {
+            usageBinder.manuallySaveData();
+        }
 
         // read file
         fileUtils = new FileUtils(this);
@@ -162,12 +199,6 @@ public class DayDetailActivity extends AppCompatActivity {
         return true;
     }
 
-    // save data first
-    private void manuallySaveData() {
-        usageBinder = MainActivity.usageBinder;
-        usageBinder.manuallySaveData();
-    }
-
     // get the app info
     private Drawable findAppIcon(String pkgName) {
         if (packages == null ) if (packages == null )packages
@@ -186,11 +217,48 @@ public class DayDetailActivity extends AppCompatActivity {
         return null;
     }
 
+    // init the connection
+    private void initConnection() {
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "onBinded: ");
+
+                usageBinder = (TickTrackerService.UsageBinder) service;
+
+                // 异步绑定
+                initLayout();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "service error");
+
+                usageBinder = null;
+            }
+        };
+    }
+
+    // bind the service
+    public void bindTickService() {
+        Log.d(TAG, "onBinding:");
+
+        Intent intent = new Intent(this, TickTrackerService.class);
+        bindService(intent, connection, BIND_AUTO_CREATE);
+    }
+
+    // unbind the service
+    public void unbindTickService() {
+        unbindService(connection);
+
+        Log.d(TAG, "onUnbinded:");
+    }
+
     // check if the service is working
     private boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
+        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(150);
 
         if (myList.size() <= 0) {
             return false;
@@ -202,6 +270,7 @@ public class DayDetailActivity extends AppCompatActivity {
                 return true;
             }
         }
+
         return false;
     }
 

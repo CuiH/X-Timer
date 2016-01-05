@@ -50,7 +50,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             }
         } else if (position == 2) {
             if (fragment3 == null) {
-                fragment3 = new MyFragment3();
+                fragment3 = new MyFragment3(mainActivity);
                 return  fragment3;
             } else {
                 return fragment3;

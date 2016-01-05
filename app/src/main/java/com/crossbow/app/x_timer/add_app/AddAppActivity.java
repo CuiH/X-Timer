@@ -2,11 +2,16 @@ package com.crossbow.app.x_timer.add_app;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,19 +49,47 @@ public class AddAppActivity extends AppCompatActivity {
     private TextView showInfo;
     private ListView listView;
 
+    // 本地存储
+    private SharedPreferences pref;
+
+    // 联系service
+    private TickTrackerService.UsageBinder usageBinder;
+    private ServiceConnection connection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.add_app_main);
 
+        initConnection();
         initToolbar();
         initStatusBar();
         initCustomAppList();
-        initAdapter();
 
-        handleListView();
         handleButton();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+
+        super.onResume();
+
+        if (isWorking()) {
+            bindTickService();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+
+        super.onPause();
+
+        if (isWorking()) unbindTickService();
     }
 
     @Override
@@ -118,10 +151,33 @@ public class AddAppActivity extends AppCompatActivity {
         appInfoAdapter.setDefault(selected);
 
         showInfo = (TextView) findViewById(R.id.add_app_text);
-        showInfo.setText("已选"+selected.size()+"个应用");
+        showInfo.setText("已选" + selected.size() + "个应用");
 
         listView = (ListView)findViewById(R.id.app_list);
         listView.setAdapter(appInfoAdapter);
+    }
+
+    // init the connection
+    private void initConnection() {
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "onBinded: ");
+
+                usageBinder = (TickTrackerService.UsageBinder) service;
+
+                // 异步绑定
+                initAdapter();
+                handleListView();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "service error");
+
+                usageBinder = null;
+            }
+        };
     }
 
     // add listener to list view
@@ -130,7 +186,7 @@ public class AddAppActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckBox check = (CheckBox) view.findViewById(R.id.app_check_box);
-                RelativeLayout background = (RelativeLayout)view.findViewById(R.id.app_background);
+                RelativeLayout background = (RelativeLayout) view.findViewById(R.id.app_background);
                 if (check.isChecked()) {
                     check.setChecked(false);
                     selected.remove(appList.get(position).getPackageName());
@@ -153,23 +209,22 @@ public class AddAppActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isWorking()) {
+                if (!isWorking() || usageBinder == null) {
                     Toast.makeText(AddAppActivity.this, "失败，请先开启服务",
                             Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
 
-                TickTrackerService.UsageBinder binder = MainActivity.usageBinder;
                 for (String appName: selected) {
-                    if (!binder.isInWatchingList(appName)) {
-                        binder.addAppToWatchingList(appName);
+                    if (!usageBinder.isInWatchingList(appName)) {
+                        usageBinder.addAppToWatchingList(appName, shouldShowNotification());
                     }
                 }
 
                 for (String name: getSelectedApps()) {
                     if (!selected.contains(name)) {
-                        binder.removeAppFromWatchingLise(name);
+                        usageBinder.removeAppFromWatchingLise(name, shouldShowNotification());
                     }
                 }
 
@@ -186,6 +241,21 @@ public class AddAppActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    // bind the service
+    public void bindTickService() {
+        Log.d(TAG, "onBinding:");
+
+        Intent intent = new Intent(this, TickTrackerService.class);
+        bindService(intent, connection, BIND_AUTO_CREATE);
+    }
+
+    // unbind the service
+    public void unbindTickService() {
+        unbindService(connection);
+
+        Log.d(TAG, "onUnbinded:");
     }
 
     // check if the service is working
@@ -209,12 +279,19 @@ public class AddAppActivity extends AppCompatActivity {
 
     // find all apps in the watching list
     private ArrayList<String> getSelectedApps() {
-        Map<String, AppUsage> watchingList = MainActivity.usageBinder.getWatchingList();
+        Map<String, AppUsage> watchingList = usageBinder.getWatchingList();
         ArrayList<String> list = new ArrayList<>();
         for (Map.Entry<String, AppUsage> app : watchingList.entrySet()) {
             list.add(app.getKey());
         }
 
         return list;
+    }
+
+    // check if should start a notification
+    public boolean shouldShowNotification() {
+        if (pref == null) pref = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        return pref.getBoolean("show", true);
     }
 }

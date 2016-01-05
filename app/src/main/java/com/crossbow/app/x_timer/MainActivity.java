@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
@@ -34,8 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "main";
 
-    public static TickTrackerService.UsageBinder usageBinder;
-
+    private TickTrackerService.UsageBinder usageBinder;
     private ServiceConnection connection;
 
     private ViewPager viewPager;
@@ -45,10 +45,16 @@ public class MainActivity extends AppCompatActivity
     private RadioButton tab_detail;
     private RadioButton tab_setting;
 
+    // 本地存储
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
+
         setContentView(R.layout.activity_main);
 
         // toolbar
@@ -67,43 +73,27 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
 
-        if (isWorking()) bindTickService();
+        if (isWorking()) {
+            bindTickService();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-    }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d(TAG, "onRestart: ");
+        if (isWorking()) unbindTickService();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
-
-        if (isWorking()) unbindTickService();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
@@ -242,14 +232,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public TickTrackerService.UsageBinder getBinder() {
+        return usageBinder;
+    }
+
     // get the viewpager instance
     public ViewPager getViewPager() {
         return viewPager;
-    }
-
-    // return the service binder
-    public TickTrackerService.UsageBinder getBinder() {
-        return usageBinder;
     }
 
     // init the connection
@@ -257,12 +246,18 @@ public class MainActivity extends AppCompatActivity
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "onBinded: ");
+
                 usageBinder = (TickTrackerService.UsageBinder) service;
+
+
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "service error");
 
+                usageBinder = null;
             }
         };
     }
@@ -301,7 +296,7 @@ public class MainActivity extends AppCompatActivity
         viewPager.setOffscreenPageLimit(4);
     }
 
-    // change all tab to unactive
+    // change all tab to inactive
     private void changeAllTabColor() {
         tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home, 0, 0);
         tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history, 0, 0);
@@ -327,10 +322,12 @@ public class MainActivity extends AppCompatActivity
     // start the TickTracker Service
     public void startTickService() {
         Intent intent = new Intent(this, TickTrackerService.class);
+        intent.putExtra("showNotification", shouldShowNotification());
+
         startService(intent);
         bindTickService();
 
-        Toast.makeText(this, "started", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "监听已开启", Toast.LENGTH_LONG).show();
     }
 
     // stop the TickTracker Service
@@ -339,11 +336,13 @@ public class MainActivity extends AppCompatActivity
         stopService(intent);
         unbindTickService();
 
-        Toast.makeText(this, "stopped", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "监听已关闭", Toast.LENGTH_LONG).show();
     }
 
     // bind the service
     public void bindTickService() {
+        Log.d(TAG, "onBinding:");
+
         Intent intent = new Intent(this, TickTrackerService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
     }
@@ -351,6 +350,38 @@ public class MainActivity extends AppCompatActivity
     // unbind the service
     public void unbindTickService() {
         unbindService(connection);
+
+        Log.d(TAG, "onUnbinded:");
+    }
+
+    // check if should start a notification
+    public boolean shouldShowNotification() {
+        if (pref == null) pref = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        return pref.getBoolean("show", true);
+    }
+
+    // update the shared preference
+    public void updateShouldShowNotification(boolean flag) {
+        if (editor == null) editor = pref.edit();
+
+        editor.putBoolean("show", flag);
+        editor.commit();
+    }
+
+    // check if should start when boot
+    public boolean shouldStartWhenBoot() {
+        if (pref == null) pref = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        return pref.getBoolean("boot", true);
+    }
+
+    // update the shared preference
+    public void updateShouldStartWhenBoot(boolean flag) {
+        if (editor == null) editor = pref.edit();
+
+        editor.putBoolean("boot", flag);
+        editor.commit();
     }
 
     // check if the service is working

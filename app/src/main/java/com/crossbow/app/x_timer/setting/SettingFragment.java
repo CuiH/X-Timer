@@ -1,7 +1,9 @@
 package com.crossbow.app.x_timer.setting;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,14 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.add_app.AppInfo;
-import com.crossbow.app.x_timer.add_app.AppInfoAdapter;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.crossbow.app.x_timer.add_app.AddAppActivity;
 
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import mehdi.sakout.fancybuttons.FancyButton;
 
 
 /**
@@ -37,15 +35,6 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
     private SettingAdapter settingAdapter;
     private List<SettingInfo> settingList;
     private ListView listView;
-
-    private FancyButton setting_service;
-    private FancyButton setting_auto;
-    private FancyButton setting_list;
-    private FancyButton setting_notification;
-    private FancyButton setting_clear;
-    private FancyButton setting_help;
-    private FancyButton setting_clear_list;
-
 
     public SettingFragment() { }
 
@@ -72,25 +61,53 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ToggleButton tv = (ToggleButton)view.findViewById(R.id.settingButton);
+
         switch (position) {
             case 0:
                 if (mainActivity.isWorking()) {
                     mainActivity.stopTickService();
-                    ToggleButton tv = (ToggleButton)view.findViewById(R.id.settingButton);
                     tv.setChecked(false);
                 } else {
                     mainActivity.startTickService();
-                    ToggleButton tv = (ToggleButton)view.findViewById(R.id.settingButton);
                     tv.setChecked(true);
                 }
 
                 break;
             case 1:
-                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+                if (mainActivity.shouldStartWhenBoot()) {
+                    mainActivity.updateShouldStartWhenBoot(false);
+                    tv.setChecked(false);
+
+                    Toast.makeText(mainActivity, "已设置不开机启动", Toast.LENGTH_SHORT).show();
+                } else {
+                    mainActivity.updateShouldStartWhenBoot(true);
+                    tv.setChecked(true);
+
+                    Toast.makeText(mainActivity, "已设置开机启动", Toast.LENGTH_SHORT).show();
+                }
 
                 break;
             case 2:
-                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+                if (mainActivity.shouldShowNotification()) {
+                    if (mainActivity.isWorking()) {
+                        mainActivity.getBinder().changeNotificationState(false);
+                    } else {
+                        Toast.makeText(mainActivity, "服务未启动", Toast.LENGTH_SHORT).show();
+                    }
+
+                    mainActivity.updateShouldShowNotification(false);
+                    tv.setChecked(false);
+                } else {
+                    if (mainActivity.isWorking()) {
+                        mainActivity.getBinder().changeNotificationState(true);
+                    } else {
+                        Toast.makeText(mainActivity, "服务未启动", Toast.LENGTH_SHORT).show();
+                    }
+
+                    mainActivity.updateShouldShowNotification(true);
+                    tv.setChecked(true);
+                }
 
                 break;
             case 3:
@@ -201,108 +218,4 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
         settingList.add(setting8);
     }
 
-
-//    // init the text in the FancyButtons
-//    private void initText() {
-//        if (mainActivity.isWorking()) {
-//            setting_service.setText("关闭");
-//        } else {
-//            setting_service.setText("启动");
-//        }
-//    }
-
-
-//    public void onClick(View v) {
-//        int id = v.getId();
-//        switch (id) {
-//            case R.id.setting_service:
-//                if (mainActivity.isWorking()) {
-//                    mainActivity.stopTickService();
-//                    setting_service.setText("启动");
-//                } else {
-//                    mainActivity.startTickService();
-//                    setting_service.setText("关闭");
-//                }
-//
-//                break;
-//            case R.id.setting_clear:
-//                if (mainActivity.isWorking()) {
-//                    Toast.makeText(mainActivity, "请先关闭监听服务", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                new SweetAlertDialog(mainActivity, SweetAlertDialog.WARNING_TYPE)
-//                        .setTitleText("确定要清空记录吗")
-//                        .setContentText("该操作不可恢复")
-//                        .setConfirmText("确认")
-//                        .setCancelText("手滑了")
-//                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                            @Override
-//                            public void onClick(SweetAlertDialog sDialog) {
-//                                FileUtils fileUtils = new FileUtils(mainActivity);
-//                                fileUtils.deleteAllAppInfo();
-//
-//                                sDialog.setTitleText("已删除")
-//                                        .setContentText("应用历史记录已清空")
-//                                        .setConfirmText("好的")
-//                                        .setConfirmClickListener(null)
-//                                        .showCancelButton(false)
-//                                        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-//                            }
-//                        }).show();
-//
-//                break;
-//            case R.id.setting_clear_list:
-//                if (mainActivity.isWorking()) {
-//                    Toast.makeText(mainActivity, "请先关闭监听服务", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                new SweetAlertDialog(mainActivity, SweetAlertDialog.WARNING_TYPE)
-//                        .setTitleText("确定要清空列表吗")
-//                        .setContentText("该操作不可恢复")
-//                        .setConfirmText("确认")
-//                        .setCancelText("手滑了")
-//                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                            @Override
-//                            public void onClick(SweetAlertDialog sDialog) {
-//                                FileUtils fileUtils2 = new FileUtils(mainActivity);
-//                                fileUtils2.deleteAppList();
-//
-//                                sDialog.setTitleText("已删除")
-//                                        .setContentText("应用监听列表已清空")
-//                                        .setConfirmText("好的")
-//                                        .setConfirmClickListener(null)
-//                                        .showCancelButton(false)
-//                                        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-//                            }
-//                        }).show();
-//
-//                break;
-//            case R.id.setting_auto:
-//                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
-//
-//                break;
-//            case R.id.setting_help:
-//                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
-//
-//                break;
-//            case R.id.setting_notification:
-//                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
-//
-//                break;
-//            case R.id.setting_list:
-//                if (!mainActivity.isWorking()) {
-//                    Toast.makeText(mainActivity, "请先开启监听服务", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                Intent intent = new Intent(getContext(), AddAppActivity.class);
-//                startActivity(intent);
-//
-//                break;
-//            default:
-//                break;
-//        }
-//    }
 }

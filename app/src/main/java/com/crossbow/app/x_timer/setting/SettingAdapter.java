@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.setting;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,15 +55,14 @@ public class SettingAdapter extends ArrayAdapter<SettingInfo> {
         }
 
         if (position == 0) {          // 监听服务
-            if (mainActivity.isWorking()) {
-                vh.tb.setChecked(true);
-            } else {
-                vh.tb.setChecked(false);
-            }
+            if (mainActivity.isWorking()) vh.tb.setChecked(true);
+            else vh.tb.setChecked(false);
         } else if (position == 1) {   // 开机启动
-
+            if (mainActivity.shouldStartWhenBoot())  vh.tb.setChecked(true);
+            else  vh.tb.setChecked(false);
         } else if (position == 2) {   // 通知栏图标
-
+            if (mainActivity.shouldShowNotification()) vh.tb.setChecked(true);
+            else vh.tb.setChecked(false);
         }
 
         if (settingInfo.getSettingStyle() == 1) {
@@ -73,6 +73,8 @@ public class SettingAdapter extends ArrayAdapter<SettingInfo> {
 
         return view;
     }
+
+
 
     private static class ViewHolder {
         TextView tv1;

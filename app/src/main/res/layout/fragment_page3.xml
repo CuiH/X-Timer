@@ -22,4 +22,10 @@
         android:layout_height="wrap_content"
         android:text="show all"/>
 
+    <Button
+        android:id="@+id/stop_noti"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stop noti"/>
+
 </LinearLayout>
