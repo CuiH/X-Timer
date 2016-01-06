@@ -29,6 +29,8 @@ import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.List;
 
+import me.drakeet.materialdialog.MaterialDialog;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener {
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity
     // 本地存储
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+
+    private MaterialDialog dialog;
 
 
     @Override
@@ -301,7 +305,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // check if the user has system permission
-    private boolean hasPermission() {
+    public boolean hasPermission() {
         AppOpsManager appOps = (AppOpsManager)
                 getSystemService(Context.APP_OPS_SERVICE);
         int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
@@ -312,7 +316,20 @@ public class MainActivity extends AppCompatActivity
     // TODO not finished
     // if no permission, show info
     private void requestPermission() {
-        Toast.makeText(this, "no permission", Toast.LENGTH_LONG).show();
+        dialog = new MaterialDialog(this)
+                .setTitle("缺少权限")
+                .setMessage("由于我们的应用将监听手机APP使用情况，您需要为其配置权限，" +
+                        "否则将无法使用。具体操作为：[设置 - 权限 - 可以访问使用量数据的应用程序]，" +
+                        "然后勾选我们的应用，点击确定即可。（我们保证不会记录您的隐私，" +
+                        "代码已公布在github，详见“关于我们”页面）。")
+                .setPositiveButton("知道了", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog.show();
     }
 
     // start the TickTracker Service

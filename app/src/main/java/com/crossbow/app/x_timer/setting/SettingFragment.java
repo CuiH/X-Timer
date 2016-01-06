@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.drakeet.materialdialog.MaterialDialog;
 
 
 /**
@@ -35,6 +36,8 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
     private SettingAdapter settingAdapter;
     private List<SettingInfo> settingList;
     private ListView listView;
+
+    private MaterialDialog dialog;
 
     public SettingFragment() { }
 
@@ -175,11 +178,53 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
 
                 break;
             case 6:
-                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+                dialog = new MaterialDialog(mainActivity)
+                        .setTitle("已知缺陷")
+                        .setMessage("1. 暂时不支持android5.0（api21）以下版本\n" +
+                                "2. 如果使用监听中的应用越过午夜12点，使用时间将会" +
+                                "被算在第二天\n" +
+                                "3. 由横屏切换竖屏会出错，建议不要使用横屏\n")
+                        .setPositiveButton("知道了", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                dialog.show();
 
                 break;
             case 7:
-                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+                if (mainActivity.hasPermission()) {
+                    dialog = new MaterialDialog(mainActivity)
+                            .setTitle("如何使用")
+                            .setMessage("您应首先开启监听服务，然后配置监听列表，选择您希望监听的" +
+                                    "应用（最好不要太多），随后即可在[首页]及[历史]页面看到应用使" +
+                                    "用情况啦！")
+                            .setPositiveButton("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                    dialog.show();
+                } else {
+                    dialog = new MaterialDialog(mainActivity)
+                            .setTitle("如何获取权限")
+                            .setMessage("由于我们的应用将监听手机APP使用情况，您需要为其配置权限，" +
+                                    "否则将无法使用。具体操作为：[设置 - 权限 - 可以访问使用量数据" +
+                                    "的应用程序]，然后勾选我们的应用，点击确定即可。（我们保证不会" +
+                                    "记录您的隐私，代码已公布在github，详见“关于我们”页面）。")
+                            .setPositiveButton("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                    dialog.show();
+                }
 
                 break;
             default:
