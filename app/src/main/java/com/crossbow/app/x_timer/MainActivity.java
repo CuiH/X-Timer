@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_home.setChecked(true);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home_new_active, 0, 0);
+                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_assessment_green_24px, 0, 0);
 
                 break;
 
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_history.setChecked(true);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_new_active, 0, 0);
+                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_green_24px, 0, 0);
 
                 break;
 
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_detail.setChecked(true);
-                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_walk_new_active, 0, 0);
+                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_directions_walk_green_24px, 0, 0);
 
                 break;
 
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_setting.setChecked(true);
-                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting_new_active, 0, 0);
+                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_settings_green_24px, 0, 0);
 
                 break;
 
@@ -298,10 +298,10 @@ public class MainActivity extends AppCompatActivity
 
     // change all tab to inactive
     private void changeAllTabColor() {
-        tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_home_new, 0, 0);
-        tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_new, 0, 0);
-        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_walk_new, 0, 0);
-        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_setting_new, 0, 0);
+        tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_assessment_black_24px, 0, 0);
+        tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_black_24px, 0, 0);
+        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_directions_walk_black_24px, 0, 0);
+        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_settings_black_24px, 0, 0);
     }
 
     // check if the user has system permission
