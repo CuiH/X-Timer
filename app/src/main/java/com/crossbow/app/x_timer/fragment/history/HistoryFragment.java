@@ -8,28 +8,48 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
 import com.crossbow.app.x_timer.detail.day_detail.DayDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
+import com.crossbow.app.x_timer.spinner.NiceSpinner;
+import com.crossbow.app.x_timer.utils.FileUtils;
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by CuiH on 2015/12/29.
  */
 public class HistoryFragment extends Fragment {
 
-    MainActivity mainActivity;
+    private MainActivity mainActivity;
 
-    CalendarPickerView calendar;
+    private CalendarPickerView calendar;
 
-    ProgressDialog dialog;
+    private RelativeLayout calendarLayout;
+    private LinearLayout appLayout;
+
+    private int nowLayout;   // 0-calendar 1-list
+
+    private HistoryAppListAdapter adapter;
+    private List<HistoryAppInfo> allStoredApp;
+
+    private int selectedIndex;
+
 
     public HistoryFragment() { }
 
@@ -50,13 +70,48 @@ public class HistoryFragment extends Fragment {
 
         initCalendar(view);
         initCalendarButton(view);
+        initAppList(view);
+        initDefault();
+        initSpinner(view);
         initOtherButton(view);
 
         return view;
     }
 
+    public void initSpinner(View view) {
+        NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.history_spinner);
+        List<String> dataSet = new LinkedList<>(Arrays.asList("按时间查询", "按应用查询"));
+        niceSpinner.attachDataSource(dataSet);
+        niceSpinner.setSelectedIndex(0);
+
+        niceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    calendarLayout.setVisibility(View.VISIBLE);
+                    appLayout.setVisibility(View.GONE);
+
+                    nowLayout = 0;
+
+                } else {
+                    calendarLayout.setVisibility(View.GONE);
+                    appLayout.setVisibility(View.VISIBLE);
+
+                    nowLayout = 1;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     // init the calendar to this month
     private void initCalendar(View view) {
+        calendarLayout = (RelativeLayout) view.findViewById(R.id.history_calendar_layout);
+
         Date today = new Date();
         Date firstDayOfTheMonth = getTheFirstDayOfTheMonth(today);
         Date firstDayOfTheNextMonth = getTheFirstDayOfTheNextMonth(today);
@@ -108,20 +163,86 @@ public class HistoryFragment extends Fragment {
         });
     }
 
+    // init the app list view
+    private void initAppList(View view) {
+        selectedIndex = -1;
+
+        appLayout = (LinearLayout)view.findViewById(R.id.history_app_layout);
+
+        ListView listView = (ListView)view.findViewById(R.id.history_app_list);
+
+        allStoredApp = getAllStoredApps();
+        adapter = new HistoryAppListAdapter(mainActivity,
+                R.layout.history_app_item, allStoredApp);
+
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                HistoryAppInfo nowApp = allStoredApp.get(position);
+                if (!nowApp.getSelected()) {
+                    nowApp.setSelected(true);
+                    if (selectedIndex != -1) {
+                        HistoryAppInfo lastApp = allStoredApp.get(selectedIndex);
+                        lastApp.setSelected(false);
+                    }
+                    selectedIndex = position;
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    // init the default layout
+    private void initDefault() {
+        nowLayout = 0;
+
+        calendarLayout.setVisibility(View.VISIBLE);
+        appLayout.setVisibility(View.GONE);
+    }
+
     // add listener to other buttons
     private void initOtherButton(View view) {
-        Button ok = (Button)view.findViewById(R.id.calendar_ok);
+        Button ok = (Button)view.findViewById(R.id.history_ok);
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mainActivity, DayDetailActivity.class);
+                if (nowLayout == 0) {
+                    Intent intent = new Intent(mainActivity, DayDetailActivity.class);
 
-                Date target = calendar.getSelectedDate();
-                intent.putExtra("date", AppUsage.getDateInString(target));
+                    Date target = calendar.getSelectedDate();
+                    intent.putExtra("date", AppUsage.getDateInString(target));
 
-                startActivity(intent);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(mainActivity, AppDetailActivity.class);
+
+                    if (selectedIndex != -1) {
+                        HistoryAppInfo selectedApp = allStoredApp.get(selectedIndex);
+                        intent.putExtra("pkgName", selectedApp.getPkgName());
+                        intent.putExtra("realName", selectedApp.getRealName());
+
+                        startActivity(intent);
+                    }
+                }
+
             }
         });
+    }
+
+    // get all apps that have been stored
+    private List<HistoryAppInfo> getAllStoredApps() {
+        List<HistoryAppInfo> list = new ArrayList<>();
+
+        FileUtils fileUtils = new FileUtils(mainActivity);
+        for (AppUsage appUsage: fileUtils.getAllStoredApp()) {
+            HistoryAppInfo info = new HistoryAppInfo(appUsage.getRealName(),
+                    appUsage.getPackageName());
+            list.add(info);
+        }
+
+        return list;
     }
 
     // as the name of the method
@@ -135,7 +256,7 @@ public class HistoryFragment extends Fragment {
         return tem.getTime();
     }
 
-
+    // as the name of the method
     private Date getTheFirstDayOfTheLastMonth(Date day) {
         Calendar tem = Calendar.getInstance();
         // 当前日期

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -29,8 +31,10 @@ import com.crossbow.app.x_timer.service.TickTrackerService;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by CuiH on 2016/1/6.
@@ -112,8 +116,10 @@ public class AppDetailActivity extends AppCompatActivity {
         });
 
         // set title
-        appName = getIntent().getStringExtra("name");
-        getSupportActionBar().setTitle(appName);
+        appName = getIntent().getStringExtra("pkgName");
+        System.out.println(appName);
+        getSupportActionBar().setTitle("  "+getIntent().getStringExtra("realName"));
+        getSupportActionBar().setLogo(findAppIcon(appName));
     }
 
     // handle the status bar
@@ -147,34 +153,44 @@ public class AppDetailActivity extends AppCompatActivity {
         // read file
         fileUtils = new FileUtils(this);
 
-        // if the app has been used in the certain date
+        // find target app and all usages
         for (AppUsage app: fileUtils.getAllStoredApp()) {
-            Map<String, AppUsage.History> history = app.getUsingHistory();
-            if (history.containsKey(date)) {
-                Drawable appIcon = findAppIcon(app.getPackageName());
+            if (app.getPackageName().equals(appName)) {
 
-                List<UsageItem> usages = new ArrayList<>();
-                AppUsage.History theDay = history.get(date);
-                ArrayList<AppUsage.History.Record> records = theDay.getUsingRecord();
+                Map<String, AppUsage.History> history = app.getUsingHistory();
 
-                for (AppUsage.History.Record r: records) {
-                    UsageItem usage = new UsageItem(r.getStartTime(),
-                            r.getEndTime(), r.getDuration());
-                    usages.add(usage);
+                if (history == null || history.isEmpty()) {
+                    break;
                 }
 
-                DayAppItem item = new DayAppItem(app.getRealName(), appIcon,
-                        theDay.getTotalTime(), theDay.getUsedCount(), usages);
-                items.add(item);
+                Map<String, AppUsage.History> sortMap = new TreeMap<>(new MapKeyComparator());
+                sortMap.putAll(history);
+
+                // 遍历map
+                for (Map.Entry<String, AppUsage.History> his: history.entrySet()) {
+                    AppUsage.History theDay = his.getValue();
+                    ArrayList<AppUsage.History.Record> records = theDay.getUsingRecord();
+
+                    List<UsageItem> usages = new ArrayList<>();
+                    for (AppUsage.History.Record r: records) {
+                        UsageItem usage = new UsageItem(r.getStartTime(),
+                                r.getEndTime(), r.getDuration());
+                        usages.add(usage);
+                    }
+
+                    AppDayItem item = new AppDayItem(his.getKey(), theDay.getTotalTime(),
+                            theDay.getUsedCount(), usages);
+                    items.add(item);
+                }
             }
         }
 
-        // no record that day
+        // no record of the target app
         if (items.isEmpty()) return false;
 
         adapter.setData(items);
 
-        listView = (AnimatedExpandableListView) findViewById(R.id.day_detail_list);
+        listView = (AnimatedExpandableListView) findViewById(R.id.app_detail_list);
         listView.setAdapter(adapter);
 
         // on click animation
@@ -188,7 +204,6 @@ public class AppDetailActivity extends AppCompatActivity {
                 }
                 return true;
             }
-
         });
 
         return true;
@@ -233,6 +248,29 @@ public class AppDetailActivity extends AppCompatActivity {
         Log.d(TAG, "onUnbinded:");
     }
 
+    // get the app info
+    private Drawable findAppIcon(String pkgName) {
+        if (packages == null ) if (packages == null )packages
+                = getPackageManager().getInstalledPackages(0);
+
+        for (int i = 0; i < packages.size(); i++) {
+            PackageInfo packageInfo = packages.get(i);
+            String packageName = packageInfo.packageName;
+            if (packageName.equals(pkgName)) {
+                Drawable appIcon = packageInfo.applicationInfo.loadIcon(getPackageManager());
+
+                Bitmap bitmap = ((BitmapDrawable)appIcon).getBitmap();
+                // Scale it to 50 x 50
+                Drawable newIcon = new BitmapDrawable(getResources(),
+                        Bitmap.createScaledBitmap(bitmap, 80, 80, true));
+
+                return newIcon;
+            }
+        }
+
+        return null;
+    }
+
     // check if the service is working
     private boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
@@ -251,5 +289,12 @@ public class AppDetailActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    // 按日期排序
+    public class MapKeyComparator implements Comparator<String> {
+        public int compare(String str1, String str2) {
+            return str1.compareTo(str2);
+        }
     }
 }

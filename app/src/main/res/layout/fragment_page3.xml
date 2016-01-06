@@ -23,9 +23,9 @@
         android:text="show all"/>
 
     <Button
-        android:id="@+id/stop_noti"
+        android:id="@+id/weixin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="stop noti"/>
+        android:text="微信"/>
 
 </LinearLayout>

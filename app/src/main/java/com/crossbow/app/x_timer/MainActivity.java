@@ -2,6 +2,7 @@ package com.crossbow.app.x_timer;
 
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     private ServiceConnection connection;
 
     private ViewPager viewPager;
+    private MyPagerAdapter pagerAdapter;
 
     private RadioButton tab_home;
     private RadioButton tab_history;
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
+    private ProgressDialog progressDialog;
+
     private MaterialDialog dialog;
 
 
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onCreate: ");
 
         setContentView(R.layout.activity_main);
+
+        // progressDialog = ProgressDialog.show(this, "正在处理", "请稍等", true, false);
 
         // toolbar
         initToolbar();
@@ -180,7 +186,8 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_home.setChecked(true);
-                tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_assessment_green_24px, 0, 0);
+                tab_home.setCompoundDrawablesWithIntrinsicBounds(0,
+                        R.drawable.radio_assessment_green_24px, 0, 0);
 
                 break;
 
@@ -188,7 +195,8 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_history.setChecked(true);
-                tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_green_24px, 0, 0);
+                tab_history.setCompoundDrawablesWithIntrinsicBounds(0,
+                        R.drawable.radio_history_green_24px, 0, 0);
 
                 break;
 
@@ -196,7 +204,8 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_detail.setChecked(true);
-                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_directions_walk_green_24px, 0, 0);
+                tab_detail.setCompoundDrawablesWithIntrinsicBounds(0,
+                        R.drawable.radio_directions_walk_green_24px, 0, 0);
 
                 break;
 
@@ -204,7 +213,8 @@ public class MainActivity extends AppCompatActivity
                 changeAllTabColor();
 
                 tab_setting.setChecked(true);
-                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_settings_green_24px, 0, 0);
+                tab_setting.setCompoundDrawablesWithIntrinsicBounds(0,
+                        R.drawable.radio_settings_green_24px, 0, 0);
 
                 break;
 
@@ -235,6 +245,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        System.out.println("im here+"+requestCode+"+"+resultCode);
+
+        if (resultCode == RESULT_OK) {
+            refreshViewPager();
+        }
+    }
+
     public TickTrackerService.UsageBinder getBinder() {
         return usageBinder;
     }
@@ -242,6 +263,15 @@ public class MainActivity extends AppCompatActivity
     // get the viewpager instance
     public ViewPager getViewPager() {
         return viewPager;
+    }
+
+    // refresh the viewpager
+    public void refreshViewPager() {
+        System.out.println("im here");
+
+        pagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), this);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setCurrentItem(3);
     }
 
     // init the connection
@@ -291,7 +321,8 @@ public class MainActivity extends AppCompatActivity
 
         // fragment
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), this));
+        pagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), this);
+        viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(this);
         // viewpager缓存数
         viewPager.setOffscreenPageLimit(4);
@@ -299,10 +330,14 @@ public class MainActivity extends AppCompatActivity
 
     // change all tab to inactive
     private void changeAllTabColor() {
-        tab_home.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_assessment_black_24px, 0, 0);
-        tab_history.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_history_black_24px, 0, 0);
-        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_directions_walk_black_24px, 0, 0);
-        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.radio_settings_black_24px, 0, 0);
+        tab_home.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.radio_assessment_black_24px, 0, 0);
+        tab_history.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.radio_history_black_24px, 0, 0);
+        tab_detail.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.radio_directions_walk_black_24px, 0, 0);
+        tab_setting.setCompoundDrawablesWithIntrinsicBounds(0,
+                R.drawable.radio_settings_black_24px, 0, 0);
     }
 
     // check if the user has system permission
