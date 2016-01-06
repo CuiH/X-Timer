@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="listItemSelected">#CDE0ED</color>
     <color name="listItemUnselected">#F3F7FA</color>
+    <color name="radioButtonUnselected">#8f8b8b</color>
+    <color name="radioButtonSelected">#98f754</color>
 </resources>
