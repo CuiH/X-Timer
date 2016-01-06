@@ -75,26 +75,24 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
         public View onCreateView(LayoutInflater inflater,
                 ViewGroup container, Bundle savedInstanceState) {
             // 今天没有数据
-        Date today = new Date();
-        if (!initData(AppUsage.getDateInString(today))) {
-            View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
+            Date today = new Date();
+            if (!initData(AppUsage.getDateInString(today))) {
+                View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
 
-            Button goToSetting = (Button)view.findViewById(R.id.go_to_setting);
-            goToSetting.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mainActivity.getViewPager().setCurrentItem(3);
-                }
-            });
+                Button goToSetting = (Button)view.findViewById(R.id.go_to_setting);
+                goToSetting.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mainActivity.getViewPager().setCurrentItem(3);
+                    }
+                });
 
-            return view;
-        }
+                return view;
+            }
 
-        View view = inflater.inflate(R.layout.home_fragment, container, false);
+            View view = inflater.inflate(R.layout.home_fragment, container, false);
 
-        initPieChart(view);
-
-        //initButton(view);
+            initPieChart(view);
 
         return view;
     }
@@ -140,10 +138,6 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
 
     // init data
     private boolean initData(String date) {
-        if (mainActivity.isWorking()) {
-            manuallySaveData();
-        }
-
         list = getCertainDayData(date);
 
         // 没有数据，直接返回
@@ -189,12 +183,6 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
         colors.add(ColorTemplate.getHoloBlue());
 
         return colors;
-    }
-
-    // save data manually
-    private void manuallySaveData() {
-        TickTrackerService.UsageBinder usageBinder = mainActivity.getBinder();
-        usageBinder.manuallySaveData();
     }
 
     // get certain day's data from file

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener {
 
-    private final String TAG = "main";
+    private final String TAG = "MainActivity";
 
     private TickTrackerService.UsageBinder usageBinder;
     private ServiceConnection connection;
@@ -77,9 +77,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         Log.d(TAG, "onResume: ");
 
-        if (isWorking()) {
-            bindTickService();
-        }
+        if (isWorking()) bindTickService();
     }
 
     @Override
@@ -249,8 +247,6 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, "onBinded: ");
 
                 usageBinder = (TickTrackerService.UsageBinder) service;
-
-
             }
 
             @Override

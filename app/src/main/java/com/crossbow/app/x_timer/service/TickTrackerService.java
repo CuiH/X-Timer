@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.splash.SplashActivity;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
 import java.util.ArrayList;
@@ -238,7 +239,7 @@ public class TickTrackerService extends Service {
 
     // start the foreground service - notification
     private void startNotification() {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, SplashActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this, 0, i,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
