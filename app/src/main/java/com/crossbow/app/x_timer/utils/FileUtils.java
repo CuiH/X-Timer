@@ -48,7 +48,6 @@ public class FileUtils {
 
     // 保存监听列表
     public void storeAppList(ArrayList<String> appList) {
-        System.out.println(appList);
         try {
             getOutputStream("appList").write(new Gson().toJson(appList).getBytes());
         } catch (Exception e) {

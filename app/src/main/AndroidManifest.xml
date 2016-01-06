@@ -6,16 +6,18 @@
 
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon_main"
         android:label="@string/app_name"
         tools:replace="android:icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".splash.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleInstance">
@@ -26,17 +28,35 @@
         </activity>
 
         <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance">
+        </activity>
+
+        <activity
             android:name=".add_app.AddAppActivity"
             android:label="选择你想要监听的应用"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".day_detail.DayDetailActivity"
+            android:name=".detail.day_detail.DayDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".detail.app_detail.AppDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <service android:name=".service.TickTrackerService"/>
+
+        <receiver android:name=".boot.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 

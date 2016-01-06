@@ -13,10 +13,22 @@ public class AppInfo {
     // 图标
     private Drawable icon;
 
-    public AppInfo(String pName, String aName, Drawable i) {
+    private boolean selected;
+
+    public AppInfo(String pName, String aName, Drawable i, boolean s) {
         packageName = pName;
         appName = aName;
         icon = i;
+
+        selected = s;
+    }
+
+    public void setSelected(boolean s) {
+        selected = s;
+    }
+
+    public boolean getSelected() {
+        return selected;
     }
 
     public String getPackageName() {

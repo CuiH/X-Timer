@@ -10,13 +10,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.splash.SplashActivity;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
 import java.util.ArrayList;
@@ -57,20 +62,24 @@ public class TickTrackerService extends Service {
         }
 
         // add a app to watching list
-        public boolean addAppToWatchingList(String appName) {
+        public boolean addAppToWatchingList(String appName, boolean shouldShow) {
             if (isInWatchingList(appName)) return false;
 
             watchingList.put(appName, fileUtils.loadAppInfo(appName));
-            updateNotification();
+
+            if (shouldShow) updateNotification();
+
             return true;
         }
 
         // remove a app from watching list
-        public boolean removeAppFromWatchingLise(String appName) {
+        public boolean removeAppFromWatchingLise(String appName, boolean shouldShow) {
             if (!isInWatchingList(appName)) return false;
 
             watchingList.remove(appName);
-            updateNotification();
+
+            if (shouldShow) updateNotification();
+
             return true;
         }
 
@@ -85,8 +94,14 @@ public class TickTrackerService extends Service {
             storeAppInformation();
             storeWatchingList();
         }
-    }
 
+        // update notification
+        public void changeNotificationState(boolean flag) {
+            if (flag == false) stopForeground(true);
+            else startNotification();
+        }
+
+    }
 
     // thread that keeps watching apps
     private class WatchingForegroundAppThread extends Thread {
@@ -158,20 +173,38 @@ public class TickTrackerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind: bind " + this.toString());
+
         return usageBinder;
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind: Unbind " + this.toString());
+
+        return super.onUnbind(intent);
+    }
+
+    @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate: Created " + this.toString());
+        Log.d(TAG, "onCreate:" + this.toString());
+
         super.onCreate();
 
         initVariables();
         initWatchingList();
         initWatchingThread();
         registSreenStatusReceiver();
+    }
 
-        startNotification();
+    @Override
+    public int onStartCommand(Intent intent , int a, int b) {
+        Log.d(TAG, "onStartCommand" + this.toString());
+        if (intent != null) {
+            boolean shouldShow = intent.getBooleanExtra("showNotification", true);
+            if (shouldShow) startNotification();
+        }
+
+        return super.onStartCommand(intent, a, b);
     }
 
     @Override
@@ -183,12 +216,6 @@ public class TickTrackerService extends Service {
         unregisterReceiver(mScreenStatusReceiver);
 
         super.onDestroy();
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind: Unbind " + this.toString());
-        return super.onUnbind(intent);
     }
 
     private void initVariables() {
@@ -253,7 +280,7 @@ public class TickTrackerService extends Service {
 
     // start the foreground service - notification
     private void startNotification() {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, SplashActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this, 0, i,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 

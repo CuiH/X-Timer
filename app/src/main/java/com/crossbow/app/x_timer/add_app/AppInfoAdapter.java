@@ -21,20 +21,14 @@ import java.util.List;
  */
 public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
     private int resourceId;
-    // 已选的
-    private ArrayList<String> checked;
     private Context mContext;
 
     public AppInfoAdapter(Context context, int textViewResourceId, List<AppInfo> objects) {
         super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
-        checked = new ArrayList<>();
         mContext = context;
     }
 
-    public void setDefault(ArrayList<String> alreadyChecked) {
-        checked = alreadyChecked;
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -57,7 +51,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         vh.tv.setText(appInfo.getAppName());
 
         // 已选的默认勾选
-        if (checked.contains(getItem(position).getPackageName())) {
+        if (appInfo.getSelected()) {
             vh.cb.setChecked(true);
             vh.rl.setBackgroundColor(ContextCompat.getColor(mContext, R.color.listItemSelected));
         } else {

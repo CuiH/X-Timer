@@ -6,53 +6,57 @@
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="360dp"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_gravity="center"
         android:padding="3dp">
         <RadioButton
             android:id="@+id/radio_home"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/radio_home_active"
+            android:drawableTop="@drawable/radio_assessment_green_24px"
             android:checked="true"
             android:button="@null"
             android:text="今日"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
+
         <RadioButton
             android:id="@+id/radio_history"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/radio_history"
+            android:drawableTop="@drawable/radio_history_black_24px"
             android:button="@null"
             android:text="历史"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
+
         <RadioButton
             android:id="@+id/radio_detail"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/radio_detail"
+            android:drawableTop="@drawable/radio_directions_walk_black_24px"
             android:button="@null"
             android:text="统计"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
+
         <RadioButton
             android:id="@+id/radio_setting"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/radio_setting"
+            android:drawableTop="@drawable/radio_settings_black_24px"
             android:button="@null"
-            android:text="设置"
+            android:text="统计"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />
+
     </LinearLayout>
 </RadioGroup>
