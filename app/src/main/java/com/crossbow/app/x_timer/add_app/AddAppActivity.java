@@ -153,7 +153,7 @@ public class AddAppActivity extends AppCompatActivity {
         showInfo = (TextView) findViewById(R.id.add_app_text);
         showInfo.setText("已选" + selected.size() + "个应用");
 
-        listView = (ListView)findViewById(R.id.app_list);
+        listView = (ListView)findViewById(R.id.add_app_list);
         listView.setAdapter(appInfoAdapter);
     }
 

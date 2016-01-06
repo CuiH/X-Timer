@@ -1,4 +1,4 @@
-package com.crossbow.app.x_timer.day_detail;
+package com.crossbow.app.x_timer.detail;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,38 +1,23 @@
-package com.crossbow.app.x_timer.home;
+package com.crossbow.app.x_timer.fragment.home;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.home.AppChartItem;
-import com.crossbow.app.x_timer.day_detail.AppItem;
-import com.crossbow.app.x_timer.day_detail.UsageItem;
 import com.crossbow.app.x_timer.service.AppUsage;
-import com.crossbow.app.x_timer.service.TickTrackerService;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.SliceValue;
-import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.PieChartView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;

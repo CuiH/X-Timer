@@ -1,6 +1,4 @@
-package com.crossbow.app.x_timer.setting;
-
-import android.graphics.drawable.Drawable;
+package com.crossbow.app.x_timer.fragment.setting;
 
 /**
  * Created by CuiH on 2016/1/1.

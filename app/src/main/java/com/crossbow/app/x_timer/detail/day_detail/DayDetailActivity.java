@@ -1,8 +1,6 @@
-package com.crossbow.app.x_timer.day_detail;
+package com.crossbow.app.x_timer.detail.day_detail;
 
 import android.app.ActivityManager;
-import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +19,9 @@ import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 
-import com.crossbow.app.x_timer.MainActivity;
+import com.crossbow.app.x_timer.detail.AnimatedExpandableListView;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.UsageItem;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
@@ -142,12 +141,7 @@ public class DayDetailActivity extends AppCompatActivity {
     private boolean initAdapter() {
         adapter = new DayDetailAdapter(this);
 
-        List<AppItem> items = new ArrayList<>();
-
-        // if the service is working, save date first;
-        if (isWorking()) {
-            usageBinder.manuallySaveData();
-        }
+        List<DayAppItem> items = new ArrayList<>();
 
         // read file
         fileUtils = new FileUtils(this);
@@ -168,7 +162,7 @@ public class DayDetailActivity extends AppCompatActivity {
                     usages.add(usage);
                 }
 
-                AppItem item = new AppItem(app.getRealName(), appIcon,
+                DayAppItem item = new DayAppItem(app.getRealName(), appIcon,
                         theDay.getTotalTime(), theDay.getUsedCount(), usages);
                 items.add(item);
             }
@@ -179,7 +173,7 @@ public class DayDetailActivity extends AppCompatActivity {
 
         adapter.setData(items);
 
-        listView = (AnimatedExpandableListView) findViewById(R.id.listView);
+        listView = (AnimatedExpandableListView) findViewById(R.id.day_detail_list);
         listView.setAdapter(adapter);
 
         // on click animation
@@ -225,6 +219,8 @@ public class DayDetailActivity extends AppCompatActivity {
                 Log.d(TAG, "onBinded: ");
 
                 usageBinder = (TickTrackerService.UsageBinder) service;
+
+                usageBinder.manuallySaveData();
 
                 // 异步绑定
                 initLayout();

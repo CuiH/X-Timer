@@ -16,7 +16,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <ListView
-        android:id="@+id/app_list"
+        android:id="@+id/add_app_list"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp">

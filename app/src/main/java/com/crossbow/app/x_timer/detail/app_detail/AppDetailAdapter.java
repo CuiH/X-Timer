@@ -1,32 +1,31 @@
-package com.crossbow.app.x_timer.day_detail;
+package com.crossbow.app.x_timer.detail.app_detail;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.AnimatedExpandableListView;
+import com.crossbow.app.x_timer.detail.UsageItem;
 
 import java.util.List;
 
 /**
- * Created by wanglx on 2016/1/2.
+ * Created by CuiH on 2016/1/6.
  */
-public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
+public class AppDetailAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
     private LayoutInflater inflater;
 
-    private List<AppItem> items;
+    private List<AppDayItem> items;
 
 
-    public DayDetailAdapter(Context context) {
+    public AppDetailAdapter(Context context) {
         inflater = LayoutInflater.from(context);
     }
 
-    public void setData(List<AppItem> items) {
+    public void setData(List<AppDayItem> items) {
         this.items = items;
     }
 
@@ -69,7 +68,7 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
     }
 
     @Override
-    public AppItem getGroup(int groupPosition) {
+    public AppDayItem getGroup(int groupPosition) {
         return items.get(groupPosition);
     }
 
@@ -86,12 +85,11 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         AppHolder holder;
-        AppItem item = getGroup(groupPosition);
+        AppDayItem item = getGroup(groupPosition);
         if (convertView == null) {
             holder = new AppHolder();
-            convertView = inflater.inflate(R.layout.day_detail_group, parent, false);
-            holder.title = (TextView) convertView.findViewById(R.id.textTitle);
-            holder.image = (ImageView) convertView.findViewById(R.id.appImage);
+            convertView = inflater.inflate(R.layout.app_detail_group, parent, false);
+            holder.date = (TextView) convertView.findViewById(R.id.textDate);
             holder.count = (TextView) convertView.findViewById(R.id.textCount);
             holder.time = (TextView) convertView.findViewById(R.id.textTime);
             convertView.setTag(holder);
@@ -99,8 +97,7 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
             holder = (AppHolder)convertView.getTag();
         }
 
-        holder.title.setText(item.getAppName());
-        holder.image.setImageDrawable(item.getAppIcon());
+        holder.date.setText(item.getDate());
         holder.count.setText("总次数:" + item.getTotalCount());
         holder.time.setText("总时长："+item.getTotalTimeInString());
 
@@ -125,10 +122,8 @@ public class DayDetailAdapter extends AnimatedExpandableListView.AnimatedExpanda
     }
 
     private static class AppHolder {
-        TextView title;
-        ImageView image;
+        TextView date;
         TextView count;
         TextView time;
     }
-
 }

@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".day_detail.DayDetailActivity"
+            android:name=".detail.day_detail.DayDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

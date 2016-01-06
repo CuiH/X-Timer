@@ -1,8 +1,4 @@
-package com.crossbow.app.x_timer.home;
-
-import android.graphics.drawable.Drawable;
-
-import java.util.List;
+package com.crossbow.app.x_timer.fragment.home;
 
 /**
  * Created by wanglx on 2016/1/2.

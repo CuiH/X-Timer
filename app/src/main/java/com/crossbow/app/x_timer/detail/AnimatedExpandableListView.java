@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.crossbow.app.x_timer.day_detail;
+package com.crossbow.app.x_timer.detail;
 
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;

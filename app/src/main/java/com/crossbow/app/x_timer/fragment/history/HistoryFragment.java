@@ -1,4 +1,4 @@
-package com.crossbow.app.x_timer.history;
+package com.crossbow.app.x_timer.fragment.history;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.day_detail.DayDetailActivity;
+import com.crossbow.app.x_timer.detail.day_detail.DayDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.squareup.timessquare.CalendarPickerView;
 

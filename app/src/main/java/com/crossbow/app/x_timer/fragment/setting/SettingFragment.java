@@ -1,9 +1,7 @@
-package com.crossbow.app.x_timer.setting;
+package com.crossbow.app.x_timer.fragment.setting;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

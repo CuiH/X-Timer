@@ -1,13 +1,14 @@
-package com.crossbow.app.x_timer;
+package com.crossbow.app.x_timer.fragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.crossbow.app.x_timer.home.HomeFragment;
-import com.crossbow.app.x_timer.fragment.MyFragment3;
-import com.crossbow.app.x_timer.history.HistoryFragment;
-import com.crossbow.app.x_timer.setting.SettingFragment;
+import com.crossbow.app.x_timer.MainActivity;
+import com.crossbow.app.x_timer.fragment.home.HomeFragment;
+import com.crossbow.app.x_timer.fragment.fragment_tem.MyFragment3;
+import com.crossbow.app.x_timer.fragment.history.HistoryFragment;
+import com.crossbow.app.x_timer.fragment.setting.SettingFragment;
 
 /**
  * Created by CuiH on 2015/12/29.

@@ -25,6 +25,7 @@ import android.widget.RadioButton;
 
 import android.widget.Toast;
 
+import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
 import java.util.List;

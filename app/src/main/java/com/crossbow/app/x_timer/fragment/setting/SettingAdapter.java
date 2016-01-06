@@ -1,7 +1,6 @@
-package com.crossbow.app.x_timer.setting;
+package com.crossbow.app.x_timer.fragment.setting;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
