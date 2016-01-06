@@ -10,16 +10,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.os.Binder;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.splash.SplashActivity;
 import com.crossbow.app.x_timer.utils.FileUtils;
@@ -197,7 +194,7 @@ public class TickTrackerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent , int a, int b) {
+    public int onStartCommand(Intent intent, int a, int b) {
         Log.d(TAG, "onStartCommand" + this.toString());
         if (intent != null) {
             boolean shouldShow = intent.getBooleanExtra("showNotification", true);
@@ -259,12 +256,12 @@ public class TickTrackerService extends Service {
             hasExperiencedScreenChanged = false;
         } else {
             targetApp.updateUsingHistory(today,
-                    System.currentTimeMillis()-lastApp.getLastTimeUsed(),
+                    System.currentTimeMillis() - lastApp.getLastTimeUsed(),
                     System.currentTimeMillis());
         }
 
         Log.d(TAG, "上个 app: " + targetApp.getPackageName());
-        Log.d(TAG, "上次用时: "+ targetApp.getUsingHistory().get(today)
+        Log.d(TAG, "上次用时: " + targetApp.getUsingHistory().get(today)
                 .getUsingRecord().get(targetApp.getUsingHistory().get(today)
                         .getUsingRecord().size() - 1).getDuration());
         Log.d(TAG, "总次数: " + targetApp.getUsingHistory().get(today).getUsedCount());
@@ -294,9 +291,9 @@ public class TickTrackerService extends Service {
             }
 
             if (watchingList.size() == 1) {
-                text = "正在监听 "+appName;
+                text = "正在监听 " + appName;
             } else {
-                text = "正在监听 "+appName+" 等"+watchingList.size()+"个应用";
+                text = "正在监听 " + appName + " 等" + watchingList.size() + "个应用";
             }
         }
 
@@ -313,7 +310,7 @@ public class TickTrackerService extends Service {
 
     // store app information when exit
     private void storeAppInformation() {
-        for (Map.Entry<String, AppUsage> entry: watchingList.entrySet()) {
+        for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
             fileUtils.storeAppInfo(entry.getValue());
         }
     }
@@ -378,7 +375,7 @@ public class TickTrackerService extends Service {
                     } else { //应用只经历了一次屏幕开闭
                         watchingList.get(currentApp.getPackageName())
                                 .updateUsingHistory(today, screenOffTime -
-                                        currentApp.getLastTimeUsed(),
+                                                currentApp.getLastTimeUsed(),
                                         screenOffTime);
                     }
                     hasExperiencedScreenChanged = true;
