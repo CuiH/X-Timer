@@ -117,8 +117,8 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
                     return;
                 }
 
-                Intent intent = new Intent(getContext(), AddAppActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(mainActivity, AddAppActivity.class);
+                startActivityForResult(intent, 1);
 
                 break;
             case 4:
@@ -257,7 +257,7 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
         settingList.add(setting6);
         SettingInfo setting7 = new SettingInfo("已知待修复缺陷", "", 1, 2);
         settingList.add(setting7);
-        SettingInfo setting8 = new SettingInfo("帮助", "如何开启权限", 1, 1);
+        SettingInfo setting8 = new SettingInfo("帮助", "使用说明", 1, 1);
         settingList.add(setting8);
     }
 

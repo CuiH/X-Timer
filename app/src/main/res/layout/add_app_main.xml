@@ -13,6 +13,7 @@
         <include
             android:id="@+id/add_app_toolbar"
             layout="@layout/toolbar_base" />
+
     </android.support.design.widget.AppBarLayout>
 
     <ListView

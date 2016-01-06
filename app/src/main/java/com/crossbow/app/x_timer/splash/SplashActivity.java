@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class SplashActivity extends AppCompatActivity {
     private final String TAG = "SplashActivity";
-    private final int SPLASH_DISPLAY_LENGTH = 2000;
+    private final int SPLASH_DISPLAY_LENGTH = 500;
 
     // if exit the splash
     private boolean status;
@@ -80,7 +80,7 @@ public class SplashActivity extends AppCompatActivity {
                 if (status) {
                     Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                     SplashActivity.this.startActivity(mainIntent);
-                    SplashActivity.this.overridePendingTransition(R.anim.fade_in, R.anim.hold);
+                    SplashActivity.this.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     SplashActivity.this.finish();
                 }
             }

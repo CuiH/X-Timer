@@ -1,6 +1,7 @@
 package com.crossbow.app.x_timer.fragment.fragment_tem;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.Button;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.app_detail.AppDayItem;
+import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
 /**
@@ -55,11 +58,15 @@ public class MyFragment3 extends Fragment {
             }
         });
 
-        final Button stopNoti = (Button)view.findViewById(R.id.stop_noti);
+        final Button wx = (Button)view.findViewById(R.id.weixin);
 
-        stopNoti.setOnClickListener(new View.OnClickListener() {
+        wx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(mainActivity, AppDetailActivity.class);
+                intent.putExtra("pkgName", "com.tencent.mm");
+                intent.putExtra("realName", "微信");
+                startActivity(intent);
             }
         });
         return view;

@@ -1,40 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/app_background"
+    android:id="@+id/history_app_background"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/app_icon"
-        android:scaleType="centerInside"
-        android:layout_centerVertical="true"
-        android:layout_width="40dp"
-        android:layout_height="40dp" />
+    android:paddingRight="10dp">
 
     <TextView
-        android:id="@+id/app_name"
+        android:id="@+id/history_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:paddingRight="5dp"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/app_icon"
         android:textSize="21sp"
         android:text="淘宝"/>
 
-    <CheckBox
-        android:id="@+id/app_check_box"
+    <RadioButton
+        android:id="@+id/history_app_radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:focusable="false"
         android:clickable="false"
         android:focusableInTouchMode="false"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_marginRight="10dp" />
 
 </RelativeLayout>

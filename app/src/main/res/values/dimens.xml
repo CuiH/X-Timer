@@ -8,4 +8,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="radio_button_width">29dp</dimen>
+    
+    <dimen name="three_grid_unit">24dp</dimen>
+    <dimen name="one_and_a_half_grid_unit">12dp</dimen>
 </resources>

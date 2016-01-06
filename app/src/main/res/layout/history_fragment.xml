@@ -1,22 +1,24 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:background="#ffffff"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
-    <TextView
+    <com.crossbow.app.x_timer.spinner.NiceSpinner
+        android:id="@+id/history_spinner"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:text="选择一个日期查看"
-        android:textColor="#325632"
-        android:textSize="24sp"/>
+        android:layout_height="wrap_content" />
 
     <RelativeLayout
+        android:id="@+id/history_calendar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
         <Button
             android:id="@+id/calendar_last_year"
             android:layout_alignParentLeft="true"
@@ -25,6 +27,7 @@
             android:layout_marginTop="8dp"
             android:textSize="12sp"
             android:text="上一年"/>
+
         <Button
             android:id="@+id/calendar_last_month"
             android:layout_toRightOf="@+id/calendar_last_year"
@@ -59,14 +62,32 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/history_app_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/history_app_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </ListView>
+
+    </LinearLayout>
+
     <Button
-        android:id="@+id/calendar_ok"
+        android:id="@+id/history_ok"
         android:background="@drawable/my_button1"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_margin="8dp"
-        android:text="确定"/>
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="5dp"
+        android:text="查看"/>
 
 </LinearLayout>

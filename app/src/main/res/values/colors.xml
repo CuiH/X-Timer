@@ -7,4 +7,6 @@
     <color name="listItemUnselected">#F3F7FA</color>
     <color name="radioButtonUnselected">#8f8b8b</color>
     <color name="radioButtonSelected">#98f754</color>
+    <color name="spinner_base_color">#44000000</color>
+    <color name="light_gray">#fff5f5f5</color>
 </resources>

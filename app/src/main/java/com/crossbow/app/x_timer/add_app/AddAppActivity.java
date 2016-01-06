@@ -45,9 +45,11 @@ public class AddAppActivity extends AppCompatActivity {
 
     private List<AppInfo> appList;
     private AppInfoAdapter appInfoAdapter;
-    private ArrayList<String> selected;
+    private ArrayList<String> selectedList;
     private TextView showInfo;
     private ListView listView;
+
+    private int selectedCount;
 
     // 本地存储
     private SharedPreferences pref;
@@ -67,7 +69,6 @@ public class AddAppActivity extends AppCompatActivity {
         initConnection();
         initToolbar();
         initStatusBar();
-        initCustomAppList();
 
         handleButton();
     }
@@ -124,8 +125,20 @@ public class AddAppActivity extends AppCompatActivity {
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
     }
 
+    // things to do after binded
+    private void afterBinded() {
+        selectedList = getSelectedApps();
+
+        initCustomAppList();
+        initAdapter();
+
+        handleListView();
+    }
+
     // list all custom app info
     public void initCustomAppList() {
+        selectedCount = 0;
+
         appList = new ArrayList<>();
         List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
 
@@ -138,7 +151,14 @@ public class AddAppActivity extends AppCompatActivity {
             String appName = packageInfo.applicationInfo.loadLabel(getPackageManager()).toString();
             String packageName = packageInfo.packageName;
             Drawable appIcon = packageInfo.applicationInfo.loadIcon(getPackageManager());
-            AppInfo tmpInfo =new AppInfo(packageName, appName, appIcon);
+
+            AppInfo tmpInfo;
+            if (selectedList.contains(packageName)) {
+                tmpInfo = new AppInfo(packageName, appName, appIcon, true);
+                selectedCount = selectedCount+1;
+            } else {
+                tmpInfo = new AppInfo(packageName, appName, appIcon, false);
+            }
             appList.add(tmpInfo);
         }
     }
@@ -146,15 +166,39 @@ public class AddAppActivity extends AppCompatActivity {
     // handle the adapter
     private void initAdapter() {
         appInfoAdapter = new AppInfoAdapter(this, R.layout.add_app_item, appList);
-        // 已选
-        selected = (ArrayList<String>)getSelectedApps().clone();
-        appInfoAdapter.setDefault(selected);
 
         showInfo = (TextView) findViewById(R.id.add_app_text);
-        showInfo.setText("已选" + selected.size() + "个应用");
+        showInfo.setText("已选" + selectedCount + "个应用");
 
         listView = (ListView)findViewById(R.id.add_app_list);
         listView.setAdapter(appInfoAdapter);
+    }
+
+    // add listener to list view
+    private void handleListView() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                RelativeLayout background = (RelativeLayout) view.findViewById(R.id.app_background);
+                AppInfo nowApp = appList.get(position);
+
+                if (nowApp.getSelected()) {
+                    nowApp.setSelected(false);
+                    selectedCount = selectedCount-1;
+                    showInfo.setText("已选" +selectedCount + "个应用");
+                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this,
+                            R.color.listItemUnselected));
+                } else {
+                    nowApp.setSelected(true);
+                    selectedCount = selectedCount+1;
+                    showInfo.setText("已选" +selectedCount + "个应用");
+                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this,
+                            R.color.listItemSelected));
+                }
+
+                appInfoAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     // init the connection
@@ -166,9 +210,8 @@ public class AddAppActivity extends AppCompatActivity {
 
                 usageBinder = (TickTrackerService.UsageBinder) service;
 
-                // 异步绑定
-                initAdapter();
-                handleListView();
+                // 异步
+                afterBinded();
             }
 
             @Override
@@ -180,28 +223,6 @@ public class AddAppActivity extends AppCompatActivity {
         };
     }
 
-    // add listener to list view
-    private void handleListView() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CheckBox check = (CheckBox) view.findViewById(R.id.app_check_box);
-                RelativeLayout background = (RelativeLayout) view.findViewById(R.id.app_background);
-                if (check.isChecked()) {
-                    check.setChecked(false);
-                    selected.remove(appList.get(position).getPackageName());
-                    showInfo.setText("已选" + selected.size() + "个应用");
-                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this, R.color.listItemUnselected));
-                } else {
-                    check.setChecked(true);
-                    selected.add(appList.get(position).getPackageName());
-                    showInfo.setText("已选" + selected.size() + "个应用");
-                    background.setBackgroundColor(ContextCompat.getColor(AddAppActivity.this, R.color.listItemSelected));
-                }
-            }
-        });
-    }
-
     // add listener to button
     private void handleButton() {
         // 确定 按钮
@@ -210,25 +231,29 @@ public class AddAppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isWorking() || usageBinder == null) {
-                    Toast.makeText(AddAppActivity.this, "失败，请先开启服务",
+                    Toast.makeText(AddAppActivity.this, "失败，未开启服务",
                             Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
 
-                for (String appName: selected) {
-                    if (!usageBinder.isInWatchingList(appName)) {
-                        usageBinder.addAppToWatchingList(appName, shouldShowNotification());
+                // clear all
+                for (String name: selectedList) {
+                    usageBinder.removeAppFromWatchingLise(name, false);
+                }
+
+                // add new list
+                for (AppInfo nowApp: appList) {
+                    if (nowApp.getSelected()) {
+                        usageBinder.addAppToWatchingList(nowApp.getPackageName()
+                                , shouldShowNotification());
                     }
                 }
 
-                for (String name: getSelectedApps()) {
-                    if (!selected.contains(name)) {
-                        usageBinder.removeAppFromWatchingLise(name, shouldShowNotification());
-                    }
-                }
-
+                // save
+                usageBinder.manuallySaveData();
                 Toast.makeText(AddAppActivity.this, "成功", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
                 finish();
             }
         });
@@ -238,6 +263,7 @@ public class AddAppActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
