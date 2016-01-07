@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,37 +48,40 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
     public HomeFragment() { }
 
     @SuppressLint("ValidFragment")
-        public HomeFragment(MainActivity activity) {
-            mainActivity = activity;
+    public HomeFragment(MainActivity activity) {
+        mainActivity = activity;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView: ");
+
+        // 今天没有数据
+        Date today = new Date();
+        if (!initData(AppUsage.getDateInString(today))) {
+            View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
+
+            Button goToSetting = (Button)view.findViewById(R.id.go_to_setting);
+            goToSetting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainActivity.getViewPager().setCurrentItem(3);
+                }
+            });
+
+            return view;
         }
 
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
+        View view = inflater.inflate(R.layout.home_fragment, container, false);
 
-        @Override
-        public View onCreateView(LayoutInflater inflater,
-                ViewGroup container, Bundle savedInstanceState) {
-            // 今天没有数据
-            Date today = new Date();
-            if (!initData(AppUsage.getDateInString(today))) {
-                View view = inflater.inflate(R.layout.home_fragment_no_data, container, false);
-
-                Button goToSetting = (Button)view.findViewById(R.id.go_to_setting);
-                goToSetting.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mainActivity.getViewPager().setCurrentItem(3);
-                    }
-                });
-
-                return view;
-            }
-
-            View view = inflater.inflate(R.layout.home_fragment, container, false);
-
-            initPieChart(view);
+        initPieChart(view);
 
         return view;
     }

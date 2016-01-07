@@ -31,6 +31,7 @@ dependencies {
     compile 'cn.pedant.sweetalert:library:1.3'
     compile 'com.diogobernardino:williamchart:2.1'
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    compile 'com.github.johnkil.android-progressfragment:progressfragment:1.4.+'
     compile 'com.github.eluleci:flatui:3.0.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
     compile 'com.nineoldandroids:library:2.4.0'

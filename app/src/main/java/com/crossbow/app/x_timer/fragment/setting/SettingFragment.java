@@ -2,8 +2,10 @@ package com.crossbow.app.x_timer.fragment.setting;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.crossbow.app.x_timer.add_app.AddAppActivity;
+import com.devspark.progressfragment.ProgressFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,9 @@ import me.drakeet.materialdialog.MaterialDialog;
 /**
  * Created by CuiH on 2015/12/29.
  */
-public class SettingFragment extends Fragment implements AdapterView.OnItemClickListener{
+public class SettingFragment extends ProgressFragment implements AdapterView.OnItemClickListener {
+
+    private final String TAG = "SettingFragment";
 
     private MainActivity mainActivity;
 
@@ -37,11 +42,17 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
 
     private MaterialDialog dialog;
 
+    // 异步用
+    private View realView;
+    private boolean firstTime;
+
+
     public SettingFragment() { }
 
     @SuppressLint("ValidFragment")
     public SettingFragment(MainActivity activity) {
         mainActivity = activity;
+        firstTime = true;
     }
 
     @Override
@@ -52,12 +63,64 @@ public class SettingFragment extends Fragment implements AdapterView.OnItemClick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
-        initSettingList();
-        initAdapter(view);
+        Log.d(TAG, "onCreateView: ");
 
-        return  view;
+        realView = inflater.inflate(R.layout.setting_fragment, container, false);
+
+        return inflater.inflate(R.layout.fragment_loading, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+
+        super.onActivityCreated(savedInstanceState);
+        setContentView(realView);
+        setContentShown(false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d(TAG, "setUserVisibleHint: ");
+
+        // 可见时
+        if (isVisibleToUser) {
+            // 第一次进入
+            if (firstTime) {
+                new MyAsyncTask().execute();
+
+                firstTime = false;
+            }
+        }
+
+        super.setUserVisibleHint(isVisibleToUser);
+    }
+
+    // 异步更新UI
+    private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            initSettingList();
+            initAdapter(realView);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            setContentShown(true);
+        }
+    }
+
+    public void setFirstTime(boolean flag) {
+        firstTime = flag;
     }
 
     @Override

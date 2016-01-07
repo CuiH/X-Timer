@@ -3,8 +3,11 @@ package com.crossbow.app.x_timer.fragment.history;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
@@ -22,6 +26,7 @@ import com.crossbow.app.x_timer.detail.day_detail.DayDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.spinner.NiceSpinner;
 import com.crossbow.app.x_timer.utils.FileUtils;
+import com.devspark.progressfragment.ProgressFragment;
 import com.squareup.timessquare.CalendarPickerView;
 
 import java.util.ArrayList;
@@ -34,13 +39,15 @@ import java.util.List;
 /**
  * Created by CuiH on 2015/12/29.
  */
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends ProgressFragment {
+
+    private final String TAG = "HistoryFragment";
 
     private MainActivity mainActivity;
 
     private CalendarPickerView calendar;
 
-    private RelativeLayout calendarLayout;
+    private ScrollView calendarLayout;
     private LinearLayout appLayout;
 
     private int nowLayout;   // 0-calendar 1-list
@@ -50,12 +57,17 @@ public class HistoryFragment extends Fragment {
 
     private int selectedIndex;
 
+    // 异步用
+    private View realView;
+    private boolean firstTime;
+
 
     public HistoryFragment() { }
 
     @SuppressLint("ValidFragment")
     public HistoryFragment(MainActivity activity) {
         mainActivity = activity;
+        firstTime = true;
     }
 
     @Override
@@ -66,18 +78,71 @@ public class HistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.history_fragment, container, false);
 
-        initCalendar(view);
-        initCalendarButton(view);
-        initAppList(view);
-        initDefault();
-        initSpinner(view);
-        initOtherButton(view);
+        Log.d(TAG, "onCreateView: ");
 
-        return view;
+        realView = inflater.inflate(R.layout.history_fragment, container, false);
+
+        return inflater.inflate(R.layout.fragment_loading, container, false);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+
+        super.onActivityCreated(savedInstanceState);
+        setContentView(realView);
+        setContentShown(false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d(TAG, "setUserVisibleHint: ");
+
+        // 可见时
+        if (isVisibleToUser) {
+            if (firstTime) {
+                Log.d(TAG, "im here !!!!!");
+                new MyAsyncTask().execute();
+
+                firstTime = false;
+            }
+        }
+
+        super.setUserVisibleHint(isVisibleToUser);
+    }
+
+    // 异步更新UI
+    private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            initCalendar(realView);
+            initCalendarButton(realView);
+            initAppList(realView);
+            initDefault();
+            initSpinner(realView);
+            initOtherButton(realView);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            setContentShown(true);
+        }
+    }
+
+    public void setFirstTime(boolean flag) {
+        firstTime = flag;
+    }
+
+    // init the spinner
     public void initSpinner(View view) {
         NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.history_spinner);
         List<String> dataSet = new LinkedList<>(Arrays.asList("按时间查询", "按应用查询"));
@@ -110,7 +175,7 @@ public class HistoryFragment extends Fragment {
 
     // init the calendar to this month
     private void initCalendar(View view) {
-        calendarLayout = (RelativeLayout) view.findViewById(R.id.history_calendar_layout);
+        calendarLayout = (ScrollView) view.findViewById(R.id.history_calendar_layout);
 
         Date today = new Date();
         Date firstDayOfTheMonth = getTheFirstDayOfTheMonth(today);

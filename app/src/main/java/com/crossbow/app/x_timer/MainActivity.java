@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    private ProgressDialog progressDialog;
-
     private MaterialDialog dialog;
 
 
@@ -267,8 +265,8 @@ public class MainActivity extends AppCompatActivity
     public void refreshViewPager() {
         System.out.println("im here");
 
-        pagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(pagerAdapter);
+        pagerAdapter.setAllFirstTime(true);
         viewPager.setCurrentItem(3);
     }
 

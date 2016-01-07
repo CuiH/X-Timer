@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.fragment.home.HomeFragment;
-import com.crossbow.app.x_timer.fragment.fragment_tem.MyFragment3;
+import com.crossbow.app.x_timer.fragment.statistic.StatisticFragment;
 import com.crossbow.app.x_timer.fragment.history.HistoryFragment;
 import com.crossbow.app.x_timer.fragment.setting.SettingFragment;
 
@@ -20,7 +20,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
     private HomeFragment fragment1;
     private HistoryFragment fragment2;
-    private MyFragment3 fragment3;
+    private StatisticFragment fragment3;
     private SettingFragment fragment4;
 
     public MyPagerAdapter(FragmentManager fm, MainActivity activity) {
@@ -51,7 +51,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             }
         } else if (position == 2) {
             if (fragment3 == null) {
-                fragment3 = new MyFragment3(mainActivity);
+                fragment3 = new StatisticFragment(mainActivity);
                 return  fragment3;
             } else {
                 return fragment3;
@@ -71,6 +71,11 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
         return tabTitles[position];
+    }
+
+    public void setAllFirstTime(boolean flag) {
+        fragment2.setFirstTime(flag);
+        fragment4.setFirstTime(flag);
     }
 
 }

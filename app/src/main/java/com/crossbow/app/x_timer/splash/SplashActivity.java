@@ -25,7 +25,9 @@ import java.util.List;
  * Created by CuiH on 2016/1/6.
  */
 public class SplashActivity extends AppCompatActivity {
+
     private final String TAG = "SplashActivity";
+
     private final int SPLASH_DISPLAY_LENGTH = 500;
 
     // if exit the splash
