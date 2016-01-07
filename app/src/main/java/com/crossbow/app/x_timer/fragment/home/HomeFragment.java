@@ -153,6 +153,10 @@ public class HomeFragment extends Fragment implements OnChartValueSelectedListen
     // get color set
     private ArrayList<Integer> getColorSet() {
         ArrayList<Integer> colors = new ArrayList<>();
+//        final int[] selfColor = {
+//                Color.rgb(192, 255, 140), Color.rgb(255, 247, 140), Color.rgb(255, 208, 140),
+//                Color.rgb(140, 234, 255), Color.rgb(255, 140, 157)
+//        };
 
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
             colors.add(c);
