@@ -184,10 +184,10 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
         mChart.setDrawHoleEnabled(true);
         mChart.setHoleColorTransparent(true);
         mChart.setTransparentCircleColor(Color.WHITE);
+        // 选中块突出大小（百分比）
         mChart.setTransparentCircleAlpha(110);
         mChart.setHoleRadius(58f);
-        // 选中块突出大小（百分比）
-        mChart.setTransparentCircleRadius(40f);
+        mChart.setTransparentCircleRadius(45f);
         // 显示中间文字
         mChart.setDrawCenterText(true);
         mChart.setCenterText("点击图表查看");

@@ -79,9 +79,7 @@ public class AddAppActivity extends AppCompatActivity {
 
         super.onResume();
 
-        if (isWorking()) {
-            bindTickService();
-        }
+        if (isWorking()) bindTickService();
     }
 
     @Override
@@ -231,7 +229,7 @@ public class AddAppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isWorking() || usageBinder == null) {
-                    Toast.makeText(AddAppActivity.this, "失败，未开启服务",
+                    Toast.makeText(AddAppActivity.this, "失败，请先开启监听服务",
                             Toast.LENGTH_SHORT).show();
                     finish();
                     return;

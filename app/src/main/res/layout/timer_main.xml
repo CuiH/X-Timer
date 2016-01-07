@@ -1,0 +1,65 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/timer_toolbar"
+            layout="@layout/toolbar_base" />
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="19sp"
+        android:textColor="#0A3F8F"
+        android:text="您可以："/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="19sp"
+            android:textColor="#0A3F8F"
+            android:text="单击列表项进行设置，或"/>
+
+        <Button
+            android:id="@+id/timer_help"
+            android:background="@drawable/my_button3"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:layout_width="100dp"
+            android:layout_gravity="center"
+            android:layout_height="30dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="5dp"
+            android:text="查看帮助"/>
+
+    </LinearLayout>
+
+
+    <ListView
+        android:id="@+id/timer_app_list"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_height="0dp">
+    </ListView>
+
+</LinearLayout>

@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.app_detail.AppDayItem;
 import com.crossbow.app.x_timer.splash.SplashActivity;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
@@ -170,6 +171,7 @@ public class TickTrackerService extends Service {
                         - lastTimeStamp >= appUsage.getLimitLength()) {
                     Message message = new Message();
                     message.what = TIME_LIMIT;
+                    message.obj = appUsage;
                     timeLimitHandler.sendMessage(message);
                     appUsage.setPrompted(true);
                 }
@@ -494,13 +496,16 @@ public class TickTrackerService extends Service {
         }
     }
 
-    private void showBox() {
+    private void showBox(String name, long time) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("提示");
+        dialog.setMessage("您为应用 " + name + " 所设置的定时提醒（" +
+                AppDayItem.transferLongToTime(time) + "）已达到。");
         dialog.setIcon(android.R.drawable.ic_dialog_info);
-        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        dialog.setPositiveButton("知道了", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         });
         dialog.setCancelable(false);
@@ -514,7 +519,8 @@ public class TickTrackerService extends Service {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == TIME_LIMIT) {
-                showBox();
+                AppUsage target = (AppUsage)msg.obj;
+                showBox(target.getRealName(), target.getLimitLength());
             }
         }
     };

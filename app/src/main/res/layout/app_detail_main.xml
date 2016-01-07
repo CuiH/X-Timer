@@ -32,9 +32,9 @@
             android:layout_marginTop="150dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="#3a414b"
-            android:text="当天没有使用记录哦"/>
+            android:text="这个应用没有使用记录哦"/>
 
     </RelativeLayout>
 

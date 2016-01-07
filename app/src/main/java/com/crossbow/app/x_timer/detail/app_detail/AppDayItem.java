@@ -37,7 +37,7 @@ public class AppDayItem {
     }
 
     // 转换为时分秒
-    private String transferLongToTime(Long millSec) {
+    public static String transferLongToTime(Long millSec) {
         if (millSec < 60000) {
             return ""+millSec/1000+"秒";
         } else if (millSec < 3600000){

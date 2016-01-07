@@ -3,6 +3,8 @@ package com.crossbow.app.x_timer.fragment.history;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +58,8 @@ public class HistoryFragment extends ProgressFragment {
     private List<HistoryAppInfo> allStoredApp;
 
     private int selectedIndex;
+
+    private List<PackageInfo> packages;
 
     // 异步用
     private View realView;
@@ -320,7 +324,7 @@ public class HistoryFragment extends ProgressFragment {
         FileUtils fileUtils = new FileUtils(mainActivity);
         for (AppUsage appUsage: fileUtils.getAllStoredApp()) {
             HistoryAppInfo info = new HistoryAppInfo(appUsage.getRealName(),
-                    appUsage.getPackageName());
+                    appUsage.getPackageName(), findAppIcon(appUsage.getPackageName()));
             list.add(info);
         }
 
@@ -362,5 +366,24 @@ public class HistoryFragment extends ProgressFragment {
         tem.add(Calendar.MONTH, 1);
 
         return tem.getTime();
+    }
+
+    // get the app info
+    private Drawable findAppIcon(String pkgName) {
+        if (packages == null ) if (packages == null )packages
+                = mainActivity.getPackageManager().getInstalledPackages(0);
+
+        for (int i = 0; i < packages.size(); i++) {
+            PackageInfo packageInfo = packages.get(i);
+            String packageName = packageInfo.packageName;
+            if (packageName.equals(pkgName)) {
+                Drawable appIcon = packageInfo.applicationInfo
+                        .loadIcon(mainActivity.getPackageManager());
+
+                return appIcon;
+            }
+        }
+
+        return null;
     }
 }

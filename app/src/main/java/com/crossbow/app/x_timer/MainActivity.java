@@ -57,30 +57,31 @@ public class MainActivity extends AppCompatActivity
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-                        int id = menuItem.getItemId();
-                        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                if (id == R.id.nav_main) {
 
-                        if (id == R.id.nav_main) {
+                } else if (id == R.id.nav_cloud) {
+                    // drawer.closeDrawer(GravityCompat.START);
 
-                        } else if (id == R.id.nav_cloud) {
-                            Intent intent = new Intent(MainActivity.this, CloudActivity.class);
-                            startActivity(intent);
-                        } else if (id == R.id.nav_setting) {
+                    Intent intent = new Intent(MainActivity.this, CloudActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_setting) {
 
-                        } else if (id == R.id.nav_advice) {
+                } else if (id == R.id.nav_advice) {
 
-                        } else if (id == R.id.nav_about) {
+                } else if (id == R.id.nav_about) {
 
-                        } else if (id == R.id.nav_check) {
+                } else if (id == R.id.nav_check) {
 
-                        }
-                        drawer.closeDrawer(GravityCompat.START);
-                        return true;
-                    }
-                });
+                }
+
+                return true;
+            }
+        });
     }
 
     @Override
@@ -268,6 +269,8 @@ public class MainActivity extends AppCompatActivity
         System.out.println("im here+"+requestCode+"+"+resultCode);
 
         if (resultCode == RESULT_OK) {
+            if (isWorking() && usageBinder != null) usageBinder.manuallySaveData();
+
             refreshViewPager();
         }
     }

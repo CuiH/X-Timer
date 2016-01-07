@@ -29,7 +29,6 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo> {
         mContext = context;
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         AppInfo appInfo = getItem(position);
