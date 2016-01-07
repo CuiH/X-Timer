@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TickTrackerService extends Service {
+
     private static final String TAG = "service";
     private static final int TIME_LIMIT = 1;
 
@@ -44,16 +45,17 @@ public class TickTrackerService extends Service {
     private WatchingForegroundAppThread watchingForegroundAppThread;
 
     // app info
-    private UsageStats lastApp, currentApp;
+    private TickAppInfo lastApp, currentApp;
     private Map<String, AppUsage> watchingList;
 
     // binder
     private UsageBinder usageBinder;
 
-    //watching screen stats;
+    // watching screen status;
     private ScreenStatusReceiver mScreenStatusReceiver;
     private boolean hasExperiencedScreenChanged;
     private KeyguardManager mKeyguardManager;
+
 
     public class UsageBinder extends Binder {
         // get the watching list
@@ -101,6 +103,117 @@ public class TickTrackerService extends Service {
             else startNotification();
         }
 
+    }
+
+    // thread that keeps watching apps
+    private class WatchingForegroundAppThread extends Thread {
+
+        private boolean running = true;
+
+        private void onThreadWait() {
+            try {
+                synchronized (this) {
+                    Log.d(TAG, "onThreadWait: 线程等待");
+                    this.wait();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void checkLimit() {
+            if (watchingList.containsKey(currentApp.getPkgName())) {
+                AppUsage appUsage = watchingList.get(currentApp
+                        .getPkgName());
+                Log.d(TAG, "checkLimit: 内层" + currentApp.getPkgName());
+                long lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
+                long historyTime = 0;
+                lastTimeStamp = lastTimeStamp > currentApp.getStartTime()
+                        ? lastTimeStamp : currentApp.getStartTime();
+                if (appUsage.getUsingHistory().size() > 0) {
+                    historyTime = appUsage.getUsingHistory().get(AppUsage
+                            .getDateInString(new Date())).getTotalTime();
+                }
+                if (!appUsage.getPrompted() && historyTime + System
+                        .currentTimeMillis() - lastTimeStamp >= appUsage
+                        .getLimitLength()) {
+
+                    Log.d(TAG, "checkLimit: 时间检测" + (historyTime + System
+                            .currentTimeMillis() - lastTimeStamp));
+
+                    appUsage.setPrompted(true);
+                    Message message = new Message();
+                    message.what = TIME_LIMIT;
+                    timieLiimitHandler.sendMessage(message);
+                }
+            }
+        }
+
+        public synchronized void onThreadPause() {
+            Log.d(TAG, "onThreadPause: 线程暂停");
+            running = false;
+        }
+
+        public synchronized void onThreadResume() {
+            Log.d(TAG, "onThreadResume: 线程恢复");
+            running = true;
+            this.notify();
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                if (running) {
+                    long nowTime = System.currentTimeMillis();
+                    List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
+                            (UsageStatsManager.INTERVAL_BEST, nowTime - 2000, nowTime);
+
+                    if (currentApp.isHasInstance()) {
+                        checkLimit();
+                    }
+                    if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
+                        // find the last used app in the second
+                        UsageStats theLastAppInOneSecond = null;
+                        for (UsageStats usageStats : queryUsageStats) {
+                            if (theLastAppInOneSecond == null || theLastAppInOneSecond
+                                    .getLastTimeUsed() < usageStats.getLastTimeUsed()) {
+                                theLastAppInOneSecond = usageStats;
+                            }
+                        }
+
+                        if (theLastAppInOneSecond != null) {
+                            // if no last, last = now
+                            if (!lastApp.isHasInstance() || !theLastAppInOneSecond
+                                    .getPackageName().equals(lastApp.getPkgName())) {
+                                if (watchingList
+                                        .containsKey(theLastAppInOneSecond.getPackageName())) {
+                                    currentApp.setAll(theLastAppInOneSecond.getPackageName(),
+                                            theLastAppInOneSecond.getLastTimeUsed(), true);
+                                } else {
+                                    currentApp.setAll(theLastAppInOneSecond.getPackageName(),
+                                            theLastAppInOneSecond.getLastTimeUsed(), false);
+                                }
+
+                                if (lastApp.isInWatchingList()) onAppSwitched();
+
+                                lastApp.setAll(currentApp.getPkgName(),
+                                        currentApp.getStartTime(), currentApp.isInWatchingList());
+
+                                Log.d(TAG, "app changed to" + currentApp.getPkgName() + " at " + currentApp.getStartTime());
+                            }
+                        }
+                    }
+                    // observe every second
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    onThreadWait();
+                }
+            }
+        }
     }
 
     @Nullable
@@ -154,8 +267,8 @@ public class TickTrackerService extends Service {
 
     private void initVariables() {
         hasExperiencedScreenChanged = false;
-        lastApp = null;
-        currentApp = null;
+        lastApp = new TickAppInfo();
+        currentApp = new TickAppInfo();
 
         watchingList = new HashMap<>();
         usageBinder = new UsageBinder();
@@ -182,27 +295,32 @@ public class TickTrackerService extends Service {
 
     // update the old app when app switched
     private void onAppSwitched() {
-        AppUsage targetApp = watchingList.get(lastApp.getPackageName());
+        AppUsage targetApp = watchingList.get(lastApp.getPkgName());
 
         String today = AppUsage.getDateInString(new Date());
 
+        // 如果这个应用使用期间经历了锁屏，只计算上次开启屏幕到当前的时间
+        long nowTime = System.currentTimeMillis();
         if (hasExperiencedScreenChanged) {
-            targetApp.updateUsingHistory(today, System.currentTimeMillis() -
-                    mScreenStatusReceiver.getScreenOnTime(), System
-                    .currentTimeMillis());
-            hasExperiencedScreenChanged = false;
-        } else {
-            targetApp.updateUsingHistory(today,
-                    System.currentTimeMillis() - lastApp.getLastTimeUsed(),
-                    System.currentTimeMillis());
-        }
+            targetApp.updateUsingHistory(today, nowTime -
+                    mScreenStatusReceiver.getScreenOnTime(), nowTime);
 
-        Log.d(TAG, "上个 app: " + targetApp.getPackageName());
-        Log.d(TAG, "上次用时: " + targetApp.getUsingHistory().get(today)
-                .getUsingRecord().get(targetApp.getUsingHistory().get(today)
-                        .getUsingRecord().size() - 1).getDuration());
-        Log.d(TAG, "总次数: " + targetApp.getUsingHistory().get(today).getUsedCount());
-        Log.d(TAG, "总用时: " + targetApp.getUsingHistory().get(today).getTotalTime());
+            hasExperiencedScreenChanged = false;
+
+            Log.d(TAG, "上个app: " + targetApp.getPackageName());
+            Log.d(TAG, "上次开始（屏幕亮起）: " + mScreenStatusReceiver.getScreenOnTime());
+            Log.d(TAG, "上次用时： " + (nowTime - mScreenStatusReceiver.getScreenOnTime()));
+            Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
+            Log.d(TAG, "======================================================");
+        } else {
+            targetApp.updateUsingHistory(today, nowTime - lastApp.getStartTime(), nowTime);
+
+            Log.d(TAG, "上个app: " + targetApp.getPackageName());
+            Log.d(TAG, "上次开始（正常开启）: " + lastApp.getStartTime());
+            Log.d(TAG, "上次用时： " + (nowTime - lastApp.getStartTime()));
+            Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
+            Log.d(TAG, "======================================================");
+        }
     }
 
     // update the notification (stop and reshow)
@@ -272,6 +390,7 @@ public class TickTrackerService extends Service {
         registerReceiver(mScreenStatusReceiver, screenStatusIF);
     }
 
+
     //response for screen state changed
     private class ScreenStatusReceiver extends BroadcastReceiver {
         private static final String USER_PRESENT = "android.intent.action" +
@@ -292,28 +411,47 @@ public class TickTrackerService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if ((SCREEN_ON.equals(intent.getAction()) && !mKeyguardManager
-                    .inKeyguardRestrictedInputMode()) || USER_PRESENT.equals
-                    (intent.getAction())) {
-                Log.d(TAG, "onReceive: 打开屏幕或解锁");
-                screenOnTime = System.currentTimeMillis();
-                watchingForegroundAppThread.onThreadResume();
-            } else if (SCREEN_OFF.equals(intent.getAction())) {
-                watchingForegroundAppThread.onThreadPause();
-                if (watchingList.containsKey(currentApp.getPackageName())) {
-                    String today = AppUsage.getDateInString(new Date());
 
-                    screenOffTime = System.currentTimeMillis();
-                    //上一次屏幕关闭，打开，到这一次关闭，当前应用未变化过
-                    if (hasExperiencedScreenChanged) {
-                        watchingList.get(currentApp.getPackageName())
-                                .updateUsingHistory(today, screenOffTime -
-                                        screenOnTime, screenOffTime);
-                    } else { //应用只经历了一次屏幕开闭
-                        watchingList.get(currentApp.getPackageName())
-                                .updateUsingHistory(today, screenOffTime -
-                                                currentApp.getLastTimeUsed(),
-                                        screenOffTime);
+            long nowTime = System.currentTimeMillis();
+
+            if ((SCREEN_ON.equals(intent.getAction()) &&
+                    !mKeyguardManager.inKeyguardRestrictedInputMode())
+                    || USER_PRESENT.equals(intent.getAction())) {      // 检测到打开屏幕(无锁屏)或解锁
+                screenOnTime = nowTime;
+                // 线程休眠
+                watchingForegroundAppThread.onThreadResume();
+
+                Log.d(TAG, "onReceive: 打开屏幕或解锁at" + screenOnTime);
+
+            } else if (SCREEN_OFF.equals(intent.getAction())) {  // 检测到关闭屏幕
+                // 线程重启
+                watchingForegroundAppThread.onThreadPause();
+
+                if (currentApp.isInWatchingList()) {   // 如果需要更新当前应用使用时间
+                    String today = AppUsage.getDateInString(new Date());
+                    screenOffTime = nowTime;
+
+                    Log.d(TAG, "onReceive: 关闭屏幕at" + screenOffTime);
+
+                    AppUsage targetApp = watchingList.get(currentApp.getPkgName());
+                    if (hasExperiencedScreenChanged) {  // 当前应用不止一次经历屏幕开闭
+                        targetApp.updateUsingHistory(today,
+                                screenOffTime - screenOnTime, screenOffTime);
+
+                        Log.d(TAG, "onReceive: app：" + currentApp.getPkgName());
+                        Log.d(TAG, "onReceive: 上次开始时间（屏幕亮起）：" + screenOnTime);
+                        Log.d(TAG, "onReceive: 上次用时：" + (screenOffTime - screenOnTime));
+                        Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
+                        Log.d(TAG, "======================================================");
+                    } else {      // 应用第一次经历屏幕开闭
+                        targetApp.updateUsingHistory(today,
+                                screenOffTime - currentApp.getStartTime(), screenOffTime);
+
+                        Log.d(TAG, "onReceive: app：" + currentApp.getPkgName());
+                        Log.d(TAG, "onReceive: 上次开始时间（应用启动）：" + currentApp.getStartTime());
+                        Log.d(TAG, "onReceive: 上次用时：" + (screenOffTime - currentApp.getStartTime()));
+                        Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
+                        Log.d(TAG, "======================================================");
                     }
                     hasExperiencedScreenChanged = true;
                 }
@@ -346,100 +484,4 @@ public class TickTrackerService extends Service {
         }
     };
 
-    // thread that keeps watching apps
-    private class WatchingForegroundAppThread extends Thread {
-
-        private boolean running = true;
-
-        private void onThreadWait() {
-            try {
-                synchronized (this) {
-                    Log.d(TAG, "onThreadWait: 线程等待");
-                    this.wait();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void checkLimit() {
-            if (watchingList.containsKey(currentApp.getPackageName())) {
-                AppUsage appUsage = watchingList.get(currentApp
-                        .getPackageName());
-                Log.d(TAG, "checkLimit: 内层" + currentApp.getPackageName());
-                long lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
-                long historyTime = 0;
-                lastTimeStamp = lastTimeStamp > currentApp.getLastTimeUsed()
-                        ? lastTimeStamp : currentApp.getLastTimeUsed();
-                if (appUsage.getUsingHistory().size() > 0) {
-                    historyTime = appUsage.getUsingHistory().get(AppUsage
-                            .getDateInString(new Date())).getTotalTime();
-                }
-                if (!appUsage.getPrompted() && historyTime + System
-                        .currentTimeMillis() - lastTimeStamp >= appUsage
-                        .getLimitLength()) {
-
-                    Log.d(TAG, "checkLimit: 时间检测" + (historyTime + System
-                            .currentTimeMillis() - lastTimeStamp));
-
-                    appUsage.setPrompted(true);
-                    Message message = new Message();
-                    message.what = TIME_LIMIT;
-                    timieLiimitHandler.sendMessage(message);
-                }
-            }
-        }
-
-        public synchronized void onThreadPause() {
-            Log.d(TAG, "onThreadPause: 线程暂停");
-            running = false;
-        }
-
-        public synchronized void onThreadResume() {
-            Log.d(TAG, "onThreadResume: 线程恢复");
-            running = true;
-            this.notify();
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                if (running) {
-                    long ts = System.currentTimeMillis();
-                    List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
-                            (UsageStatsManager.INTERVAL_BEST, ts - 2000, ts);
-                    if (currentApp != null) {
-                        checkLimit();
-                    }
-                    if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
-                        // find current app
-                        for (UsageStats usageStats : queryUsageStats) {
-                            if (currentApp == null || currentApp.getLastTimeUsed() <
-                                    usageStats.getLastTimeUsed()) {
-                                currentApp = usageStats;
-                            }
-                        }
-                        // check if app switched
-                        if (currentApp != null && (lastApp == null ||
-                                !lastApp.getPackageName().equals(currentApp.getPackageName()))) {
-                            if (lastApp != null)
-                                // check if last app is in the watching list
-                                if (lastApp != null && watchingList.containsKey(lastApp.getPackageName())) {
-                                    onAppSwitched();
-                                }
-                            lastApp = currentApp;
-                        }
-                    }
-                    // observe every second
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    onThreadWait();
-                }
-            }
-        }
-    }
 }
