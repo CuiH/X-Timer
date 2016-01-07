@@ -1,5 +1,6 @@
 package com.crossbow.app.x_timer.service;
 
+import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -8,14 +9,16 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
-
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.splash.SplashActivity;
@@ -29,7 +32,8 @@ import java.util.Map;
 
 public class TickTrackerService extends Service {
 
-    private final String TAG = "service";
+    private static final String TAG = "service";
+    private static final int TIME_LIMIT = 1;
 
     // system service
     public UsageStatsManager usageStatsManager;
@@ -106,23 +110,54 @@ public class TickTrackerService extends Service {
 
         private boolean running = true;
 
-        public synchronized void onThreadPause() {
-            running = false;
-        }
-
-        public synchronized void onThreadResume() {
-            running = true;
-            this.notify();
-        }
-
         private void onThreadWait() {
             try {
                 synchronized (this) {
+                    Log.d(TAG, "onThreadWait: 线程等待");
                     this.wait();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        private void checkLimit() {
+            if (watchingList.containsKey(currentApp.getPkgName())) {
+                AppUsage appUsage = watchingList.get(currentApp
+                        .getPkgName());
+                Log.d(TAG, "checkLimit: 内层" + currentApp.getPkgName());
+                long lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
+                long historyTime = 0;
+                lastTimeStamp = lastTimeStamp > currentApp.getStartTime()
+                        ? lastTimeStamp : currentApp.getStartTime();
+                if (appUsage.getUsingHistory().size() > 0) {
+                    historyTime = appUsage.getUsingHistory().get(AppUsage
+                            .getDateInString(new Date())).getTotalTime();
+                }
+                if (!appUsage.getPrompted() && historyTime + System
+                        .currentTimeMillis() - lastTimeStamp >= appUsage
+                        .getLimitLength()) {
+
+                    Log.d(TAG, "checkLimit: 时间检测" + (historyTime + System
+                            .currentTimeMillis() - lastTimeStamp));
+
+                    appUsage.setPrompted(true);
+                    Message message = new Message();
+                    message.what = TIME_LIMIT;
+                    timieLiimitHandler.sendMessage(message);
+                }
+            }
+        }
+
+        public synchronized void onThreadPause() {
+            Log.d(TAG, "onThreadPause: 线程暂停");
+            running = false;
+        }
+
+        public synchronized void onThreadResume() {
+            Log.d(TAG, "onThreadResume: 线程恢复");
+            running = true;
+            this.notify();
         }
 
         @Override
@@ -133,6 +168,9 @@ public class TickTrackerService extends Service {
                     List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
                             (UsageStatsManager.INTERVAL_BEST, nowTime - 2000, nowTime);
 
+                    if (currentApp.isHasInstance()) {
+                        checkLimit();
+                    }
                     if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
                         // find the last used app in the second
                         UsageStats theLastAppInOneSecond = null;
@@ -143,9 +181,7 @@ public class TickTrackerService extends Service {
                             }
                         }
 
-
                         if (theLastAppInOneSecond != null) {
-
                             // if no last, last = now
                             if (!lastApp.isHasInstance() || !theLastAppInOneSecond
                                     .getPackageName().equals(lastApp.getPkgName())) {
@@ -163,7 +199,7 @@ public class TickTrackerService extends Service {
                                 lastApp.setAll(currentApp.getPkgName(),
                                         currentApp.getStartTime(), currentApp.isInWatchingList());
 
-                                Log.d(TAG, "app changed to" + currentApp.getPkgName()+" at "+currentApp.getStartTime());
+                                Log.d(TAG, "app changed to" + currentApp.getPkgName() + " at " + currentApp.getStartTime());
                             }
                         }
                     }
@@ -225,7 +261,7 @@ public class TickTrackerService extends Service {
         storeWatchingList();
 
         unregisterReceiver(mScreenStatusReceiver);
-
+        Log.d(TAG, "onDestroy: 服务结束");
         super.onDestroy();
     }
 
@@ -385,7 +421,7 @@ public class TickTrackerService extends Service {
                 // 线程休眠
                 watchingForegroundAppThread.onThreadResume();
 
-                Log.d(TAG, "onReceive: 打开屏幕或解锁at"+screenOnTime);
+                Log.d(TAG, "onReceive: 打开屏幕或解锁at" + screenOnTime);
 
             } else if (SCREEN_OFF.equals(intent.getAction())) {  // 检测到关闭屏幕
                 // 线程重启
@@ -395,7 +431,7 @@ public class TickTrackerService extends Service {
                     String today = AppUsage.getDateInString(new Date());
                     screenOffTime = nowTime;
 
-                    Log.d(TAG, "onReceive: 关闭屏幕at"+screenOffTime);
+                    Log.d(TAG, "onReceive: 关闭屏幕at" + screenOffTime);
 
                     AppUsage targetApp = watchingList.get(currentApp.getPkgName());
                     if (hasExperiencedScreenChanged) {  // 当前应用不止一次经历屏幕开闭
@@ -417,10 +453,35 @@ public class TickTrackerService extends Service {
                         Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
                         Log.d(TAG, "======================================================");
                     }
-
                     hasExperiencedScreenChanged = true;
                 }
             }
         }
     }
+
+    private void showBox() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("提示");
+        dialog.setIcon(android.R.drawable.ic_dialog_info);
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        dialog.setCancelable(false);
+        AlertDialog mDialog = dialog.create();
+        mDialog.getWindow().setType(WindowManager.LayoutParams
+                .TYPE_SYSTEM_ALERT);//设定为系统级警告，关键
+        mDialog.show();
+    }
+
+    private Handler timieLiimitHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == TIME_LIMIT) {
+                showBox();
+            }
+        }
+    };
+
 }

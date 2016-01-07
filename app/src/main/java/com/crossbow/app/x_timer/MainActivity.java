@@ -2,7 +2,6 @@ package com.crossbow.app.x_timer;
 
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -77,6 +76,12 @@ public class MainActivity extends AppCompatActivity
 
         // connection
         initConnection();
+
+//        if (!Settings.canDrawOverlays(this)) {
+//            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                    Uri.parse("package:" + getPackageName()));
+//            startActivityForResult(intent, 1);
+//        }
     }
 
     @Override
