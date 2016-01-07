@@ -399,7 +399,9 @@ public class TickTrackerService extends Service {
         private static final String SCREEN_ON = "android.intent.action" +
                 ".SCREEN_ON";
 
-        public long screenOffTime, screenOnTime;
+        private long screenOffTime, screenOnTime;
+
+        private boolean isLocked = false;
 
         public long getScreenOffTime() {
             return screenOffTime;
@@ -417,13 +419,17 @@ public class TickTrackerService extends Service {
             if ((SCREEN_ON.equals(intent.getAction()) &&
                     !mKeyguardManager.inKeyguardRestrictedInputMode())
                     || USER_PRESENT.equals(intent.getAction())) {      // 检测到打开屏幕(无锁屏)或解锁
+                isLocked = false;
+
                 screenOnTime = nowTime;
                 // 线程休眠
                 watchingForegroundAppThread.onThreadResume();
 
                 Log.d(TAG, "onReceive: 打开屏幕或解锁at" + screenOnTime);
 
-            } else if (SCREEN_OFF.equals(intent.getAction())) {  // 检测到关闭屏幕
+            } else if (SCREEN_OFF.equals(intent.getAction()) && !isLocked) {  // 检测到关闭屏幕
+                isLocked = true;
+
                 // 线程重启
                 watchingForegroundAppThread.onThreadPause();
 
