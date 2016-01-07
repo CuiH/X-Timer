@@ -1,7 +1,10 @@
 package com.crossbow.app.x_timer.fragment.statistic;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -10,27 +13,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
+import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.devspark.progressfragment.ProgressFragment;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by CuiH on 2015/12/29.
  */
 public class StatisticFragment extends ProgressFragment {
 
-    private final int SPLASH_DISPLAY_LENGTH = 500;
-
     private final String TAG = "StatisticFragment";
 
     private MainActivity mainActivity;
 
+    // 异步用
     private View realView;
-
     private boolean firstTime;
+
+    private List<AppUsage> appUsageList;
+
 
     public StatisticFragment() { }
 
@@ -61,9 +73,7 @@ public class StatisticFragment extends ProgressFragment {
         Log.d(TAG, "onActivityCreated: ");
 
         super.onActivityCreated(savedInstanceState);
-        // Setup content view
         setContentView(realView);
-        // ...
         setContentShown(false);
     }
 
@@ -74,15 +84,7 @@ public class StatisticFragment extends ProgressFragment {
         // 可见时
         if (isVisibleToUser) {
             if (firstTime) {
-                Log.d(TAG, "im here !!!!!");
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setContentShown(true);
-
-                    }
-                }, SPLASH_DISPLAY_LENGTH);
+                new MyAsyncTask().execute();
 
                 firstTime = false;
             }
@@ -91,6 +93,128 @@ public class StatisticFragment extends ProgressFragment {
         super.setUserVisibleHint(isVisibleToUser);
     }
 
+    // 异步更新UI
+    private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            initDayLengthUsed();
+            getStoredAppInfo();
+            initMostCountUsedApp();
+            initMostDayUsedApp();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            setContentShown(true);
+        }
+    }
+
+    public void setFirstTime(boolean flag) {
+        firstTime = flag;
+    }
+
+    // 计算共使用了X-Timer多少天
+    private void initDayLengthUsed() {
+        TextView textView = (TextView)realView.findViewById(R.id.statistic_day_length_all);
+
+        SharedPreferences pref = mainActivity
+                .getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        Date today = new Date();
+
+        String startString = pref.getString("firstDate", AppUsage.getDateInString(today));
+        Date startDate = new Date();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            startDate = sdf.parse(startString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        int day1 = calendar.get(Calendar.DAY_OF_YEAR);
+        calendar.setTime(today);
+        int day2 = calendar.get(Calendar.DAY_OF_YEAR);
+
+        textView.setText(""+(day2-day1));
+    }
+
+    // 获取存储的所有app信息
+    private void getStoredAppInfo() {
+        FileUtils fileUtils = new FileUtils(mainActivity);
+        appUsageList = fileUtils.getAllStoredApp();
+    }
+
+    // 查找使用次数最多的应用
+    private void initMostCountUsedApp() {
+        TextView name = (TextView)realView.findViewById(R.id.statistic_most_count_app);
+        TextView count = (TextView)realView.findViewById(R.id.statistic_most_count_app_count);
+
+        if (appUsageList.isEmpty()) {
+            name.setText("暂无数据");
+            count.setText("暂无数据");
+
+            return;
+        }
+
+        AppUsage mostUsed = null;
+        long mostUsedCount = -1;
+        for (AppUsage appUsage: appUsageList) {
+            long nowCount = 0;
+            for (Map.Entry<String, AppUsage.History> historyEntry:
+                    appUsage.getUsingHistory().entrySet()) {
+                nowCount += historyEntry.getValue().getUsedCount();
+            }
+
+            if (nowCount > mostUsedCount) {
+                mostUsedCount = nowCount;
+                mostUsed = appUsage;
+            }
+        }
+
+        if (mostUsed != null) {
+            name.setText(mostUsed.getRealName());
+            count.setText(""+mostUsedCount);
+        } else {
+            name.setText("暂无数据");
+            count.setText("暂无数据");
+        }
+    }
+
+    private void initMostDayUsedApp() {
+        TextView name = (TextView)realView.findViewById(R.id.statistic_most_day_app);
+        TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
+
+        if (appUsageList.isEmpty()) {
+            name.setText("暂无数据");
+            days.setText("暂无数据");
+
+            return;
+        }
+
+        AppUsage mostUsed = null;
+        long mostUsedCount = -1;
+        for (AppUsage appUsage: appUsageList) {
+            long nowCount = appUsage.getUsingHistory().entrySet().size();
+
+            if (nowCount > mostUsedCount) {
+                mostUsedCount = nowCount;
+                mostUsed = appUsage;
+            }
+        }
+
+        if (mostUsed != null) {
+            name.setText(mostUsed.getRealName());
+            days.setText(""+mostUsedCount);
+        } else {
+            name.setText("暂无数据");
+            days.setText("暂无数据");
+        }
+    }
 
 
 

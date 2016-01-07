@@ -74,7 +74,9 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void setAllFirstTime(boolean flag) {
+        fragment1.setFirstTime(flag);
         fragment2.setFirstTime(flag);
+        fragment3.setFirstTime(flag);
         fragment4.setFirstTime(flag);
     }
 
