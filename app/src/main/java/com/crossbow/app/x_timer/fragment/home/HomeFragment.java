@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
@@ -146,7 +147,7 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
     }
 
     private void  initViewWithoutData() {
-        LinearLayout viewWithoutData = (LinearLayout)realView.findViewById(R.id.home_no_data);
+        RelativeLayout viewWithoutData = (RelativeLayout)realView.findViewById(R.id.home_no_data);
         LinearLayout viewWithDate = (LinearLayout)realView.findViewById(R.id.home_with_data);
 
         viewWithDate.setVisibility(View.GONE);
@@ -162,7 +163,7 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
     }
 
     private void initViewWithData() {
-        LinearLayout viewWithoutData = (LinearLayout)realView.findViewById(R.id.home_no_data);
+        RelativeLayout viewWithoutData = (RelativeLayout)realView.findViewById(R.id.home_no_data);
         LinearLayout viewWithDate = (LinearLayout)realView.findViewById(R.id.home_with_data);
 
         viewWithDate.setVisibility(View.VISIBLE);
