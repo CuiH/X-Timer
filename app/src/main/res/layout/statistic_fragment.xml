@@ -178,6 +178,12 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/testB"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="add limit to 微信"/>
+
     </LinearLayout>
 
 

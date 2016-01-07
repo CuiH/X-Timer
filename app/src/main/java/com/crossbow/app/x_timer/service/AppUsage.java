@@ -1,5 +1,6 @@
 package com.crossbow.app.x_timer.service;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,17 +14,21 @@ public class AppUsage {
     private String realName;
     // 记录应用使用历史（按天）
     private Map<String, History> usingHistory;
-    //是否设置了时限
+    // 是否设置了时限
     private boolean hasLimit;
-    //是否已经提示过
-    private boolean prompted = false;
-    //时限的长短
-    private long limitLength = 10000;
+    // 是否已经提示过
+    private boolean prompted;
+    // 时限的长短
+    private long limitLength;
 
     public AppUsage(String pkgName, String rName) {
         packageName = pkgName;
         realName = rName;
         usingHistory = new HashMap<>();
+
+        hasLimit = false;
+        prompted = false;
+        limitLength = Integer.MAX_VALUE;
     }
 
     public String getPackageName() {
@@ -34,16 +39,28 @@ public class AppUsage {
         return realName;
     }
 
+    public void setHasLimit(boolean flag) {
+        hasLimit = flag;
+    }
+
+    public boolean isHasLimit() {
+        return hasLimit;
+    }
+
     public long getLimitLength() {
         return limitLength;
+    }
+
+    public void setLimitLength(long lLength) {
+        limitLength = lLength;
     }
 
     public boolean getPrompted() {
         return prompted;
     }
 
-    public void setPrompted(boolean prompted) {
-        this.prompted = prompted;
+    public void setPrompted(boolean p) {
+        prompted = p;
     }
 
     public Map<String, History> getUsingHistory() {

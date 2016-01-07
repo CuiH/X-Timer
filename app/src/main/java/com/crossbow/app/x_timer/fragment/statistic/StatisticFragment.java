@@ -14,11 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
+import com.crossbow.app.x_timer.service.TickTrackerService;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.devspark.progressfragment.ProgressFragment;
 
@@ -116,6 +118,7 @@ public class StatisticFragment extends ProgressFragment {
             getStoredAppInfo();
             initMostCountUsedApp();
             initMostDayUsedApp();
+            initButton();
 
             return null;
         }
@@ -232,6 +235,25 @@ public class StatisticFragment extends ProgressFragment {
             name.setText("暂无数据");
             days.setText("暂无数据");
         }
+    }
+
+    private void initButton() {
+        Button b = (Button)realView.findViewById(R.id.testB);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "im here!!");
+                if (mainActivity.isWorking()) {
+                    Log.d(TAG, "im here2312312!!");
+                    TickTrackerService.UsageBinder binder = mainActivity.getBinder();
+                    if (binder.setLimitToApp("com.tencent.mm", 10000)) {
+                        Toast.makeText(mainActivity, "s", Toast.LENGTH_SHORT);
+                    } else {
+                        Toast.makeText(mainActivity, "f", Toast.LENGTH_SHORT);
+                    }
+                }
+            }
+        });
     }
 
 

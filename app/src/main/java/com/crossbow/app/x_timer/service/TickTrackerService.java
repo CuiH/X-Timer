@@ -103,6 +103,18 @@ public class TickTrackerService extends Service {
             else startNotification();
         }
 
+        // set limit to a app
+        public boolean setLimitToApp(String pkgName, long limit) {
+            AppUsage app = watchingList.get(pkgName);
+            if (app == null) return false;
+
+            app.setLimitLength(limit);
+            app.setPrompted(false);
+            app.setHasLimit(true);
+
+            return true;
+        }
+
     }
 
     // thread that keeps watching apps
@@ -122,29 +134,36 @@ public class TickTrackerService extends Service {
         }
 
         private void checkLimit() {
-            if (watchingList.containsKey(currentApp.getPkgName())) {
-                AppUsage appUsage = watchingList.get(currentApp
-                        .getPkgName());
-                Log.d(TAG, "checkLimit: 内层" + currentApp.getPkgName());
-                long lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
-                long historyTime = 0;
-                lastTimeStamp = lastTimeStamp > currentApp.getStartTime()
-                        ? lastTimeStamp : currentApp.getStartTime();
-                if (appUsage.getUsingHistory().size() > 0) {
-                    historyTime = appUsage.getUsingHistory().get(AppUsage
-                            .getDateInString(new Date())).getTotalTime();
+            AppUsage appUsage = watchingList.get(currentApp.getPkgName());
+            if (appUsage.isHasLimit() && !appUsage.getPrompted()) {
+                long todayTotalTime;
+
+                Map<String, AppUsage.History> historyMap = appUsage.getUsingHistory();
+                if (historyMap.size() <= 0) {
+                    todayTotalTime = 0;
+                } else {
+                    AppUsage.History history = historyMap.get(AppUsage
+                            .getDateInString(new Date()));
+                    if (history == null) {
+                        todayTotalTime = 0;
+                    } else {
+                        todayTotalTime = history.getTotalTime();
+                    }
                 }
-                if (!appUsage.getPrompted() && historyTime + System
-                        .currentTimeMillis() - lastTimeStamp >= appUsage
-                        .getLimitLength()) {
 
-                    Log.d(TAG, "checkLimit: 时间检测" + (historyTime + System
-                            .currentTimeMillis() - lastTimeStamp));
+                long lastTimeStamp = currentApp.getStartTime();
 
-                    appUsage.setPrompted(true);
+                Log.d(TAG, "checkLimit: " + appUsage.getLimitLength());
+                if (hasExperiencedScreenChanged) {
+                    lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
+                }
+
+                if (todayTotalTime + System.currentTimeMillis()
+                        - lastTimeStamp >= appUsage.getLimitLength()) {
                     Message message = new Message();
                     message.what = TIME_LIMIT;
-                    timieLiimitHandler.sendMessage(message);
+                    timeLimitHandler.sendMessage(message);
+                    appUsage.setPrompted(true);
                 }
             }
         }
@@ -168,9 +187,10 @@ public class TickTrackerService extends Service {
                     List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
                             (UsageStatsManager.INTERVAL_BEST, nowTime - 2000, nowTime);
 
-                    if (currentApp.isHasInstance()) {
+                    if (currentApp.isHasInstance() && currentApp.isInWatchingList()) {
                         checkLimit();
                     }
+
                     if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
                         // find the last used app in the second
                         UsageStats theLastAppInOneSecond = null;
@@ -459,6 +479,7 @@ public class TickTrackerService extends Service {
                         Log.d(TAG, "总次数： " + targetApp.getUsingHistory().get(today).getUsedCount());
                         Log.d(TAG, "======================================================");
                     }
+
                     hasExperiencedScreenChanged = true;
                 }
             }
@@ -481,7 +502,7 @@ public class TickTrackerService extends Service {
         mDialog.show();
     }
 
-    private Handler timieLiimitHandler = new Handler() {
+    private Handler timeLimitHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == TIME_LIMIT) {

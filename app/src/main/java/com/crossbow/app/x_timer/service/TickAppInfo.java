@@ -31,6 +31,8 @@ public class TickAppInfo {
         return pkgName;
     }
 
+
+
     public boolean isInWatchingList() {
         return inWatchingList;
     }
