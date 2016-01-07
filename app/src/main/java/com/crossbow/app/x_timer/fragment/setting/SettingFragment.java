@@ -45,6 +45,8 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
     // 异步用
     private View realView;
     private boolean firstTime;
+    private boolean isVisible;
+    private boolean forceRefresh;
 
 
     public SettingFragment() { }
@@ -53,6 +55,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
     public SettingFragment(MainActivity activity) {
         mainActivity = activity;
         firstTime = true;
+        forceRefresh = true;
     }
 
     @Override
@@ -78,20 +81,30 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
         super.onActivityCreated(savedInstanceState);
         setContentView(realView);
         setContentShown(false);
+
+        if (isVisible) {
+            if (firstTime) {
+                new MyAsyncTask().execute();
+
+                firstTime = false;
+            }
+        }
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         Log.d(TAG, "setUserVisibleHint: ");
 
-        // 可见时
         if (isVisibleToUser) {
-            // 第一次进入
-            if (firstTime) {
+            isVisible = true;
+
+            if (forceRefresh) {
                 new MyAsyncTask().execute();
 
-                firstTime = false;
+                forceRefresh = false;
             }
+        } else {
+            isVisible = false;
         }
 
         super.setUserVisibleHint(isVisibleToUser);
@@ -121,6 +134,10 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 
     public void setFirstTime(boolean flag) {
         firstTime = flag;
+    }
+
+    public void setForceRefresh(boolean flag) {
+        forceRefresh = flag;
     }
 
     @Override

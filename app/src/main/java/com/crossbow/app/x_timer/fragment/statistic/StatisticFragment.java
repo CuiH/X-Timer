@@ -40,6 +40,8 @@ public class StatisticFragment extends ProgressFragment {
     // 异步用
     private View realView;
     private boolean firstTime;
+    private boolean isVisible;
+    private boolean forceRefresh;
 
     private List<AppUsage> appUsageList;
 
@@ -50,6 +52,7 @@ public class StatisticFragment extends ProgressFragment {
     public StatisticFragment(MainActivity activity) {
         mainActivity = activity;
         firstTime = true;
+        forceRefresh = true;
     }
 
     @Override
@@ -75,19 +78,30 @@ public class StatisticFragment extends ProgressFragment {
         super.onActivityCreated(savedInstanceState);
         setContentView(realView);
         setContentShown(false);
+
+        if (isVisible) {
+            if (firstTime) {
+                new MyAsyncTask().execute();
+
+                firstTime = false;
+            }
+        }
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         Log.d(TAG, "setUserVisibleHint: ");
 
-        // 可见时
         if (isVisibleToUser) {
-            if (firstTime) {
+            isVisible = true;
+
+            if (forceRefresh) {
                 new MyAsyncTask().execute();
 
-                firstTime = false;
+                forceRefresh = false;
             }
+        } else {
+            isVisible = false;
         }
 
         super.setUserVisibleHint(isVisibleToUser);
@@ -114,6 +128,10 @@ public class StatisticFragment extends ProgressFragment {
 
     public void setFirstTime(boolean flag) {
         firstTime = flag;
+    }
+
+    public void setForceRefresh(boolean flag) {
+        forceRefresh = flag;
     }
 
     // 计算共使用了X-Timer多少天

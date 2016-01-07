@@ -53,6 +53,8 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
     // 异步用
     private View realView;
     private boolean firstTime;
+    private boolean isVisible;
+    private boolean forceRefresh;
 
 
     public HomeFragment() { }
@@ -61,6 +63,7 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
     public HomeFragment(MainActivity activity) {
         mainActivity = activity;
         firstTime = true;
+        forceRefresh = false;
     }
 
     @Override
@@ -86,22 +89,31 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
         super.onActivityCreated(savedInstanceState);
         setContentView(realView);
         setContentShown(false);
-    }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        Log.d(TAG, "setUserVisibleHint: ");
-
-        // 可见时
-        if (isVisibleToUser) {
+        if (isVisible) {
             if (firstTime) {
                 new MyAsyncTask().execute();
 
                 firstTime = false;
             }
         }
+    }
 
-        super.setUserVisibleHint(isVisibleToUser);
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d(TAG, "setUserVisibleHint: ");
+
+        if (isVisibleToUser) {
+            isVisible = true;
+
+            if (forceRefresh) {
+                new MyAsyncTask().execute();
+
+                forceRefresh = false;
+            }
+        } else {
+            isVisible = false;
+        }
     }
 
     // 异步更新UI
@@ -127,6 +139,10 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
 
     public void setFirstTime(boolean flag) {
         firstTime = flag;
+    }
+
+    public void setForceRefresh(boolean flag) {
+        forceRefresh = flag;
     }
 
     private void  initViewWithoutData() {
