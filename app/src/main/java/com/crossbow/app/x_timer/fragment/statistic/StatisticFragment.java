@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.detail.app_detail.AppDayItem;
 import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
@@ -118,7 +119,7 @@ public class StatisticFragment extends ProgressFragment {
             getStoredAppInfo();
             initMostCountUsedApp();
             initMostDayUsedApp();
-            initButton();
+            initMosTimeUsedApp();
 
             return null;
         }
@@ -170,7 +171,7 @@ public class StatisticFragment extends ProgressFragment {
         appUsageList = fileUtils.getAllStoredApp();
     }
 
-    // 查找使用次数最多的应用
+    // 使用次数最多的应用
     private void initMostCountUsedApp() {
         TextView name = (TextView)realView.findViewById(R.id.statistic_most_count_app);
         TextView count = (TextView)realView.findViewById(R.id.statistic_most_count_app_count);
@@ -206,6 +207,7 @@ public class StatisticFragment extends ProgressFragment {
         }
     }
 
+    // 使用天数最多的应用
     private void initMostDayUsedApp() {
         TextView name = (TextView)realView.findViewById(R.id.statistic_most_day_app);
         TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
@@ -237,25 +239,40 @@ public class StatisticFragment extends ProgressFragment {
         }
     }
 
-    private void initButton() {
-        Button b = (Button)realView.findViewById(R.id.testB);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "im here!!");
-                if (mainActivity.isWorking()) {
-                    Log.d(TAG, "im here2312312!!");
-                    TickTrackerService.UsageBinder binder = mainActivity.getBinder();
-                    if (binder.setLimitToApp("com.tencent.mm", 10000)) {
-                        Toast.makeText(mainActivity, "s", Toast.LENGTH_SHORT);
-                    } else {
-                        Toast.makeText(mainActivity, "f", Toast.LENGTH_SHORT);
-                    }
-                }
+    // 使用时间最多的应用
+    private void initMosTimeUsedApp() {
+        TextView name = (TextView)realView.findViewById(R.id.statistic_most_time_app);
+        TextView days = (TextView)realView.findViewById(R.id.statistic_most_time_app_count);
+
+        if (appUsageList.isEmpty()) {
+            name.setText("暂无数据");
+            days.setText("暂无数据");
+
+            return;
+        }
+
+        AppUsage mostTime = null;
+        long mostTimeCount = -1;
+        for (AppUsage appUsage: appUsageList) {
+            long nowTime = 0;
+            for (Map.Entry<String, AppUsage.History> historyEntry:
+                    appUsage.getUsingHistory().entrySet()) {
+                nowTime += historyEntry.getValue().getTotalTime();
             }
-        });
+
+            if (nowTime > mostTimeCount) {
+                mostTimeCount = nowTime;
+                mostTime = appUsage;
+            }
+        }
+
+        if (mostTime != null) {
+            name.setText(mostTime.getRealName());
+            days.setText(""+ AppDayItem.transferLongToTime(mostTimeCount));
+        } else {
+            name.setText("暂无数据");
+            days.setText("暂无数据");
+        }
     }
-
-
 
 }

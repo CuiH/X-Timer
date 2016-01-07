@@ -6,186 +6,254 @@
     android:padding="8dp">
 
     <TextView
+        android:layout_margin="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#005555"
+        android:textSize="30sp"
         android:text="迄今为止:"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="您累计使用了我们的app:"/>
-
-            <TextView
-                android:id="@+id/statistic_day_length_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="天"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="您使用次数最多的应用是:"/>
-
-            <TextView
-                android:id="@+id/statistic_most_count_app"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="，共"/>
-
-            <TextView
-                android:id="@+id/statistic_most_count_app_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="次"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="您使用天数最多的应用是:"/>
-
-            <TextView
-                android:id="@+id/statistic_most_day_app"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="，共"/>
-
-            <TextView
-                android:id="@+id/statistic_most_day_app_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="天"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="您使用时间最多的应用是:"/>
-
-            <TextView
-                android:id="@+id/statistic_most_time_app"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="，共"/>
-
-            <TextView
-                android:id="@+id/statistic_most_time_app_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="您单次使用最长的应用是:"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="，共"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="，从"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" 到 "/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""/>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/testB"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="add limit to 微信"/>
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="#009999"
+                    android:textSize="20sp"
+                    android:text="您累计使用了我们的app:"/>
+
+                <TextView
+                    android:id="@+id/statistic_day_length_all"
+                    android:layout_width="70dp"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:textColor="#CC00FF"
+                    android:background="@drawable/text_background"
+                    android:textSize="20sp"
+                    android:text="2322"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="#009999"
+                    android:textSize="20sp"
+                    android:text="天"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:layout_gravity="center"
+                        android:textSize="20sp"
+                        android:text="您使用次数最多的应用是:"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_count_app"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:textColor="#DD002C"
+                        android:text=""/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="197dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="#009999"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:text="共"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_count_app_count"
+                        android:layout_width="70dp"
+                        android:layout_height="60dp"
+                        android:gravity="center"
+                        android:textColor="#CC00FF"
+                        android:background="@drawable/text_background"
+                        android:textSize="20sp"
+                        android:text="23"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:layout_gravity="center"
+                        android:textSize="20sp"
+                        android:text="次"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="15dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:textSize="20sp"
+                        android:text="您使用天数最多的应用是:"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_day_app"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:textColor="#DD002C"
+                        android:text=""/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="197dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:textSize="20sp"
+                        android:layout_gravity="center"
+                        android:text="共"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_day_app_count"
+                        android:layout_width="70dp"
+                        android:layout_height="60dp"
+                        android:gravity="center"
+                        android:textColor="#CC00FF"
+                        android:background="@drawable/text_background"
+                        android:textSize="20sp"
+                        android:text=""/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:textSize="20sp"
+                        android:layout_gravity="center"
+                        android:text="天"/>
+
+                </LinearLayout>
 
 
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:textSize="20sp"
+                        android:text="您使用时间最多的应用是:"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_time_app"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:textColor="#DD002C"
+                        android:text=""/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="197dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009999"
+                        android:layout_gravity="center"
+                        android:textSize="20sp"
+                        android:text="共"/>
+
+                    <TextView
+                        android:id="@+id/statistic_most_time_app_count"
+                        android:layout_width="70dp"
+                        android:layout_height="60dp"
+                        android:gravity="center"
+                        android:textColor="#CC00FF"
+                        android:background="@drawable/text_background"
+                        android:textSize="20sp"
+                        android:text=""/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:text="......"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
