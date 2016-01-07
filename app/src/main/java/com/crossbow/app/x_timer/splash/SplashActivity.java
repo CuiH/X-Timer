@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,8 +18,10 @@ import android.view.WindowManager;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,8 +36,10 @@ public class SplashActivity extends AppCompatActivity {
     // if exit the splash
     private boolean status;
 
+    // service
     private ServiceConnection connection;
     private TickTrackerService.UsageBinder usageBinder;
+
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -42,6 +47,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.splash_layout);
 
         initScreen();
+        checkFirstDayOfUse();
         initDelay();
 
         checkWorking();
@@ -70,6 +76,20 @@ public class SplashActivity extends AppCompatActivity {
         Window window = getWindow();
         //设置当前窗体为全屏显示
         window.setFlags(flag, flag);
+    }
+
+    // check if the user use this app the first day
+    public void checkFirstDayOfUse() {
+        SharedPreferences pref = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        if (pref.getBoolean("firstDay", true)) {
+            SharedPreferences.Editor editor = pref.edit();
+            Date today = new Date();
+            editor.putString("firstDate", AppUsage.getDateInString(today));
+            editor.putBoolean("firstDay", false);
+
+            editor.commit();
+        }
     }
 
     // init delay, after SPLASH_DISPLAY_LENGTH, main activity will be started
@@ -153,5 +173,7 @@ public class SplashActivity extends AppCompatActivity {
         }
         return false;
     }
+
+
 
 }
