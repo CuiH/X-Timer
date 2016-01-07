@@ -8,6 +8,7 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -16,6 +17,11 @@
         tools:replace="android:icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <activity android:name=".cloud.CloudActivity"
+            android:label="X-Timer"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
         <activity
             android:name=".splash.SplashActivity"

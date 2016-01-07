@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.crossbow.app.x_timer.cloud.CloudActivity;
 import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
@@ -53,6 +54,34 @@ public class MainActivity extends AppCompatActivity
 
     private MaterialDialog dialog;
 
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        int id = menuItem.getItemId();
+                        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+                        if (id == R.id.nav_main) {
+
+                        } else if (id == R.id.nav_cloud) {
+                            Intent intent = new Intent(MainActivity.this, CloudActivity.class);
+                            startActivity(intent);
+                        } else if (id == R.id.nav_setting) {
+
+                        } else if (id == R.id.nav_advice) {
+
+                        } else if (id == R.id.nav_about) {
+
+                        } else if (id == R.id.nav_check) {
+
+                        }
+                        drawer.closeDrawer(GravityCompat.START);
+                        return true;
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +102,9 @@ public class MainActivity extends AppCompatActivity
         if (!hasPermission()) {
             requestPermission();
         }
+
+        // set onSelect
+        setupDrawerContent((NavigationView)findViewById(R.id.nav_view));
 
         // connection
         initConnection();
@@ -129,24 +161,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_main) {
-
-        } else if (id == R.id.nav_cloud) {
-
-        } else if (id == R.id.nav_setting) {
-
-        } else if (id == R.id.nav_advice) {
-
-        } else if (id == R.id.nav_about) {
-
-        } else if (id == R.id.nav_check) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        // do nothing
         return true;
     }
 
