@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.crossbow.app.x_timer.detail.AnimatedExpandableListView;
 import com.crossbow.app.x_timer.R;
@@ -44,7 +45,7 @@ public class DayDetailActivity extends AppCompatActivity {
     private String date;
 
     private LinearLayout hasInfo;
-    private LinearLayout noInfo;
+    private RelativeLayout noInfo;
 
     // 联系service
     private TickTrackerService.UsageBinder usageBinder;
@@ -126,7 +127,7 @@ public class DayDetailActivity extends AppCompatActivity {
     // handle the layout
     private void initLayout() {
         hasInfo = (LinearLayout)findViewById(R.id.day_detail_yes);
-        noInfo = (LinearLayout)findViewById(R.id.day_detail_no);
+        noInfo = (RelativeLayout)findViewById(R.id.day_detail_no);
 
         if (initAdapter()) {
             hasInfo.setVisibility(View.VISIBLE);

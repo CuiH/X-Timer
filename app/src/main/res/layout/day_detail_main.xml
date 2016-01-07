@@ -14,29 +14,29 @@
             layout="@layout/toolbar_base" />
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/day_detail_no"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_margin="50dp"
-            android:layout_gravity="center"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="90dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/wunai"/>
+            android:src="@drawable/cloud_long"/>
 
         <TextView
-            android:layout_margin="10dp"
+            android:layout_marginLeft="81dp"
+            android:layout_marginTop="150dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="19sp"
-            android:layout_gravity="center"
-            android:textColor="#0A3F8F"
+            android:textSize="24sp"
+            android:textColor="#3a414b"
             android:text="当天没有使用记录哦"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/day_detail_yes"
