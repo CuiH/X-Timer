@@ -1,5 +1,6 @@
 package com.crossbow.app.x_timer.service;
 
+import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -8,14 +9,16 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
-
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.splash.SplashActivity;
@@ -28,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TickTrackerService extends Service {
-    private final String TAG = "service";
+    private static final String TAG = "service";
+    private static final int TIME_LIMIT = 1;
 
     // system service
     public UsageStatsManager usageStatsManager;
@@ -37,7 +41,6 @@ public class TickTrackerService extends Service {
     private FileUtils fileUtils;
 
     // thread
-
     private WatchingForegroundAppThread watchingForegroundAppThread;
 
     // app info
@@ -47,7 +50,7 @@ public class TickTrackerService extends Service {
     // binder
     private UsageBinder usageBinder;
 
-    //wathcing screen stats;
+    //watching screen stats;
     private ScreenStatusReceiver mScreenStatusReceiver;
     private boolean hasExperiencedScreenChanged;
     private KeyguardManager mKeyguardManager;
@@ -100,72 +103,6 @@ public class TickTrackerService extends Service {
 
     }
 
-    // thread that keeps watching apps
-    private class WatchingForegroundAppThread extends Thread {
-
-        private boolean running = true;
-
-        public synchronized void onThreadPause() {
-            running = false;
-        }
-
-        public synchronized void onThreadResume() {
-            running = true;
-            this.notify();
-        }
-
-        private void onThreadWait() {
-            try {
-                synchronized (this) {
-                    this.wait();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        @Override
-        public void run() {
-            while (true) {
-                if (running) {
-                    long ts = System.currentTimeMillis();
-                    List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
-                            (UsageStatsManager.INTERVAL_BEST, ts - 2000, ts);
-
-                    if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
-                        // find current app
-                        for (UsageStats usageStats : queryUsageStats) {
-                            if (currentApp == null || currentApp.getLastTimeUsed() <
-                                    usageStats.getLastTimeUsed()) {
-                                currentApp = usageStats;
-                            }
-                        }
-
-                        // check if app switched
-                        if (currentApp != null && (lastApp == null ||
-                                !lastApp.getPackageName().equals(currentApp.getPackageName()))) {
-                            if (lastApp != null)
-                                // check if last app is in the watching list
-                                if (lastApp != null && watchingList.containsKey(lastApp.getPackageName())) {
-                                    onAppSwitched();
-                                }
-                            lastApp = currentApp;
-                        }
-                    }
-                    // observe every second
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    onThreadWait();
-                }
-            }
-        }
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -190,7 +127,7 @@ public class TickTrackerService extends Service {
         initVariables();
         initWatchingList();
         initWatchingThread();
-        registSreenStatusReceiver();
+        registerScreenStatusReceiver();
     }
 
     @Override
@@ -211,7 +148,7 @@ public class TickTrackerService extends Service {
         storeWatchingList();
 
         unregisterReceiver(mScreenStatusReceiver);
-
+        Log.d(TAG, "onDestroy: 服务结束");
         super.onDestroy();
     }
 
@@ -326,7 +263,7 @@ public class TickTrackerService extends Service {
     }
 
     //注册监听器
-    private void registSreenStatusReceiver() {
+    private void registerScreenStatusReceiver() {
         mScreenStatusReceiver = new ScreenStatusReceiver();
         IntentFilter screenStatusIF = new IntentFilter();
         screenStatusIF.addAction(Intent.ACTION_SCREEN_ON);
@@ -379,6 +316,128 @@ public class TickTrackerService extends Service {
                                         screenOffTime);
                     }
                     hasExperiencedScreenChanged = true;
+                }
+            }
+        }
+    }
+
+    private void showBox() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("提示");
+        dialog.setIcon(android.R.drawable.ic_dialog_info);
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        dialog.setCancelable(false);
+        AlertDialog mDialog = dialog.create();
+        mDialog.getWindow().setType(WindowManager.LayoutParams
+                .TYPE_SYSTEM_ALERT);//设定为系统级警告，关键
+        mDialog.show();
+    }
+
+    private Handler timieLiimitHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == TIME_LIMIT) {
+                showBox();
+            }
+        }
+    };
+
+    // thread that keeps watching apps
+    private class WatchingForegroundAppThread extends Thread {
+
+        private boolean running = true;
+
+        private void onThreadWait() {
+            try {
+                synchronized (this) {
+                    Log.d(TAG, "onThreadWait: 线程等待");
+                    this.wait();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void checkLimit() {
+            if (watchingList.containsKey(currentApp.getPackageName())) {
+                AppUsage appUsage = watchingList.get(currentApp
+                        .getPackageName());
+                Log.d(TAG, "checkLimit: 内层" + currentApp.getPackageName());
+                long lastTimeStamp = mScreenStatusReceiver.getScreenOnTime();
+                long historyTime = 0;
+                lastTimeStamp = lastTimeStamp > currentApp.getLastTimeUsed()
+                        ? lastTimeStamp : currentApp.getLastTimeUsed();
+                if (appUsage.getUsingHistory().size() > 0) {
+                    historyTime = appUsage.getUsingHistory().get(AppUsage
+                            .getDateInString(new Date())).getTotalTime();
+                }
+                if (!appUsage.getPrompted() && historyTime + System
+                        .currentTimeMillis() - lastTimeStamp >= appUsage
+                        .getLimitLength()) {
+
+                    Log.d(TAG, "checkLimit: 时间检测" + (historyTime + System
+                            .currentTimeMillis() - lastTimeStamp));
+
+                    appUsage.setPrompted(true);
+                    Message message = new Message();
+                    message.what = TIME_LIMIT;
+                    timieLiimitHandler.sendMessage(message);
+                }
+            }
+        }
+
+        public synchronized void onThreadPause() {
+            Log.d(TAG, "onThreadPause: 线程暂停");
+            running = false;
+        }
+
+        public synchronized void onThreadResume() {
+            Log.d(TAG, "onThreadResume: 线程恢复");
+            running = true;
+            this.notify();
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                if (running) {
+                    long ts = System.currentTimeMillis();
+                    List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
+                            (UsageStatsManager.INTERVAL_BEST, ts - 2000, ts);
+                    if (currentApp != null) {
+                        checkLimit();
+                    }
+                    if (queryUsageStats != null && !queryUsageStats.isEmpty()) {
+                        // find current app
+                        for (UsageStats usageStats : queryUsageStats) {
+                            if (currentApp == null || currentApp.getLastTimeUsed() <
+                                    usageStats.getLastTimeUsed()) {
+                                currentApp = usageStats;
+                            }
+                        }
+                        // check if app switched
+                        if (currentApp != null && (lastApp == null ||
+                                !lastApp.getPackageName().equals(currentApp.getPackageName()))) {
+                            if (lastApp != null)
+                                // check if last app is in the watching list
+                                if (lastApp != null && watchingList.containsKey(lastApp.getPackageName())) {
+                                    onAppSwitched();
+                                }
+                            lastApp = currentApp;
+                        }
+                    }
+                    // observe every second
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    onThreadWait();
                 }
             }
         }

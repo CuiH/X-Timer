@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by CuiH on 2015/12/29.
- */
 public class AppUsage {
     // 应用包名
     private String packageName;
@@ -16,6 +13,12 @@ public class AppUsage {
     private String realName;
     // 记录应用使用历史（按天）
     private Map<String, History> usingHistory;
+    //是否设置了时限
+    private boolean hasLimit;
+    //是否已经提示过
+    private boolean prompted = false;
+    //时限的长短
+    private long limitLength = 10000;
 
     public AppUsage(String pkgName, String rName) {
         packageName = pkgName;
@@ -31,6 +34,18 @@ public class AppUsage {
         return realName;
     }
 
+    public long getLimitLength() {
+        return limitLength;
+    }
+
+    public boolean getPrompted() {
+        return prompted;
+    }
+
+    public void setPrompted(boolean prompted) {
+        this.prompted = prompted;
+    }
+
     public Map<String, History> getUsingHistory() {
         return usingHistory;
     }
@@ -40,7 +55,7 @@ public class AppUsage {
         // 是新的一天
         if (usingHistory.isEmpty() || !usingHistory.containsKey(date)) {
             addUsingHistory(date, duration, endTime);
-
+            prompted = false;
             return true;
         }
 
@@ -114,7 +129,6 @@ public class AppUsage {
 
             return updated;
         }
-
 
         // 详细使用记录
         public class Record {
