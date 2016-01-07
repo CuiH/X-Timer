@@ -3,28 +3,28 @@
     <group android:id="@+id/nav_first_group">
         <item
             android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_home_24dp"
             android:title="首页" />
     </group>
 
     <group android:id="@+id/nav_second_group">
         <item
             android:id="@+id/nav_cloud"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_cloud_upload_24dp"
             android:title="云备份" />
     </group>
     <group android:id="@+id/nav_third_group">
         <item
             android:id="@+id/nav_advice"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_mail_24dp"
             android:title="提供反馈" />
         <item
             android:id="@+id/nav_check"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_autorenew_24dp"
             android:title="检查更新" />
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_description_24dp"
             android:title="关于我们" />
 
 
@@ -32,7 +32,7 @@
     <group android:id="@+id/nav_froth_group">
         <item
             android:id="@+id/nav_setting"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="设置" />
+            android:icon="@drawable/ic_directions_walk_24dp"
+            android:title="退出" />
     </group>
 </menu>

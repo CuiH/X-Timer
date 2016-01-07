@@ -87,7 +87,7 @@
 
     <Button
         android:id="@+id/history_ok"
-        android:background="@drawable/my_button1"
+        android:background="@drawable/my_button3"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:layout_width="match_parent"
