@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ public class HistoryAppListAdapter extends ArrayAdapter<HistoryAppInfo> {
             view = LayoutInflater.from(getContext()).inflate(resourceId, null);
             vh.tv = (TextView)view.findViewById(R.id.history_app_name);
             vh.rb = (RadioButton)view.findViewById(R.id.history_app_radio);
+            vh.iv = (ImageView)view.findViewById(R.id.history_app_icon);
             view.setTag(vh);
         } else {
             view = convertView;
@@ -41,6 +43,7 @@ public class HistoryAppListAdapter extends ArrayAdapter<HistoryAppInfo> {
         }
 
         vh.tv.setText(nowApp.getRealName());
+        vh.iv.setImageDrawable(nowApp.getIcon());
         if (nowApp.getSelected()) vh.rb.setChecked(true);
         else vh.rb.setChecked(false);
 
@@ -50,6 +53,7 @@ public class HistoryAppListAdapter extends ArrayAdapter<HistoryAppInfo> {
     private static class ViewHolder {
         TextView tv;
         RadioButton rb;
+        ImageView iv;
     }
 
 }

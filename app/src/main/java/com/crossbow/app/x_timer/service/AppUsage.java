@@ -72,7 +72,9 @@ public class AppUsage {
         // 是新的一天
         if (usingHistory.isEmpty() || !usingHistory.containsKey(date)) {
             addUsingHistory(date, duration, endTime);
-            prompted = false;
+
+            if (hasLimit) prompted = false;
+
             return true;
         }
 

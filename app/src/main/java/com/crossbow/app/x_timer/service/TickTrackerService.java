@@ -108,11 +108,19 @@ public class TickTrackerService extends Service {
             AppUsage app = watchingList.get(pkgName);
             if (app == null) return false;
 
-            app.setLimitLength(limit);
-            app.setPrompted(false);
-            app.setHasLimit(true);
+            if (limit == 0) {
+                app.setLimitLength(Integer.MAX_VALUE);
+                app.setPrompted(false);
+                app.setHasLimit(false);
 
-            return true;
+                return true;
+            } else {
+                app.setLimitLength(limit);
+                app.setPrompted(false);
+                app.setHasLimit(true);
+
+                return true;
+            }
         }
 
     }
