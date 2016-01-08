@@ -4,6 +4,7 @@ package com.crossbow.app.x_timer.cloud;
  * Created by kinsang on 16-1-8.
  */
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -15,13 +16,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.timer.TimerAppInfo;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * Created by xiaoyanhao on 16/1/6.
@@ -43,6 +49,13 @@ public class SignPageFragment extends Fragment {
     private Button signup_btn;
 
     private ProgressDialog dialog;
+    private ProgressDialog dialog2;
+
+    private MaterialDialog mMaterialDialog;
+    private MaterialDialog mMaterialDialog2;
+    private View dialogView;
+
+
 
     private static final int SIGNIN = 1;
     private static final int SIGNUP = 2;
@@ -74,8 +87,10 @@ public class SignPageFragment extends Fragment {
                                 signin_error.setText(error);
                             }
                         } else {
-                            // 登录成功
-                            // String userID = object.getString("userID");
+                            Toast.makeText(getActivity(), "登陆成功", Toast.LENGTH_LONG).show();
+                            dialog.cancel();
+
+                            showUploadDialog();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -95,7 +110,10 @@ public class SignPageFragment extends Fragment {
                                 signup_error.setText(error);
                             }
                         } else {
-                            // 注册成功
+                            Toast.makeText(getActivity(), "注册成功", Toast.LENGTH_LONG).show();
+                            dialog.cancel();
+
+                            showUploadDialog();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -104,6 +122,7 @@ public class SignPageFragment extends Fragment {
                 default:
                     break;
             }
+
             dialog.cancel();
         }
     };
@@ -167,6 +186,82 @@ public class SignPageFragment extends Fragment {
             setSignUpView(view);
         }
         return view;
+    }
+
+    private void showUploadDialog() {
+        dialogView = LayoutInflater.from(getActivity())
+                .inflate(R.layout.cloud_dialog, null);
+
+        Button click = (Button)dialogView.findViewById(R.id.cloud_upload);
+        click.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaterialDialog.dismiss();
+
+                dialog2 = ProgressDialog.show(getActivity(), "正在上传", "请稍等", true, true);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog2.dismiss();
+
+                        mMaterialDialog2 = new MaterialDialog(getActivity())
+                                .setTitle("上传成功！")
+                                .setMessage("")
+                                .setPositiveButton("返回", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mMaterialDialog2.dismiss();
+                                        getActivity().finish();
+                                    }
+                                });
+
+                        mMaterialDialog2.show();
+                    }
+                }, 5000);
+            }
+        });
+
+        Button click2 = (Button)dialogView.findViewById(R.id.cloud_download);
+        click2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaterialDialog.dismiss();
+
+                dialog2 = ProgressDialog.show(getActivity(), "正在下载", "请稍等", true, true);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog2.dismiss();
+
+                        mMaterialDialog2 = new MaterialDialog(getActivity())
+                                .setTitle("下载成功！")
+                                .setMessage("")
+                                .setPositiveButton("返回", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mMaterialDialog2.dismiss();
+                                        getActivity().finish();
+                                    }
+                                });
+
+                        mMaterialDialog2.show();
+                    }
+                }, 8000);
+            }
+        });
+
+        mMaterialDialog = new MaterialDialog(getActivity())
+                .setTitle("云备份")
+                .setMessage("")
+                .setNegativeButton("取消", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+
+        mMaterialDialog.setContentView(dialogView);
+        mMaterialDialog.show();
     }
 
     private void setSignInView(View view) {

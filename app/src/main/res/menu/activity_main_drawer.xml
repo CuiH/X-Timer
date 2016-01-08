@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:id="@+id/nav_first_group">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/nav_first_group">
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_home_24dp"
             android:title="首页" />
     </group>
 
-    <group android:id="@+id/nav_second_group">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/nav_second_group">
         <item
             android:id="@+id/nav_cloud"
             android:icon="@drawable/ic_cloud_upload_24dp"
             android:title="云备份" />
     </group>
-    <group android:id="@+id/nav_third_group">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/nav_third_group">
         <item
             android:id="@+id/nav_advice"
             android:icon="@drawable/ic_mail_24dp"
@@ -29,7 +35,9 @@
 
 
     </group>
-    <group android:id="@+id/nav_froth_group">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/nav_froth_group">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_directions_walk_24dp"
