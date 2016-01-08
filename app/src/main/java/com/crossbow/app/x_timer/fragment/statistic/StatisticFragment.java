@@ -2,26 +2,19 @@ package com.crossbow.app.x_timer.fragment.statistic;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
 import com.crossbow.app.x_timer.detail.app_detail.AppDayItem;
-import com.crossbow.app.x_timer.detail.app_detail.AppDetailActivity;
 import com.crossbow.app.x_timer.service.AppUsage;
-import com.crossbow.app.x_timer.service.TickTrackerService;
 import com.crossbow.app.x_timer.utils.FileUtils;
 import com.devspark.progressfragment.ProgressFragment;
 
@@ -162,7 +155,7 @@ public class StatisticFragment extends ProgressFragment {
         calendar.setTime(today);
         int day2 = calendar.get(Calendar.DAY_OF_YEAR);
 
-        textView.setText(""+(day2-day1));
+        textView.setText(""+(day2-day1) + "\n天");
     }
 
     // 获取存储的所有app信息
@@ -200,7 +193,7 @@ public class StatisticFragment extends ProgressFragment {
 
         if (mostUsed != null) {
             name.setText(mostUsed.getRealName());
-            count.setText(""+mostUsedCount);
+            count.setText(""+mostUsedCount + "\n次");
         } else {
             name.setText("暂无数据");
             count.setText("暂无数据");
@@ -232,7 +225,7 @@ public class StatisticFragment extends ProgressFragment {
 
         if (mostUsed != null) {
             name.setText(mostUsed.getRealName());
-            days.setText(""+mostUsedCount);
+            days.setText(""+mostUsedCount + "\n天");
         } else {
             name.setText("暂无数据");
             days.setText("暂无数据");
