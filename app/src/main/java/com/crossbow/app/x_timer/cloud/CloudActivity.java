@@ -31,7 +31,7 @@ public class CloudActivity extends AppCompatActivity {
 
     // handle toolbar
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar)findViewById(R.id.timer_toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.cloud_toolbar);
         setSupportActionBar(toolbar);
 
         // back
