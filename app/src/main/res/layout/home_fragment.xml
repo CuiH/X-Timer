@@ -36,32 +36,37 @@
         android:background="#ffffff">
 
         <ImageView
-            android:layout_marginTop="50dp"
             android:layout_width="360dp"
             android:layout_height="360dp"
             android:scaleType="fitXY"
+            android:layout_centerInParent="true"
             android:src="@drawable/main_bubble" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="180dp"
-            android:layout_centerHorizontal="true"
-            android:textSize="28sp"
-            android:text="暂无应用数据"/>
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/go_to_setting"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="225dp"
-            android:text="逛逛设置"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:background="@drawable/my_button3"
-            android:shadowRadius="5" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:text="暂无应用数据"/>
 
+            <Button
+                android:id="@+id/go_to_setting"
+                android:text="去设置页面逛逛"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:layout_width="160dp"
+                android:layout_marginTop="15dp"
+                android:layout_height="35dp"
+                android:background="@drawable/my_button3"
+                android:layout_gravity="center"
+                android:shadowRadius="5" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

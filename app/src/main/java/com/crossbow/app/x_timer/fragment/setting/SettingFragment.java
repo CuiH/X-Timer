@@ -192,7 +192,13 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                 }
 
                 break;
+
             case 3:
+                Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+
+                break;
+
+            case 4:
                 if (!mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "请先开启监听服务", Toast.LENGTH_SHORT).show();
                     return;
@@ -203,7 +209,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 
                 break;
 
-            case 4:
+            case 5:
                 if (!mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "请先开启监听服务", Toast.LENGTH_SHORT).show();
                     return;
@@ -214,7 +220,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 
                 break;
 
-            case 5:
+            case 6:
                 if (mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "请先关闭监听服务", Toast.LENGTH_SHORT).show();
                     return;
@@ -241,7 +247,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                         }).show();
 
                 break;
-            case 6:
+            case 7:
                 if (mainActivity.isWorking()) {
                     Toast.makeText(mainActivity, "请先关闭监听服务", Toast.LENGTH_SHORT).show();
                     return;
@@ -268,7 +274,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                         }).show();
 
                 break;
-            case 7:
+            case 8:
                 dialog = new MaterialDialog(mainActivity)
                         .setTitle("已知缺陷")
                         .setMessage("1. 暂时不支持android5.0（api21）以下版本\n" +
@@ -285,7 +291,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                 dialog.show();
 
                 break;
-            case 8:
+            case 9:
                 if (mainActivity.hasPermission()) {
                     dialog = new MaterialDialog(mainActivity)
                             .setTitle("如何使用")
@@ -342,18 +348,20 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
         settingList.add(setting2);
         SettingInfo setting3 = new SettingInfo("通知栏图标", "显示或隐藏通知栏图标", 2, 1);
         settingList.add(setting3);
-        SettingInfo setting4 = new SettingInfo("管理监听列表", "添加或删除要监听的应用", 1, 1);
+        SettingInfo setting4 = new SettingInfo("是否记录走路时间", "开启后将记录您走路时使用应用的时间", 2, 1);
         settingList.add(setting4);
-        SettingInfo setting5 = new SettingInfo("设置定时提醒", "为应用设置使用时间提醒", 1, 1);
+        SettingInfo setting5 = new SettingInfo("管理监听列表", "添加或删除要监听的应用", 1, 1);
         settingList.add(setting5);
-        SettingInfo setting6 = new SettingInfo("清除历史记录", "清空所有应用使用记录", 1, 1);
+        SettingInfo setting6 = new SettingInfo("设置定时提醒", "为应用设置使用时间提醒", 1, 1);
         settingList.add(setting6);
-        SettingInfo setting7 = new SettingInfo("清空监听列表", "", 1, 2);
+        SettingInfo setting7 = new SettingInfo("清除历史记录", "清空所有应用使用记录", 1, 1);
         settingList.add(setting7);
-        SettingInfo setting8 = new SettingInfo("已知待修复缺陷", "", 1, 2);
+        SettingInfo setting8 = new SettingInfo("清空监听列表", "", 1, 2);
         settingList.add(setting8);
-        SettingInfo setting9 = new SettingInfo("帮助", "使用说明", 1, 1);
+        SettingInfo setting9 = new SettingInfo("已知待修复缺陷", "", 1, 2);
         settingList.add(setting9);
+        SettingInfo setting10 = new SettingInfo("帮助", "使用说明", 1, 1);
+        settingList.add(setting10);
     }
 
 }
