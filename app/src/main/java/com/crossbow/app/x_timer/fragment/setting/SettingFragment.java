@@ -246,7 +246,13 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                                 sDialog.setTitleText("已删除")
                                         .setContentText("应用历史记录已清空")
                                         .setConfirmText("好的")
-                                        .setConfirmClickListener(null)
+                                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                            @Override
+                                            public void onClick(SweetAlertDialog sDialog) {
+                                                mainActivity.refreshViewPager();
+                                                sDialog.dismiss();
+                                            }
+                                        })
                                         .showCancelButton(false)
                                         .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                             }

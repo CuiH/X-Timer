@@ -20,7 +20,7 @@
             android:layout_height="40dp"
             android:layout_marginBottom="6dp"
             android:layout_marginTop="5dp"
-            android:text="上传"/>
+            android:text="备份"/>
 
         <Button
             android:id="@+id/cloud_download"
@@ -31,7 +31,7 @@
             android:layout_height="40dp"
             android:layout_marginBottom="6dp"
             android:layout_marginTop="20dp"
-            android:text="下载"/>
+            android:text="同步"/>
 
     </LinearLayout>
 

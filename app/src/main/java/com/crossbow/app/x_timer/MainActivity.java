@@ -29,7 +29,10 @@ import android.widget.Toast;
 import com.crossbow.app.x_timer.cloud.CloudActivity;
 import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
 import com.crossbow.app.x_timer.service.TickTrackerService;
+import com.crossbow.app.x_timer.utils.FileUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 
 import me.drakeet.materialdialog.MaterialDialog;
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             Intent intent = new Intent(MainActivity.this, CloudActivity.class);
-                            startActivity(intent);
+                            startActivityForResult(intent, 1);
                         }
                     }, 200);
 
@@ -113,6 +116,8 @@ public class MainActivity extends AppCompatActivity
         // fragment and radio group
         initTab();
 
+        printAllFile();
+
         // permission
         if (!hasPermission()) {
             requestPermission();
@@ -128,6 +133,30 @@ public class MainActivity extends AppCompatActivity
 //            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
 //                    Uri.parse("package:" + getPackageName()));
 //            startActivityForResult(intent, 1);
+//        }
+    }
+
+    private void printAllFile() {
+//        FileUtils fileUtils = new FileUtils(this);
+//        fileUtils.deleteALLFiles();
+//
+//
+//        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+//        File[] files = root.listFiles();
+//        for (File file : files) {
+//            System.out.println(new String(file.getName()));
+//            try {
+//                FileInputStream fis = openFileInput(file.getName());
+//                byte[] contents = new byte[fis.available()];
+//
+//                fis.read(contents);
+//                fis.close();
+//
+//                System.out.println(new String(contents));
+//            }catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
 //        }
     }
 
@@ -304,7 +333,7 @@ public class MainActivity extends AppCompatActivity
 
     // refresh the viewpager
     public void refreshViewPager() {
-        System.out.println("im here");
+        // System.out.println("im here");
 
         viewPager.setAdapter(pagerAdapter);
         pagerAdapter.setAllFirstTime(true);

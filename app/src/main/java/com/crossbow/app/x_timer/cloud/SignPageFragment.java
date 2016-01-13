@@ -21,12 +21,17 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.MainActivity;
 import com.crossbow.app.x_timer.R;
+import com.crossbow.app.x_timer.service.AppUsage;
 import com.crossbow.app.x_timer.timer.TimerAppInfo;
+import com.crossbow.app.x_timer.utils.FileUtils;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.util.ArrayList;
 
 import me.drakeet.materialdialog.MaterialDialog;
 
@@ -57,10 +62,12 @@ public class SignPageFragment extends Fragment {
     private MaterialDialog mMaterialDialog3;
     private View dialogView;
 
-
+    private String userID;
 
     private static final int SIGNIN = 1;
     private static final int SIGNUP = 2;
+    private static final int UPLOAD = 3;
+    private static final int DOWNLOAD = 4;
 
     private static final String ERROR1 = "user existed";
     private static final String ERROR2 = "user not existed";
@@ -89,6 +96,7 @@ public class SignPageFragment extends Fragment {
                                 signin_error.setText(error);
                             }
                         } else {
+                            userID = object.getString("userID");
                             Toast.makeText(getActivity(), "登陆成功", Toast.LENGTH_LONG).show();
                             dialog.cancel();
 
@@ -121,6 +129,43 @@ public class SignPageFragment extends Fragment {
                         e.printStackTrace();
                     }
                     break;
+
+                case UPLOAD:
+                    dialog2.dismiss();
+
+                    mMaterialDialog2 = new MaterialDialog(getActivity())
+                            .setTitle("备份成功！")
+                            .setMessage("")
+                            .setPositiveButton("返回", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mMaterialDialog2.dismiss();
+                                    getActivity().setResult(getActivity().RESULT_OK);
+                                    getActivity().finish();
+                                }
+                            });
+
+                    mMaterialDialog2.show();
+
+                    break;
+
+                case DOWNLOAD:
+                    dialog2.dismiss();
+
+                    mMaterialDialog2 = new MaterialDialog(getActivity())
+                            .setTitle("同步成功!")
+                            .setMessage("")
+                            .setPositiveButton("返回", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mMaterialDialog2.dismiss();
+                                    getActivity().setResult(getActivity().RESULT_OK);
+                                    getActivity().finish();
+                                }
+                            });
+
+                    mMaterialDialog2.show();
+
                 default:
                     break;
             }
@@ -128,6 +173,8 @@ public class SignPageFragment extends Fragment {
             dialog.cancel();
         }
     };
+
+
 
     private View.OnClickListener signinListener = new View.OnClickListener() {
         @Override
@@ -212,25 +259,8 @@ public class SignPageFragment extends Fragment {
                 mMaterialDialog.dismiss();
 
                 dialog2 = ProgressDialog.show(getActivity(), "正在上传", "请稍等", true, true);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog2.dismiss();
-
-                        mMaterialDialog2 = new MaterialDialog(getActivity())
-                                .setTitle("上传成功！")
-                                .setMessage("")
-                                .setPositiveButton("返回", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mMaterialDialog2.dismiss();
-                                        getActivity().finish();
-                                    }
-                                });
-
-                        mMaterialDialog2.show();
-                    }
-                }, 5000);
+                CloudBackup.getInstance().upload(getActivity(), getAllFileNames(),
+                        userID, handler, UPLOAD);
             }
         });
 
@@ -241,25 +271,7 @@ public class SignPageFragment extends Fragment {
                 mMaterialDialog.dismiss();
 
                 dialog2 = ProgressDialog.show(getActivity(), "正在下载", "请稍等", true, true);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog2.dismiss();
-
-                        mMaterialDialog2 = new MaterialDialog(getActivity())
-                                .setTitle("下载失败。")
-                                .setMessage("")
-                                .setPositiveButton("返回", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mMaterialDialog2.dismiss();
-                                        getActivity().finish();
-                                    }
-                                });
-
-                        mMaterialDialog2.show();
-                    }
-                }, 8000);
+                CloudBackup.getInstance().download(getContext(), handler, DOWNLOAD, userID);
             }
         });
 
@@ -294,6 +306,23 @@ public class SignPageFragment extends Fragment {
         // signup_btn.setOnClickListener(signupListener);
         signup_btn.setClickable(false);
         signup_btn.setBackgroundColor(Color.parseColor("#5C6457"));
+    }
+
+    private ArrayList<String> getAllFileNames() {
+        ArrayList<String> list = new ArrayList<>();
+        File root = new File("/data/data/com.crossbow.app.x_timer/files");
+        File[] files = root.listFiles();
+
+        if (files == null || files.length == 0) return list;
+
+        for (File file : files) {
+            String name = file.getName();
+            if (name.startsWith("flag_") || name.equals("appList")) {
+                list.add(name);
+            }
+        }
+
+        return list;
     }
 
 }

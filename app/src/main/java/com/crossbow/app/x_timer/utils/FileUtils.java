@@ -43,7 +43,7 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     // 保存监听列表
