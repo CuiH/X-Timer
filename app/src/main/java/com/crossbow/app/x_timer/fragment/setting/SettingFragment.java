@@ -204,6 +204,9 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                     return;
                 }
 
+                if (mainActivity.isStartingActivity) return;
+                mainActivity.isStartingActivity = true;
+
                 Intent intent = new Intent(mainActivity, AddAppActivity.class);
                 startActivityForResult(intent, 1);
 
@@ -214,6 +217,9 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
                     Toast.makeText(mainActivity, "请先开启监听服务", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                if (mainActivity.isStartingActivity) return;
+                mainActivity.isStartingActivity = true;
 
                 Intent intent2 = new Intent(mainActivity, TimerActivity.class);
                 startActivityForResult(intent2, 1);
@@ -277,10 +283,12 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
             case 8:
                 dialog = new MaterialDialog(mainActivity)
                         .setTitle("已知缺陷")
-                        .setMessage("1. 暂时不支持android5.0（api21）以下版本\n" +
+                        .setMessage("1. 暂时不支持android5.0(api21)以下版本\n" +
                                 "2. 如果使用监听中的应用越过午夜12点，使用时间将会" +
                                 "被算在第二天\n" +
-                                "3. 由横屏切换竖屏会出错，建议不要使用横屏\n")
+                                "3. 由横屏切换竖屏会出错，建议不要使用横屏\n" +
+                                "4. 关机时数据可能不会被自动保存，所以建议在关机前打开一次应用界面" +
+                                "以实现自动保存")
                         .setPositiveButton("知道了", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

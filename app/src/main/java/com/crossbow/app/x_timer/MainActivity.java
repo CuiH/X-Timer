@@ -7,8 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity
 
     private MaterialDialog dialog;
 
+    public boolean isStartingActivity;
+
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -63,20 +68,28 @@ public class MainActivity extends AppCompatActivity
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
                 if (id == R.id.nav_main) {
-
+                    viewPager.setCurrentItem(0);
                 } else if (id == R.id.nav_cloud) {
-                    // drawer.closeDrawer(GravityCompat.START);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(MainActivity.this, CloudActivity.class);
+                            startActivity(intent);
+                        }
+                    }, 200);
 
-                    Intent intent = new Intent(MainActivity.this, CloudActivity.class);
-                    startActivity(intent);
-                } else if (id == R.id.nav_setting) {
-
+                    drawer.closeDrawers();
+                } else if (id == R.id.nav_quit) {
+                    finish();
                 } else if (id == R.id.nav_advice) {
-
+                    Toast.makeText(MainActivity.this, "未实现",Toast.LENGTH_SHORT).show();
+                    drawer.closeDrawers();
                 } else if (id == R.id.nav_about) {
-
+                    Toast.makeText(MainActivity.this, "未实现",Toast.LENGTH_SHORT).show();
+                    drawer.closeDrawers();
                 } else if (id == R.id.nav_check) {
-
+                    Toast.makeText(MainActivity.this, "未实现",Toast.LENGTH_SHORT).show();
+                    drawer.closeDrawers();
                 }
 
                 return true;
@@ -123,6 +136,10 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onResume: ");
 
         if (isWorking()) bindTickService();
+        isStartingActivity = false;
+
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     @Override
@@ -368,7 +385,6 @@ public class MainActivity extends AppCompatActivity
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
-    // TODO not finished
     // if no permission, show info
     private void requestPermission() {
         dialog = new MaterialDialog(this)

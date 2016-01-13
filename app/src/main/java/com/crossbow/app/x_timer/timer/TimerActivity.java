@@ -136,7 +136,8 @@ public class TimerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mMaterialDialog2 = new MaterialDialog(TimerActivity.this)
                         .setTitle("关于定时提醒")
-                        .setMessage("为应用设置定时提醒时间后，如果您当日使用该应用的时间超过了" +
+                        .setMessage("只可以为监听中的应用设置定时提醒。为应用设置定时提醒时间后，" +
+                                "如果您当日使用该应用的时间超过了" +
                                 "您为其设定的时长，您将会收到提醒（同一个应用同一天只会收到" +
                                 "一次超时提醒）。")
                         .setPositiveButton("知道了", new View.OnClickListener() {
@@ -261,8 +262,13 @@ public class TimerActivity extends AppCompatActivity {
                                     Toast.makeText(TimerActivity.this, "成功",
                                             Toast.LENGTH_SHORT).show();
 
-                                    nowApp.setHasTimer(true);
-                                    nowApp.setLimit(time * 1000);
+                                    if (time == 0) {
+                                        nowApp.setHasTimer(false);
+                                    } else {
+                                        nowApp.setHasTimer(true);
+                                        nowApp.setLimit(time * 1000);
+                                    }
+
                                     timerAdapter.notifyDataSetChanged();
 
                                     setResult(RESULT_OK);

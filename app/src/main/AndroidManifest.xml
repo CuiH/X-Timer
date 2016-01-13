@@ -40,7 +40,8 @@
         <activity
             android:name=".add_app.AddAppActivity"
             android:label="选择你想要监听的应用"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode='singleTask'>
         </activity>
 
         <activity
@@ -53,14 +54,17 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <activity android:name=".cloud.CloudActivity"
+        <activity
+            android:name=".cloud.CloudActivity"
             android:label="注册/登陆"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
             android:name=".timer.TimerActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="为应用设置定时提醒"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode='singleTask'>
         </activity>
 
         <service android:name=".service.TickTrackerService"/>

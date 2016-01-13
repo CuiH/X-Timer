@@ -234,7 +234,7 @@ public class SignPageFragment extends Fragment {
                         dialog2.dismiss();
 
                         mMaterialDialog2 = new MaterialDialog(getActivity())
-                                .setTitle("下载成功！")
+                                .setTitle("下载失败。")
                                 .setMessage("")
                                 .setPositiveButton("返回", new View.OnClickListener() {
                                     @Override

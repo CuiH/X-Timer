@@ -53,7 +53,7 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/radio_settings_black_24px"
             android:button="@null"
-            android:text="统计"
+            android:text="设置"
             android:gravity="center"
             android:textColor="#555555"
             android:textSize="12sp" />

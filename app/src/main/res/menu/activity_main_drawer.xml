@@ -39,7 +39,7 @@
         android:checkableBehavior="single"
         android:id="@+id/nav_froth_group">
         <item
-            android:id="@+id/nav_setting"
+            android:id="@+id/nav_quit"
             android:icon="@drawable/ic_directions_walk_24dp"
             android:title="退出" />
     </group>

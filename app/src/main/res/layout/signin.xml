@@ -25,7 +25,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_description_24dp"/>
+                android:src="@drawable/person"/>
             <EditText
                 android:id="@+id/signin_user"
                 android:layout_width="match_parent"
@@ -41,7 +41,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_description_24dp"/>
+                android:src="@drawable/lock"/>
             <EditText
                 android:id="@+id/signin_pass"
                 android:inputType="textPassword"
