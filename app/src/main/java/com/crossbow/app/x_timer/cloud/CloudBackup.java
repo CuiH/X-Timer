@@ -34,6 +34,8 @@ public class CloudBackup {
     }
 
     public void upload(Context context, String fileName, String userID) {
+//        uploadFile(fileName, userID);
+
         try {
             FileInputStream fis = context.openFileInput(fileName);
             byte[] contents = new byte[fis.available()];
@@ -41,7 +43,7 @@ public class CloudBackup {
             fis.read(contents);
             fis.close();
 
-            uploadFile(new String(contents), URL + userID);
+            uploadFile(new String(contents), userID);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,22 +53,34 @@ public class CloudBackup {
         downloadFile(handler, type, URL + userID + ext);
     }
 
-    private void uploadFile(final String file, final String url) {
+    private void uploadFile(final String file, final String userID) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection connection = null;
+                String prefix = "--", end = "\r\n", boundary = "******";
                 try {
-                    connection = (HttpURLConnection)((new URL(url)).openConnection());
+                    connection = (HttpURLConnection)((new URL(URL + userID)).openConnection());
 
                     connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Content-Type", "multipart/form-data");
+                    connection.setRequestProperty("Charset", "UTF-8");
+                    connection.setRequestProperty("Connection", "Keep-Alive");
+                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setUseCaches(false);
                     connection.setConnectTimeout(40000);
                     connection.setReadTimeout(40000);
 
                     DataOutputStream out = new DataOutputStream(connection.getOutputStream());
 
+                    out.writeBytes(prefix + boundary + end);
+                    out.writeBytes("Content-Disposition: form-data; name=\"dataset\"; filename=\""+userID+ext+"\""+end);
+                    out.writeBytes(end);
                     out.writeBytes(file);
+                    out.writeBytes(end);
+                    out.writeBytes(prefix + boundary + prefix + end);
+                    out.flush();
 
                     InputStream in = connection.getInputStream();
 
@@ -80,7 +94,7 @@ public class CloudBackup {
                     }
 
                     Log.e("response", response.toString());
-
+                    out.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

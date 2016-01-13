@@ -13,7 +13,7 @@
         android:layout_marginTop="5dp"
         android:text="迄今为止，您:"
         android:textColor="#005555"
-        android:textSize="30sp"/>
+        android:textSize="28sp"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -254,7 +254,7 @@
                             android:gravity="center"
                             android:text="1000"
                             android:textColor="#FFFFFF"
-                            android:textSize="20sp"/>
+                            android:textSize="16.5sp"/>
 
                     </LinearLayout>
 

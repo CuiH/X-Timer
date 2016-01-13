@@ -5,6 +5,7 @@ package com.crossbow.app.x_timer.cloud;
  */
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,7 @@ public class SignPageFragment extends Fragment {
 
     private MaterialDialog mMaterialDialog;
     private MaterialDialog mMaterialDialog2;
+    private MaterialDialog mMaterialDialog3;
     private View dialogView;
 
 
@@ -170,7 +172,6 @@ public class SignPageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
         dialog = new ProgressDialog(getContext());
-//        dialog.setTitle("请稍候");
     }
 
     @Override
@@ -182,6 +183,18 @@ public class SignPageFragment extends Fragment {
             view = inflater.inflate(R.layout.signin, container, false);
             setSignInView(view);
         } else {
+            mMaterialDialog3 = new MaterialDialog(getActivity())
+                    .setTitle("提示")
+                    .setMessage("注册暂未开放，请使用测试账号登录，详见说明文档。")
+                    .setPositiveButton("确定", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mMaterialDialog3.dismiss();
+                        }
+                    });
+
+            mMaterialDialog3.show();
+
             view = inflater.inflate(R.layout.signup, container, false);
             setSignUpView(view);
         }
@@ -278,7 +291,9 @@ public class SignPageFragment extends Fragment {
         signup_pass2 = (EditText)view.findViewById(R.id.signup_pass2);
         signup_error = (TextView)view.findViewById(R.id.signup_error);
         signup_btn = (Button)view.findViewById(R.id.signup_btn);
-        signup_btn.setOnClickListener(signupListener);
+        // signup_btn.setOnClickListener(signupListener);
+        signup_btn.setClickable(false);
+        signup_btn.setBackgroundColor(Color.parseColor("#5C6457"));
     }
 
 }

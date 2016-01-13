@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (id == R.id.nav_main) {
                     viewPager.setCurrentItem(0);
+                    drawer.closeDrawers();
                 } else if (id == R.id.nav_cloud) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
