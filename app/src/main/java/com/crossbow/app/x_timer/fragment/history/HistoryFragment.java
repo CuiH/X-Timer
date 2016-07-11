@@ -133,12 +133,6 @@ public class HistoryFragment extends ProgressFragment {
     private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             initCalendar(realView);
             initCalendarButton(realView);
             initAppList(realView);
