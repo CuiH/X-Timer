@@ -212,7 +212,8 @@ public class HistoryFragment extends ProgressFragment {
 				Date firstDayOfTheNextMonth = getTheFirstDayOfTheNextMonth(now);
 				Date firstDayOfTheNextNextMonth = getTheFirstDayOfTheNextMonth(firstDayOfTheNextMonth);
 
-				calendar.init(firstDayOfTheNextMonth, firstDayOfTheNextNextMonth).withSelectedDate(firstDayOfTheNextMonth);
+				calendar.init(firstDayOfTheNextMonth, firstDayOfTheNextNextMonth)
+					.withSelectedDate(firstDayOfTheNextMonth);
 			}
 		});
 
@@ -222,9 +223,10 @@ public class HistoryFragment extends ProgressFragment {
 			public void onClick(View v) {
 				Date now = calendar.getSelectedDate();
 				Date firstDayOfTheLastMonth = getTheFirstDayOfTheLastMonth(now);
-				Date firstDatOfTheMonth = getTheFirstDayOfTheMonth(now);
+				Date firstDayOfTheMonth = getTheFirstDayOfTheMonth(now);
 
-				calendar.init(firstDayOfTheLastMonth, firstDatOfTheMonth).withSelectedDate(firstDayOfTheLastMonth);
+				calendar.init(firstDayOfTheLastMonth, firstDayOfTheMonth)
+					.withSelectedDate(firstDayOfTheLastMonth);
 			}
 		});
 
@@ -232,7 +234,13 @@ public class HistoryFragment extends ProgressFragment {
 		nextYear.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+				Date now = calendar.getSelectedDate();
+				Date firstDayOfTheMonthOfNextYear = getTheFirstDayOfTheMonthOfNextYear(now);
+				Date firstDayOfTheNextMonthOfNextYear =
+					getTheFirstDayOfTheNextMonth(firstDayOfTheMonthOfNextYear);
+
+				calendar.init(firstDayOfTheMonthOfNextYear, firstDayOfTheNextMonthOfNextYear)
+					.withSelectedDate(firstDayOfTheMonthOfNextYear);
 			}
 		});
 
@@ -240,7 +248,13 @@ public class HistoryFragment extends ProgressFragment {
 		lastYear.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(mainActivity, "未实现", Toast.LENGTH_SHORT).show();
+				Date now = calendar.getSelectedDate();
+				Date firstDayOfTheMonthOfLastYear = getTheFirstDayOfTheMonthOfLastYear(now);
+				Date firstDayOfTheNextMonthOfLastYear =
+					getTheFirstDayOfTheNextMonth(firstDayOfTheMonthOfLastYear);
+
+				calendar.init(firstDayOfTheMonthOfLastYear, firstDayOfTheNextMonthOfLastYear)
+					.withSelectedDate(firstDayOfTheMonthOfLastYear);
 			}
 		});
 	}
@@ -346,6 +360,30 @@ public class HistoryFragment extends ProgressFragment {
 		tem.set(Calendar.DATE, tem.getActualMinimum(Calendar.DAY_OF_MONTH));
 		// 上个月的第一天
 		tem.add(Calendar.MONTH, -1);
+
+		return tem.getTime();
+	}
+
+	private Date getTheFirstDayOfTheMonthOfLastYear(Date day) {
+		Calendar tem = Calendar.getInstance();
+		// 当前日期
+		tem.setTime(day);
+		// 设置当前日期为当前月的第一天
+		tem.set(Calendar.DATE, tem.getActualMinimum(Calendar.DAY_OF_MONTH));
+		// 上一年
+		tem.add(Calendar.YEAR, -1);
+
+		return tem.getTime();
+	}
+
+	private Date getTheFirstDayOfTheMonthOfNextYear(Date day) {
+		Calendar tem = Calendar.getInstance();
+		// 当前日期
+		tem.setTime(day);
+		// 设置当前日期为当前月的第一天
+		tem.set(Calendar.DATE, tem.getActualMinimum(Calendar.DAY_OF_MONTH));
+		// 下一年
+		tem.add(Calendar.YEAR, 1);
 
 		return tem.getTime();
 	}

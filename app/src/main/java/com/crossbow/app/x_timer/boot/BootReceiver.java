@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.crossbow.app.x_timer.service.AutoPersistenceService;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 
 /**
@@ -23,11 +24,15 @@ public class BootReceiver extends BroadcastReceiver {
         mContext = context;
 
         if (shouldStartWhenBoot()) {
-            Intent startService = new Intent(context, TickTrackerService.class);
-            startService.putExtra("showNotification", shouldShowNotification());
-            mContext.startService(startService);
+            Intent startTickTrackerService = new Intent(context, TickTrackerService.class);
+			startTickTrackerService.putExtra("showNotification", shouldShowNotification());
+            mContext.startService(startTickTrackerService);
 
             Toast.makeText(context, "监听已开启", Toast.LENGTH_LONG).show();
+
+			// 同时开启自动保存
+            Intent startAutoPersistenceService = new Intent(context, AutoPersistenceService.class);
+			mContext.startService(startAutoPersistenceService);
         }
     }
 

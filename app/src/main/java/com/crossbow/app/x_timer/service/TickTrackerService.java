@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class TickTrackerService extends Service {
 
-    private static final String TAG = "service";
+    private static final String TAG = "TickTrackerService";
     private static final int TIME_LIMIT = 1;
 
     // system service
@@ -76,7 +76,7 @@ public class TickTrackerService extends Service {
         }
 
         // remove a app from watching list
-        public boolean removeAppFromWatchingLise(String appName, boolean shouldShow) {
+        public boolean removeAppFromWatchingList(String appName, boolean shouldShow) {
             if (!isInWatchingList(appName)) return false;
 
             watchingList.remove(appName);
@@ -212,9 +212,10 @@ public class TickTrackerService extends Service {
                         }
 
                         if (theLastAppInOneSecond != null) {
-                            // if no last, last = now
+                            // if no last or changed
                             if (!lastApp.isHasInstance() || !theLastAppInOneSecond
                                     .getPackageName().equals(lastApp.getPkgName())) {
+                                // update current
                                 if (watchingList
                                         .containsKey(theLastAppInOneSecond.getPackageName())) {
                                     currentApp.setAll(theLastAppInOneSecond.getPackageName(),
@@ -224,12 +225,16 @@ public class TickTrackerService extends Service {
                                             theLastAppInOneSecond.getLastTimeUsed(), false);
                                 }
 
-                                if (lastApp.isInWatchingList()) onAppSwitched();
+								// add a record
+                                if (lastApp.isHasInstance() && lastApp.isInWatchingList())
+									onAppSwitched();
 
+								// update last
                                 lastApp.setAll(currentApp.getPkgName(),
                                         currentApp.getStartTime(), currentApp.isInWatchingList());
 
-                                Log.d(TAG, "app changed to" + currentApp.getPkgName() + " at " + currentApp.getStartTime());
+                                Log.d(TAG, "app changed to" + currentApp.getPkgName() +
+									" at " + currentApp.getStartTime());
                             }
                         }
                     }

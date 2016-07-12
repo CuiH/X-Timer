@@ -237,7 +237,7 @@ public class AddAppActivity extends AppCompatActivity {
 
                 // clear all
                 for (String name: selectedList) {
-                    usageBinder.removeAppFromWatchingLise(name, false);
+                    usageBinder.removeAppFromWatchingList(name, false);
                 }
 
                 // add new list
