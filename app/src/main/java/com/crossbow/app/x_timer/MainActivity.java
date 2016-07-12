@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-        // progressDialog = ProgressDialog.show(this, "正在处理", "请稍等", true, false);
-
         // toolbar
         initToolbar();
 
@@ -333,8 +331,6 @@ public class MainActivity extends AppCompatActivity
 
     // refresh the viewpager
     public void refreshViewPager() {
-        // System.out.println("im here");
-
         viewPager.setAdapter(pagerAdapter);
         pagerAdapter.setAllFirstTime(true);
         viewPager.setCurrentItem(3);

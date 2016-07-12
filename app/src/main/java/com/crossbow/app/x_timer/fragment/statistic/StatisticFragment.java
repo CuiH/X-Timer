@@ -29,243 +29,254 @@ import java.util.Map;
  */
 public class StatisticFragment extends ProgressFragment {
 
-    private final String TAG = "StatisticFragment";
+	private final String TAG = "StatisticFragment";
 
-    private MainActivity mainActivity;
+	private MainActivity mainActivity;
 
-    // 异步用
-    private View realView;
-    private boolean firstTime;
-    private boolean isVisible;
-    private boolean forceRefresh;
+	// 异步用
+	private View realView;
+	private boolean firstTime;
+	private boolean isVisible;
+	private boolean forceRefresh;
 
-    private List<AppUsage> appUsageList;
+	private List<AppUsage> appUsageList;
+
+	// 更新UI的数据
+	private int dayLengthUsed;
+	private String mostCountUsedAppName;
+	private String mostCountUsedAppCount;
 
 
-    public StatisticFragment() { }
+	public StatisticFragment() { }
 
-    @SuppressLint("ValidFragment")
-    public StatisticFragment(MainActivity activity) {
-        mainActivity = activity;
-        firstTime = true;
-        forceRefresh = true;
-    }
+	@SuppressLint("ValidFragment")
+	public StatisticFragment(MainActivity activity) {
+		mainActivity = activity;
+		firstTime = true;
+		forceRefresh = true;
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView: ");
+		Log.d(TAG, "onCreateView: ");
 
-        realView = inflater.inflate(R.layout.statistic_fragment, container, false);
+		realView = inflater.inflate(R.layout.statistic_fragment, container, false);
 
-        return inflater.inflate(R.layout.fragment_loading, container, false);
-    }
+		return inflater.inflate(R.layout.fragment_loading, container, false);
+	}
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        Log.d(TAG, "onActivityCreated: ");
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		Log.d(TAG, "onActivityCreated: ");
 
-        super.onActivityCreated(savedInstanceState);
-        setContentView(realView);
-        setContentShown(false);
+		super.onActivityCreated(savedInstanceState);
+		setContentView(realView);
+		setContentShown(false);
 
-        if (isVisible) {
-            if (firstTime) {
-                new MyAsyncTask().execute();
+		if (isVisible) {
+			if (firstTime) {
+				new MyAsyncTask().execute();
 
-                firstTime = false;
-            }
-        }
-    }
+				firstTime = false;
+			}
+		}
+	}
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        Log.d(TAG, "setUserVisibleHint: ");
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		Log.d(TAG, "setUserVisibleHint: ");
 
-        if (isVisibleToUser) {
-            isVisible = true;
+		if (isVisibleToUser) {
+			isVisible = true;
 
-            if (forceRefresh) {
-                new MyAsyncTask().execute();
+			if (forceRefresh) {
+				new MyAsyncTask().execute();
 
-                forceRefresh = false;
-            }
-        } else {
-            isVisible = false;
-        }
+				forceRefresh = false;
+			}
+		} else {
+			isVisible = false;
+		}
 
-        super.setUserVisibleHint(isVisibleToUser);
-    }
+		super.setUserVisibleHint(isVisibleToUser);
+	}
 
-    // 异步更新UI
-    private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
+	// 异步更新UI
+	private class MyAsyncTask extends AsyncTask<Void, Integer, Void> {
+		@Override
+		protected Void doInBackground(Void... params) {
+			initDayLengthUsed();
+			getStoredAppInfo();
+			initMostCountUsedApp();
+			initMostDayUsedApp();
+			initMosTimeUsedApp();
 
-            initDayLengthUsed();
-            getStoredAppInfo();
-            initMostCountUsedApp();
-            initMostDayUsedApp();
-            initMosTimeUsedApp();
+			return null;
+		}
 
-            return null;
-        }
+		@Override
+		protected void onPostExecute(Void result) {
+			initUI();
 
-        @Override
-        protected void onPostExecute(Void result) {
-            setContentShown(true);
-        }
-    }
+			setContentShown(true);
+		}
+	}
 
-    public void setFirstTime(boolean flag) {
-        firstTime = flag;
-    }
+	public void setFirstTime(boolean flag) {
+		firstTime = flag;
+	}
 
-    public void setForceRefresh(boolean flag) {
-        forceRefresh = flag;
-    }
+	public void setForceRefresh(boolean flag) {
+		forceRefresh = flag;
+	}
 
-    // 计算共使用了X-Timer多少天
-    private void initDayLengthUsed() {
-        TextView textView = (TextView)realView.findViewById(R.id.statistic_day_length_all);
+	// 计算共使用了X-Timer多少天
+	private void initDayLengthUsed() {
+		SharedPreferences pref = mainActivity
+			.getSharedPreferences("settings", Context.MODE_PRIVATE);
 
-        SharedPreferences pref = mainActivity
-                .getSharedPreferences("settings", Context.MODE_PRIVATE);
+		Date today = new Date();
 
-        Date today = new Date();
+		String startString = pref.getString("firstDate", AppUsage.getDateInString(today));
+		Date startDate = new Date();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			startDate = sdf.parse(startString);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        String startString = pref.getString("firstDate", AppUsage.getDateInString(today));
-        Date startDate = new Date();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            startDate = sdf.parse(startString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		int day1 = calendar.get(Calendar.DAY_OF_YEAR);
+		calendar.setTime(today);
+		int day2 = calendar.get(Calendar.DAY_OF_YEAR);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startDate);
-        int day1 = calendar.get(Calendar.DAY_OF_YEAR);
-        calendar.setTime(today);
-        int day2 = calendar.get(Calendar.DAY_OF_YEAR);
+		dayLengthUsed = day2-day1;
+	}
 
-        textView.setText(""+(day2-day1) + "\n天");
-    }
+	// 使用次数最多的应用
+	private void initMostCountUsedApp() {
+		if (appUsageList.isEmpty()) {
+			mostCountUsedAppCount = "暂无数据";
+			mostCountUsedAppName = "暂无数据";
 
-    // 获取存储的所有app信息
-    private void getStoredAppInfo() {
-        FileUtils fileUtils = new FileUtils(mainActivity);
-        appUsageList = fileUtils.getAllStoredApp();
-    }
+			return;
+		}
 
-    // 使用次数最多的应用
-    private void initMostCountUsedApp() {
-        TextView name = (TextView)realView.findViewById(R.id.statistic_most_count_app);
-        TextView count = (TextView)realView.findViewById(R.id.statistic_most_count_app_count);
+		AppUsage mostUsed = null;
+		long mostUsedCount = -1;
+		for (AppUsage appUsage: appUsageList) {
+			long nowCount = 0;
+			for (Map.Entry<String, AppUsage.History> historyEntry:
+				appUsage.getUsingHistory().entrySet()) {
+				nowCount += historyEntry.getValue().getUsedCount();
+			}
 
-        if (appUsageList.isEmpty()) {
-            name.setText("暂无数据");
-            count.setText("暂无数据");
+			if (nowCount > mostUsedCount) {
+				mostUsedCount = nowCount;
+				mostUsed = appUsage;
+			}
+		}
 
-            return;
-        }
+		if (mostUsed != null) {
+			mostCountUsedAppName = mostUsed.getRealName();
+			mostCountUsedAppCount = ""+mostUsedCount + "\n次";
+		} else {
+			mostCountUsedAppCount = "暂无数据";
+			mostCountUsedAppName = "暂无数据";
+		}
+	}
 
-        AppUsage mostUsed = null;
-        long mostUsedCount = -1;
-        for (AppUsage appUsage: appUsageList) {
-            long nowCount = 0;
-            for (Map.Entry<String, AppUsage.History> historyEntry:
-                    appUsage.getUsingHistory().entrySet()) {
-                nowCount += historyEntry.getValue().getUsedCount();
-            }
+	// 使用天数最多的应用
+	private void initMostDayUsedApp() {
+		TextView name = (TextView)realView.findViewById(R.id.statistic_most_day_app);
+		TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
 
-            if (nowCount > mostUsedCount) {
-                mostUsedCount = nowCount;
-                mostUsed = appUsage;
-            }
-        }
+		if (appUsageList.isEmpty()) {
+			name.setText("暂无数据");
+			days.setText("暂无数据");
 
-        if (mostUsed != null) {
-            name.setText(mostUsed.getRealName());
-            count.setText(""+mostUsedCount + "\n次");
-        } else {
-            name.setText("暂无数据");
-            count.setText("暂无数据");
-        }
-    }
+			return;
+		}
 
-    // 使用天数最多的应用
-    private void initMostDayUsedApp() {
-        TextView name = (TextView)realView.findViewById(R.id.statistic_most_day_app);
-        TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
+		AppUsage mostUsed = null;
+		long mostUsedCount = -1;
+		for (AppUsage appUsage: appUsageList) {
+			long nowCount = appUsage.getUsingHistory().entrySet().size();
 
-        if (appUsageList.isEmpty()) {
-            name.setText("暂无数据");
-            days.setText("暂无数据");
+			if (nowCount > mostUsedCount) {
+				mostUsedCount = nowCount;
+				mostUsed = appUsage;
+			}
+		}
 
-            return;
-        }
+		if (mostUsed != null) {
+			name.setText(mostUsed.getRealName());
+			days.setText(""+mostUsedCount + "\n天");
+		} else {
+			name.setText("暂无数据");
+			days.setText("暂无数据");
+		}
+	}
 
-        AppUsage mostUsed = null;
-        long mostUsedCount = -1;
-        for (AppUsage appUsage: appUsageList) {
-            long nowCount = appUsage.getUsingHistory().entrySet().size();
+	// 使用时间最多的应用
+	private void initMosTimeUsedApp() {
+		TextView name = (TextView)realView.findViewById(R.id.statistic_most_time_app);
+		TextView days = (TextView)realView.findViewById(R.id.statistic_most_time_app_count);
 
-            if (nowCount > mostUsedCount) {
-                mostUsedCount = nowCount;
-                mostUsed = appUsage;
-            }
-        }
+		if (appUsageList.isEmpty()) {
+			name.setText("暂无数据");
+			days.setText("暂无数据");
 
-        if (mostUsed != null) {
-            name.setText(mostUsed.getRealName());
-            days.setText(""+mostUsedCount + "\n天");
-        } else {
-            name.setText("暂无数据");
-            days.setText("暂无数据");
-        }
-    }
+			return;
+		}
 
-    // 使用时间最多的应用
-    private void initMosTimeUsedApp() {
-        TextView name = (TextView)realView.findViewById(R.id.statistic_most_time_app);
-        TextView days = (TextView)realView.findViewById(R.id.statistic_most_time_app_count);
+		AppUsage mostTime = null;
+		long mostTimeCount = -1;
+		for (AppUsage appUsage: appUsageList) {
+			long nowTime = 0;
+			for (Map.Entry<String, AppUsage.History> historyEntry:
+				appUsage.getUsingHistory().entrySet()) {
+				nowTime += historyEntry.getValue().getTotalTime();
+			}
 
-        if (appUsageList.isEmpty()) {
-            name.setText("暂无数据");
-            days.setText("暂无数据");
+			if (nowTime > mostTimeCount) {
+				mostTimeCount = nowTime;
+				mostTime = appUsage;
+			}
+		}
 
-            return;
-        }
+		if (mostTime != null) {
+			name.setText(mostTime.getRealName());
+			days.setText(""+ AppDayItem.transferLongToTime(mostTimeCount));
+		} else {
+			name.setText("暂无数据");
+			days.setText("暂无数据");
+		}
+	}
 
-        AppUsage mostTime = null;
-        long mostTimeCount = -1;
-        for (AppUsage appUsage: appUsageList) {
-            long nowTime = 0;
-            for (Map.Entry<String, AppUsage.History> historyEntry:
-                    appUsage.getUsingHistory().entrySet()) {
-                nowTime += historyEntry.getValue().getTotalTime();
-            }
+	private void initUI() {
+		TextView textView = (TextView)realView.findViewById(R.id.statistic_day_length_all);
+		textView.setText(""+dayLengthUsed + "\n天");
 
-            if (nowTime > mostTimeCount) {
-                mostTimeCount = nowTime;
-                mostTime = appUsage;
-            }
-        }
+		TextView name = (TextView)realView.findViewById(R.id.statistic_most_count_app);
+		TextView count = (TextView)realView.findViewById(R.id.statistic_most_count_app_count);
+		name.setText(mostCountUsedAppName);
+		count.setText(mostCountUsedAppCount);
+	}
 
-        if (mostTime != null) {
-            name.setText(mostTime.getRealName());
-            days.setText(""+ AppDayItem.transferLongToTime(mostTimeCount));
-        } else {
-            name.setText("暂无数据");
-            days.setText("暂无数据");
-        }
-    }
+	// 获取存储的所有app信息
+	private void getStoredAppInfo() {
+		FileUtils fileUtils = new FileUtils(mainActivity);
+		appUsageList = fileUtils.getAllStoredApp();
+	}
 
 }
