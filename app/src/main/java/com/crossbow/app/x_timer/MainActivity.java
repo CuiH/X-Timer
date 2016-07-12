@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.crossbow.app.x_timer.cloud.CloudActivity;
 import com.crossbow.app.x_timer.fragment.MyPagerAdapter;
+import com.crossbow.app.x_timer.service.AutoPersistenceService;
 import com.crossbow.app.x_timer.service.TickTrackerService;
 import com.crossbow.app.x_timer.utils.FileUtils;
 
@@ -448,6 +449,10 @@ public class MainActivity extends AppCompatActivity
         bindTickService();
 
         Toast.makeText(this, "监听已开启", Toast.LENGTH_LONG).show();
+
+		// 同时开启自动保存
+		Intent autoPersistenceService = new Intent(this, AutoPersistenceService.class);
+		startService(autoPersistenceService);
     }
 
     // stop the TickTracker Service
@@ -457,6 +462,10 @@ public class MainActivity extends AppCompatActivity
         unbindTickService();
 
         Toast.makeText(this, "监听已关闭", Toast.LENGTH_LONG).show();
+
+		// 同时关闭自动保存
+		Intent autoPersistenceService = new Intent(this, AutoPersistenceService.class);
+		stopService(autoPersistenceService);
     }
 
     // bind the service
@@ -522,4 +531,5 @@ public class MainActivity extends AppCompatActivity
         }
         return false;
     }
+
 }

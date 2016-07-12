@@ -70,11 +70,15 @@
 
         <service android:name=".service.TickTrackerService"/>
 
+        <service android:name=".service.AutoPersistenceService"/>
+
         <receiver android:name=".boot.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".auto_persistence.AlarmReceiver"/>
 
     </application>
 
