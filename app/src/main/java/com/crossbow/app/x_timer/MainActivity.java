@@ -498,7 +498,9 @@ public class MainActivity extends AppCompatActivity
     public boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
+
+        // 100偏小，会获取不到相应的进程，导致出现错误
+        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(500);
 
         if (myList.size() <= 0) {
             return false;

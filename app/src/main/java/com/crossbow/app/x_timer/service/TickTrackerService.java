@@ -520,6 +520,8 @@ public class TickTrackerService extends Service {
         public void handleMessage(Message msg) {
             if (msg.what == TIME_LIMIT) {
                 AppUsage target = (AppUsage)msg.obj;
+
+                //这里需要申请权限
                 showBox(target.getRealName(), target.getLimitLength());
             }
         }
