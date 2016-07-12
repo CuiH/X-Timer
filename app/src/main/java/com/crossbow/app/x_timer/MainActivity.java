@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -33,6 +36,7 @@ import com.crossbow.app.x_timer.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import me.drakeet.materialdialog.MaterialDialog;
@@ -92,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(MainActivity.this, "未实现",Toast.LENGTH_SHORT).show();
                     drawer.closeDrawers();
                 } else if (id == R.id.nav_check) {
-                    Toast.makeText(MainActivity.this, "未实现",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "已是最新版",Toast.LENGTH_SHORT).show();
                     drawer.closeDrawers();
                 }
 
@@ -126,12 +130,6 @@ public class MainActivity extends AppCompatActivity
 
         // connection
         initConnection();
-
-//        if (!Settings.canDrawOverlays(this)) {
-//            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                    Uri.parse("package:" + getPackageName()));
-//            startActivityForResult(intent, 1);
-//        }
     }
 
     private void printAllFile() {
@@ -298,7 +296,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_share:
-                Toast.makeText(this, "未实现", Toast.LENGTH_SHORT).show();
+				Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.crossbow);
+				Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
+
+				Intent intent = new Intent();
+				ComponentName componentName = new ComponentName("com.tencent.mm",
+					"com.tencent.mm.ui.tools.ShareToTimeLineUI");
+				intent.setComponent(componentName);
+				intent.setAction("android.intent.action.SEND");
+				intent.setType("image/*");
+				intent.putExtra("Kdescription", "我正在用X-Timer，很好用，大家也一起来试试吧！");
+				intent.putExtra(Intent.EXTRA_STREAM, uri);
+				startActivity(intent);
+
                 break;
             default:
                 break;
@@ -412,7 +422,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // if no permission, show info
-    private void requestPermission() {
+    public void requestPermission() {
         dialog = new MaterialDialog(this)
                 .setTitle("缺少权限")
                 .setMessage("由于我们的应用将监听手机APP使用情况，您需要为其配置权限，" +

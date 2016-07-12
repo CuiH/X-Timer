@@ -187,7 +187,6 @@
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_gravity="end"
-                            android:autoText="false"
                             android:background="@drawable/mycircle"
                             android:elevation="6dp"
                             android:gravity="center"
@@ -255,7 +254,6 @@
                             android:text="1000"
                             android:textColor="#FFFFFF"
                             android:textSize="16.5sp"/>
-
                     </LinearLayout>
 
                 </LinearLayout>

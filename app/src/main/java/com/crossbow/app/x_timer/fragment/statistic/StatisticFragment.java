@@ -42,9 +42,14 @@ public class StatisticFragment extends ProgressFragment {
 	private List<AppUsage> appUsageList;
 
 	// 更新UI的数据
-	private int dayLengthUsed;
+	private String dayLengthUsed;
 	private String mostCountUsedAppName;
 	private String mostCountUsedAppCount;
+	private String mostDayUsedAppName;
+	private String mostDayUsedAppDays;
+	private String mostTimeUsedAppName;
+	private String mostTimeUsedAppTime;
+
 
 
 	public StatisticFragment() { }
@@ -116,7 +121,7 @@ public class StatisticFragment extends ProgressFragment {
 			getStoredAppInfo();
 			initMostCountUsedApp();
 			initMostDayUsedApp();
-			initMosTimeUsedApp();
+			initMostTimeUsedApp();
 
 			return null;
 		}
@@ -159,7 +164,7 @@ public class StatisticFragment extends ProgressFragment {
 		calendar.setTime(today);
 		int day2 = calendar.get(Calendar.DAY_OF_YEAR);
 
-		dayLengthUsed = day2-day1;
+		dayLengthUsed = "" + (day2-day1) + "\n天";
 	}
 
 	// 使用次数最多的应用
@@ -197,12 +202,9 @@ public class StatisticFragment extends ProgressFragment {
 
 	// 使用天数最多的应用
 	private void initMostDayUsedApp() {
-		TextView name = (TextView)realView.findViewById(R.id.statistic_most_day_app);
-		TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
-
 		if (appUsageList.isEmpty()) {
-			name.setText("暂无数据");
-			days.setText("暂无数据");
+			mostDayUsedAppDays = "暂无数据";
+			mostDayUsedAppName = "暂无数据";
 
 			return;
 		}
@@ -219,22 +221,19 @@ public class StatisticFragment extends ProgressFragment {
 		}
 
 		if (mostUsed != null) {
-			name.setText(mostUsed.getRealName());
-			days.setText(""+mostUsedCount + "\n天");
+			mostDayUsedAppName = mostUsed.getRealName();
+			mostDayUsedAppDays = "" + mostUsedCount + "\n天";
 		} else {
-			name.setText("暂无数据");
-			days.setText("暂无数据");
+			mostDayUsedAppDays = "暂无数据";
+			mostDayUsedAppName = "暂无数据";
 		}
 	}
 
 	// 使用时间最多的应用
-	private void initMosTimeUsedApp() {
-		TextView name = (TextView)realView.findViewById(R.id.statistic_most_time_app);
-		TextView days = (TextView)realView.findViewById(R.id.statistic_most_time_app_count);
-
+	private void initMostTimeUsedApp() {
 		if (appUsageList.isEmpty()) {
-			name.setText("暂无数据");
-			days.setText("暂无数据");
+			mostTimeUsedAppTime = "暂无数据";
+			mostTimeUsedAppName = "暂无数据";
 
 			return;
 		}
@@ -255,22 +254,33 @@ public class StatisticFragment extends ProgressFragment {
 		}
 
 		if (mostTime != null) {
-			name.setText(mostTime.getRealName());
-			days.setText(""+ AppDayItem.transferLongToTime(mostTimeCount));
+			mostTimeUsedAppName = mostTime.getRealName();
+			mostTimeUsedAppTime = ""+ AppDayItem.transferLongToTime(mostTimeCount);
 		} else {
-			name.setText("暂无数据");
-			days.setText("暂无数据");
+			mostTimeUsedAppTime = "暂无数据";
+			mostTimeUsedAppName = "暂无数据";
 		}
 	}
 
 	private void initUI() {
 		TextView textView = (TextView)realView.findViewById(R.id.statistic_day_length_all);
-		textView.setText(""+dayLengthUsed + "\n天");
+		textView.setText(dayLengthUsed);
 
-		TextView name = (TextView)realView.findViewById(R.id.statistic_most_count_app);
+		TextView name1 = (TextView)realView.findViewById(R.id.statistic_most_count_app);
 		TextView count = (TextView)realView.findViewById(R.id.statistic_most_count_app_count);
-		name.setText(mostCountUsedAppName);
+		name1.setText(mostCountUsedAppName);
 		count.setText(mostCountUsedAppCount);
+
+		TextView name2 = (TextView)realView.findViewById(R.id.statistic_most_day_app);
+		TextView days = (TextView)realView.findViewById(R.id.statistic_most_day_app_count);
+		name2.setText(mostDayUsedAppName);
+		days.setText(mostDayUsedAppDays);
+
+		TextView name3 = (TextView)realView.findViewById(R.id.statistic_most_time_app);
+		TextView time = (TextView)realView.findViewById(R.id.statistic_most_time_app_count);
+		name3.setText(mostTimeUsedAppName);
+		time.setText(mostTimeUsedAppTime);
+
 	}
 
 	// 获取存储的所有app信息

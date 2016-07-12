@@ -122,13 +122,14 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 			}
 
 			initSettingList();
-			initAdapter(realView);
 
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
+			initAdapter(realView);
+
 			setContentShown(true);
 		}
 	}
@@ -147,6 +148,12 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 
 		switch (position) {
 			case 0:
+				if (!mainActivity.hasPermission()) {
+					mainActivity.requestPermission();
+					
+					break;
+				}
+
 				if (mainActivity.isWorking()) {
 					mainActivity.stopTickService();
 					tv.setChecked(false);
