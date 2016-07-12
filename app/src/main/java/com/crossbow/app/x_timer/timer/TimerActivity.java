@@ -312,7 +312,7 @@ public class TimerActivity extends AppCompatActivity {
     public boolean isWorking() {
         ActivityManager myAM = (ActivityManager)getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(100);
+        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(500);
 
         if (myList.size() <= 0) {
             return false;
