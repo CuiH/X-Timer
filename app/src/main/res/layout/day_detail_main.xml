@@ -54,7 +54,7 @@
             android:textColor="#0A3F8F"
             android:text="每个应用只显示最多五次记录"/>
 
-        <com.crossbow.app.x_timer.detail.AnimatedExpandableListView
+        <com.crossbow.app.x_timer.util.listview.AnimatedExpandableListView
             android:id="@+id/day_detail_list"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"

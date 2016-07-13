@@ -21,9 +21,11 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.crossbow.app.x_timer.R;
-import com.crossbow.app.x_timer.detail.app_detail.AppDayItem;
-import com.crossbow.app.x_timer.splash.SplashActivity;
-import com.crossbow.app.x_timer.utils.FileUtils;
+import com.crossbow.app.x_timer.entity.AppDayItem;
+import com.crossbow.app.x_timer.activity.SplashActivity;
+import com.crossbow.app.x_timer.persistence.FileUtils;
+import com.crossbow.app.x_timer.entity.AppUsage;
+import com.crossbow.app.x_timer.entity.TickAppInfo;
 
 import java.util.ArrayList;
 import java.util.Date;

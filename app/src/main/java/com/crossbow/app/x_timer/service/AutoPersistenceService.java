@@ -13,7 +13,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.crossbow.app.x_timer.auto_persistence.AlarmReceiver;
+import com.crossbow.app.x_timer.receiver.AlarmReceiver;
 
 import java.util.List;
 

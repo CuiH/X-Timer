@@ -21,7 +21,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".splash.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleInstance">
@@ -32,37 +32,37 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleInstance">
         </activity>
 
         <activity
-            android:name=".add_app.AddAppActivity"
+            android:name=".activity.AddAppActivity"
             android:label="选择你想要监听的应用"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode='singleTask'>
         </activity>
 
         <activity
-            android:name=".detail.day_detail.DayDetailActivity"
+            android:name=".activity.DayDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".detail.app_detail.AppDetailActivity"
+            android:name=".activity.AppDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".cloud.CloudActivity"
+            android:name=".activity.CloudActivity"
             android:label="注册/登陆"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".timer.TimerActivity"
+            android:name=".activity.TimerActivity"
             android:label="为应用设置定时提醒"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode='singleTask'>
@@ -72,13 +72,13 @@
 
         <service android:name=".service.AutoPersistenceService"/>
 
-        <receiver android:name=".boot.BootReceiver">
+        <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".auto_persistence.AlarmReceiver"/>
+        <receiver android:name=".receiver.AlarmReceiver"/>
 
     </application>
 
