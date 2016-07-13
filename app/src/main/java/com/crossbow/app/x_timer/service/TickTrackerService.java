@@ -195,8 +195,9 @@ public class TickTrackerService extends Service {
                 if (running) {
                     long nowTime = System.currentTimeMillis();
                     List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats
-                            (UsageStatsManager.INTERVAL_BEST, nowTime - 2000, nowTime);
+                            (UsageStatsManager.INTERVAL_BEST, nowTime - 5000, nowTime);
 
+                    // 先检查当前应用的定时提醒是否触发
                     if (currentApp.isHasInstance() && currentApp.isInWatchingList()) {
                         checkLimit();
                     }
@@ -212,32 +213,36 @@ public class TickTrackerService extends Service {
                         }
 
                         if (theLastAppInOneSecond != null) {
-                            // if no last or changed
-                            if (!lastApp.isHasInstance() || !theLastAppInOneSecond
-                                    .getPackageName().equals(lastApp.getPkgName())) {
-                                // update current
-                                if (watchingList
-                                        .containsKey(theLastAppInOneSecond.getPackageName())) {
-                                    currentApp.setAll(theLastAppInOneSecond.getPackageName(),
-                                            theLastAppInOneSecond.getLastTimeUsed(), true);
-                                } else {
-                                    currentApp.setAll(theLastAppInOneSecond.getPackageName(),
-                                            theLastAppInOneSecond.getLastTimeUsed(), false);
-                                }
+							boolean currentAppHasInstance = currentApp.isHasInstance();
+							// no current or app changed
+                            if (!currentAppHasInstance || !theLastAppInOneSecond
+								.getPackageName().equals(currentApp.getPkgName())) {
+								// if has current, update last
+								if (currentAppHasInstance) {
+									lastApp.setAll(currentApp.getPkgName(),
+										currentApp.getStartTime(), currentApp.isInWatchingList());
 
-								// add a record
-                                if (lastApp.isHasInstance() && lastApp.isInWatchingList())
-									onAppSwitched();
+									if (lastApp.isInWatchingList()) {
+										onAppSwitched();
+									}
+								}
 
-								// update last
-                                lastApp.setAll(currentApp.getPkgName(),
-                                        currentApp.getStartTime(), currentApp.isInWatchingList());
+								// update current
+								if (watchingList
+									.containsKey(theLastAppInOneSecond.getPackageName())) {
+									currentApp.setAll(theLastAppInOneSecond.getPackageName(),
+										theLastAppInOneSecond.getLastTimeUsed(), true);
+								} else {
+									currentApp.setAll(theLastAppInOneSecond.getPackageName(),
+										theLastAppInOneSecond.getLastTimeUsed(), false);
+								}
 
-                                Log.d(TAG, "app changed to" + currentApp.getPkgName() +
+                                Log.d(TAG, "app changed to " + currentApp.getPkgName() +
 									" at " + currentApp.getStartTime());
                             }
                         }
                     }
+
                     // observe every second
                     try {
                         Thread.sleep(1000);
