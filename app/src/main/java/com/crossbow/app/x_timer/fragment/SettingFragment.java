@@ -243,7 +243,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 					.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
 						@Override
 						public void onClick(SweetAlertDialog sDialog) {
-							FileUtils fileUtils = new FileUtils(mainActivity);
+							FileUtils fileUtils = FileUtils.getInstance();
 							fileUtils.deleteAllAppInfo();
 
 							sDialog.setTitleText("已删除")
@@ -276,7 +276,7 @@ public class SettingFragment extends ProgressFragment implements AdapterView.OnI
 					.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
 						@Override
 						public void onClick(SweetAlertDialog sDialog) {
-							FileUtils fileUtils2 = new FileUtils(mainActivity);
+							FileUtils fileUtils2 = FileUtils.getInstance();
 							fileUtils2.deleteAppList();
 
 							sDialog.setTitleText("已删除")

@@ -19,14 +19,18 @@ import java.util.List;
  * Created by heath on 15-12-29.
  */
 public class FileUtils {
-    // 记录上下文
-    private Context mContext;
 
-    private List<PackageInfo> packages;
+	private static class LazyHolder {
+		private static final FileUtils INSTANCE = new FileUtils();
+	}
 
-    public FileUtils(Context context) {
-        this.mContext = context;
-    }
+	public static final FileUtils getInstance() {
+		return LazyHolder.INSTANCE;
+	}
+
+    public FileUtils() {
+
+	}
 
     // 获取保存的监听列表
     public ArrayList<String> getAppList() {
@@ -47,18 +51,18 @@ public class FileUtils {
     }
 
     // 保存监听列表
-    public void storeAppList(ArrayList<String> appList) {
+    public synchronized void storeAppList(Context context, ArrayList<String> appList) {
         try {
-            getOutputStream("appList").write(new Gson().toJson(appList).getBytes());
+            getOutputStream(context, "appList").write(new Gson().toJson(appList).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // 保存app使用状况
-    public void storeAppInfo(AppUsage appUsage) {
+    public synchronized void storeAppInfo(Context context, AppUsage appUsage) {
         try {
-            getOutputStream("flag_"+appUsage.getPackageName())
+            getOutputStream(context, "flag_"+appUsage.getPackageName())
                     .write(new Gson().toJson(appUsage).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,11 +70,11 @@ public class FileUtils {
     }
 
     // 读取app使用状况
-    public AppUsage loadAppInfo(String pkgName) {
+    public AppUsage loadAppInfo(Context context, String pkgName) {
         //文件不存在，直接返回一个新的AppUsage
         File file = new File("/data/data/com.crossbow.app.x_timer/files/flag_" + pkgName);
         if (!file.exists()) {
-            return new AppUsage(pkgName, findAppName(pkgName));
+            return new AppUsage(pkgName, findAppName(context, pkgName));
         }
 
         //文件存在则读取文件，转换成AppUsage
@@ -91,9 +95,9 @@ public class FileUtils {
     }
 
     // 获取file的OutputStream
-    private FileOutputStream getOutputStream(String fileName) {
+    private FileOutputStream getOutputStream(Context context, String fileName) {
         try {
-            FileOutputStream outputStream = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
             return outputStream;
         } catch (Exception e) {
@@ -124,7 +128,7 @@ public class FileUtils {
     }
 
     // 获取所有存储的app信息，不管在不在list里
-    public List<AppUsage> getAllStoredApp() {
+    public List<AppUsage> getAllStoredApp(Context context) {
         List<AppUsage> list = new ArrayList<>();
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
@@ -133,7 +137,8 @@ public class FileUtils {
 
         for (File file : files) {
             if (file.getName().startsWith("flag_")) {
-                AppUsage usage = loadAppInfo(file.getName().substring(5, file.getName().length()));
+                AppUsage usage = loadAppInfo(context,
+					file.getName().substring(5, file.getName().length()));
                 list.add(usage);
             }
         }
@@ -142,7 +147,7 @@ public class FileUtils {
     }
 
     // 删除指定应用信息
-    public boolean deleteCertainAppInfo(String pkgName) {
+    public synchronized boolean deleteCertainAppInfo(String pkgName) {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
 
@@ -159,7 +164,7 @@ public class FileUtils {
     }
 
     // 删除所有应用信息
-    public boolean deleteAllAppInfo() {
+    public synchronized boolean deleteAllAppInfo() {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
 
@@ -173,7 +178,7 @@ public class FileUtils {
     }
 
     // 删除所有files下文件，debug用
-    public boolean deleteALLFiles() {
+    public synchronized boolean deleteALLFiles() {
         File root = new File("/data/data/com.crossbow.app.x_timer/files");
         File[] files = root.listFiles();
 
@@ -200,8 +205,8 @@ public class FileUtils {
         return true;
     }
 
-    // 删除所监听列表
-    public boolean deleteAppList() {
+    // 删除监听列表
+    public synchronized boolean deleteAppList() {
         File file = new File("/data/data/com.crossbow.app.x_timer/files/appList");
         if (!file.exists()) {
             return false;
@@ -212,15 +217,15 @@ public class FileUtils {
     }
 
     // get app real name
-    private String findAppName(String pkgName) {
-        if (packages == null) packages = mContext.getPackageManager().getInstalledPackages(0);
+    private String findAppName(Context context, String pkgName) {
+		List<PackageInfo> packages = context.getPackageManager().getInstalledPackages(0);
 
         for (int i = 0; i < packages.size(); i++) {
             PackageInfo packageInfo = packages.get(i);
             String packageName = packageInfo.packageName;
             if (packageName.equals(pkgName)) {
                 String appName = packageInfo.applicationInfo
-                        .loadLabel(mContext.getPackageManager()).toString();
+                        .loadLabel(context.getPackageManager()).toString();
 
                 return appName;
             }

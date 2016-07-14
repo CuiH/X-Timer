@@ -278,9 +278,9 @@ public class HomeFragment extends ProgressFragment implements OnChartValueSelect
 		List<AppChartItem> list = new ArrayList<>();
 
 		// read file
-		FileUtils fileUtils = new FileUtils(mainActivity);
+		FileUtils fileUtils = FileUtils.getInstance();
 		// if the app has been used in the certain date
-		for (AppUsage app: fileUtils.getAllStoredApp()) {
+		for (AppUsage app: fileUtils.getAllStoredApp(mainActivity)) {
 			Map<String, AppUsage.History> history = app.getUsingHistory();
 			if (history.containsKey(date)) {
 				AppUsage.History theDay = history.get(date);

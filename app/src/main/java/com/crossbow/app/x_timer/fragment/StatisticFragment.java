@@ -285,8 +285,8 @@ public class StatisticFragment extends ProgressFragment {
 
 	// 获取存储的所有app信息
 	private void getStoredAppInfo() {
-		FileUtils fileUtils = new FileUtils(mainActivity);
-		appUsageList = fileUtils.getAllStoredApp();
+		FileUtils fileUtils = FileUtils.getInstance();
+		appUsageList = fileUtils.getAllStoredApp(mainActivity);
 	}
 
 }

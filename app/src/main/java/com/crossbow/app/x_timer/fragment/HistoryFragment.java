@@ -327,8 +327,8 @@ public class HistoryFragment extends ProgressFragment {
 	private void initAllStoredApps() {
 		List<HistoryAppInfo> list = new ArrayList<>();
 
-		FileUtils fileUtils = new FileUtils(mainActivity);
-		for (AppUsage appUsage: fileUtils.getAllStoredApp()) {
+		FileUtils fileUtils = FileUtils.getInstance();
+		for (AppUsage appUsage: fileUtils.getAllStoredApp(mainActivity)) {
 			HistoryAppInfo info = new HistoryAppInfo(appUsage.getRealName(),
 				appUsage.getPackageName(), findAppIcon(appUsage.getPackageName()));
 			list.add(info);

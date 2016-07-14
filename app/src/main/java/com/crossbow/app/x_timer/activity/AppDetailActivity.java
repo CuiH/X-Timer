@@ -152,10 +152,10 @@ public class AppDetailActivity extends AppCompatActivity {
         List<AppDayItem> items = new ArrayList<>();
 
         // read file
-        fileUtils = new FileUtils(this);
+        fileUtils = FileUtils.getInstance();
 
         // find target app and all usages
-        for (AppUsage app: fileUtils.getAllStoredApp()) {
+        for (AppUsage app: fileUtils.getAllStoredApp(this)) {
             if (app.getPackageName().equals(appName)) {
 
                 Map<String, AppUsage.History> history = app.getUsingHistory();

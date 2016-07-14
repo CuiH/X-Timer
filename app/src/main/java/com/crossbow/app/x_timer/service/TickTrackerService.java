@@ -70,7 +70,7 @@ public class TickTrackerService extends Service {
         public boolean addAppToWatchingList(String appName, boolean shouldShow) {
             if (isInWatchingList(appName)) return false;
 
-            watchingList.put(appName, fileUtils.loadAppInfo(appName));
+            watchingList.put(appName, fileUtils.loadAppInfo(TickTrackerService.this, appName));
 
             if (shouldShow) updateNotification();
 
@@ -314,7 +314,7 @@ public class TickTrackerService extends Service {
 
         watchingList = new HashMap<>();
         usageBinder = new UsageBinder();
-        fileUtils = new FileUtils(this);
+        fileUtils = FileUtils.getInstance();
         mKeyguardManager = (KeyguardManager) this.getSystemService(Context
                 .KEYGUARD_SERVICE);
 
@@ -325,7 +325,7 @@ public class TickTrackerService extends Service {
     // init the watching list
     private void initWatchingList() {
         for (String appName : fileUtils.getAppList()) {
-            watchingList.put(appName, fileUtils.loadAppInfo(appName));
+            watchingList.put(appName, fileUtils.loadAppInfo(this, appName));
         }
     }
 
@@ -408,7 +408,7 @@ public class TickTrackerService extends Service {
     // store app information when exit
     private void storeAppInformation() {
         for (Map.Entry<String, AppUsage> entry : watchingList.entrySet()) {
-            fileUtils.storeAppInfo(entry.getValue());
+            fileUtils.storeAppInfo(this, entry.getValue());
         }
     }
 
@@ -419,7 +419,7 @@ public class TickTrackerService extends Service {
             arrayList.add(app.getKey());
         }
 
-        fileUtils.storeAppList(arrayList);
+        fileUtils.storeAppList(this, arrayList);
     }
 
     //注册监听器
